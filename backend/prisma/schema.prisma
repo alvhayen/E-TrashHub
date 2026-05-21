@@ -1,0 +1,104 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  RUMAH_TANGGA
+  DRIVER
+  ADMIN_TPS3R
+  MITRA_B2B
+  PEMDA
+}
+
+enum Status {
+  PENDING
+  ON_THE_WAY
+  COLLECTED
+  VERIFIED
+  COMPLETED
+}
+
+enum InventoryStatus {
+  READY
+  PROCESSING
+  SOLD_OUT
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  address   String?
+  phone     String?
+  zone      String?
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+
+  // Relations
+  pickupRequestsAsUser   PickupRequest[]     @relation("UserPickups")
+  pickupRequestsAsDriver PickupRequest[]     @relation("DriverPickups")
+  inventories            Inventory[]
+  transactions           Transaction[]
+  voucherRedemptions     VoucherRedemption[]
+}
+
+model PickupRequest {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  driverId        Int?
+  wasteTypes      String[] // Array of strings (e.g. ["Botol Plastik", "Kertas/Kardus"])
+  estimatedWeight Float
+  actualWeight    Float?
+  status          Status   @default(PENDING)
+  address         String
+  note            String?
+  points          Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user         User          @relation("UserPickups", fields: [userId], references: [id])
+  driver       User?         @relation("DriverPickups", fields: [driverId], references: [id])
+  transactions Transaction[]
+}
+
+model Inventory {
+  id          Int             @id @default(autoincrement())
+  tps3rId     Int
+  commodity   String
+  stockKg     Float
+  pricePerKg  Float
+  status      InventoryStatus @default(READY)
+  createdAt   DateTime        @default(now())
+
+  tps3r User @relation(fields: [tps3rId], references: [id])
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  pickupId    Int?
+  points      Int
+  type        String // "EARN" | "REDEEM" | "DEDUCTION"
+  description String
+  createdAt   DateTime @default(now())
+
+  user   User           @relation(fields: [userId], references: [id])
+  pickup PickupRequest? @relation(fields: [pickupId], references: [id])
+}
+
+model VoucherRedemption {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  voucherName String
+  pointsUsed  Int
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}

@@ -1,0 +1,6 @@
+{
+  "name": "e-TrashHub",
+  "description": "A smart waste management web application built for Juara Vibe Coding.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
