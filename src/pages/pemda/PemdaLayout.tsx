@@ -1,14 +1,15 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
-import { LayoutDashboard, TrendingUp, ShieldCheck, FileText } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, ShieldCheck, FileText, HelpCircle } from 'lucide-react';
 
 export default function PemdaLayout() {
   const navItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/pemda' },
     { icon: TrendingUp, label: 'Timbulan', path: '/pemda/volume' },
     { icon: ShieldCheck, label: 'Kepatuhan', path: '/pemda/compliance' },
-    { icon: FileText, label: 'Laporan', path: '/pemda/reports' }
+    { icon: FileText, label: 'Laporan', path: '/pemda/reports' },
+    { icon: HelpCircle, label: 'FAQ', path: '/pemda/faq' }
   ];
 
   return (

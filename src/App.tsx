@@ -60,12 +60,14 @@ import MitraLayout from './pages/mitra_b2b/MitraLayout';
 import Catalog from './pages/mitra_b2b/Catalog';
 import MaterialDetail from './pages/mitra_b2b/MaterialDetail';
 import MitraProfile from './pages/mitra_b2b/MitraProfile';
+import MitraFAQ from './pages/mitra_b2b/MitraFAQ';
 
 import PemdaLayout from './pages/pemda/PemdaLayout';
 import OverviewDashboard from './pages/pemda/OverviewDashboard';
 import VolumeDetail from './pages/pemda/VolumeDetail';
 import CompliancePage from './pages/pemda/CompliancePage';
 import ReportsExport from './pages/pemda/ReportsExport';
+import PemdaFAQ from './pages/pemda/PemdaFAQ';
 import RoleSelector from './pages/RoleSelector';
 import Register from './pages/Register';
 import Onboarding from './pages/Onboarding';
@@ -115,6 +117,7 @@ export default function App() {
               <Route index element={<Catalog />} />
               <Route path="material/:id" element={<MaterialDetail />} />
               <Route path="profile" element={<MitraProfile />} />
+              <Route path="faq" element={<MitraFAQ />} />
             </Route>
 
             <Route path="/pemda" element={<ProtectedRoute allowedRoles={['pemda']}><PemdaLayout /></ProtectedRoute>}>
@@ -122,6 +125,7 @@ export default function App() {
               <Route path="volume" element={<VolumeDetail />} />
               <Route path="compliance" element={<CompliancePage />} />
               <Route path="reports" element={<ReportsExport />} />
+              <Route path="faq" element={<PemdaFAQ />} />
             </Route>
 
             <Route path="/unauthorized" element={<Unauthorized />} />

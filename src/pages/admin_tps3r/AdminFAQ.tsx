@@ -39,7 +39,7 @@ export default function AdminFAQ() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {faqs.map((faq, index) => (
-          <Card key={index} variant="outlined" padding="md" style={{ cursor: 'pointer', transition: 'box-shadow 0.2s' }} onClick={() => setOpenIndex(openIndex === index ? null : index)}>
+          <Card key={index} variant="bordered" padding="md" style={{ cursor: 'pointer', transition: 'box-shadow 0.2s' }} onClick={() => setOpenIndex(openIndex === index ? null : index)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#0f172a' }}>{faq.question}</h3>
               <div style={{ color: '#64748b' }}>

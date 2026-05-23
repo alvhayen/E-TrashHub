@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Search, ShoppingBag, User } from 'lucide-react';
+import { Search, ShoppingBag, User, HelpCircle } from 'lucide-react';
 
 export default function MitraLayout() {
   const { user } = useAuth();
@@ -42,6 +42,15 @@ export default function MitraLayout() {
               transition: 'color 0.2s'
             })}>
               <User size={18} /> Profil Perusahaan
+            </NavLink>
+            <NavLink to="/mitra_b2b/faq" style={({isActive}) => ({ 
+              color: isActive ? '#34d399' : 'rgba(255,255,255,0.7)', 
+              textDecoration: 'none', 
+              fontWeight: isActive ? 600 : 500,
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              transition: 'color 0.2s'
+            })}>
+              <HelpCircle size={18} /> FAQ
             </NavLink>
           </nav>
         </div>
