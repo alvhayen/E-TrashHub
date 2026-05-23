@@ -44,7 +44,7 @@ export default function CompliancePage() {
             </h3>
             <div style={{ padding: '1rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div>
-                <div style={{ fontWeight: 700, color: '#991b1b', fontSize: '1.125rem' }}>Kecamatan Semampir</div>
+                <div style={{ fontWeight: 700, color: '#991b1b', fontSize: '1.125rem' }}>Balikpapan Timur</div>
                 <div style={{ fontSize: '0.875rem', color: '#b91c1c' }}>Rata-rata Kepatuhan: 52% (Turun 3%)</div>
               </div>
               <div style={{ padding: '0.5rem 1rem', backgroundColor: '#fff', color: '#b91c1c', fontWeight: 700, borderRadius: 'var(--radius-full)', border: '1px solid #fecaca' }}>
@@ -53,7 +53,7 @@ export default function CompliancePage() {
             </div>
             <div style={{ padding: '1rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: 700, color: '#991b1b', fontSize: '1.125rem' }}>Kecamatan Pabean Cantikan</div>
+                <div style={{ fontWeight: 700, color: '#991b1b', fontSize: '1.125rem' }}>Balikpapan Utara</div>
                 <div style={{ fontSize: '0.875rem', color: '#b91c1c' }}>Rata-rata Kepatuhan: 58%</div>
               </div>
               <div style={{ padding: '0.5rem 1rem', backgroundColor: '#fff', color: '#b91c1c', fontWeight: 700, borderRadius: 'var(--radius-full)', border: '1px solid #fecaca' }}>
@@ -73,7 +73,7 @@ export default function CompliancePage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                 <CheckCircle2 color="#34d399" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div style={{ fontSize: '0.875rem', lineHeight: 1.4 }}>Pusatkan kampanye edukasi pemilahan kertas dan karton di <strong style={{ color: '#fff' }}>Kecamatan Semampir</strong>. Tingkat kontaminasi mencapai 40%.</div>
+                <div style={{ fontSize: '0.875rem', lineHeight: 1.4 }}>Pusatkan kampanye edukasi pemilahan kertas dan karton di <strong style={{ color: '#fff' }}>Balikpapan Timur</strong>. Tingkat kontaminasi mencapai 40%.</div>
               </div>
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                 <CheckCircle2 color="#34d399" style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -81,7 +81,7 @@ export default function CompliancePage() {
               </div>
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                 <CheckCircle2 color="#34d399" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div style={{ fontSize: '0.875rem', lineHeight: 1.4 }}>Apresiasi warga <strong style={{ color: '#fff' }}>Surabaya Barat</strong> dengan award zona terbersih bulan ini via integrasi WhatsApp API.</div>
+                <div style={{ fontSize: '0.875rem', lineHeight: 1.4 }}>Apresiasi warga <strong style={{ color: '#fff' }}>Balikpapan Barat</strong> dengan award zona terbersih bulan ini via integrasi WhatsApp API.</div>
               </div>
             </div>
           </Card>

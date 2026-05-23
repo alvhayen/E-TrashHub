@@ -22,11 +22,8 @@ export default function HouseholdLayout() {
       overflowX: 'hidden',
       boxShadow: '0 0 20px rgba(0,0,0,0.05)'
     }}>
-      <div style={{ position: 'fixed', top: '1rem', right: '50%', transform: 'translateX(220px)', zIndex: 50 }}>
-         {window.innerWidth <= 480 ? 
-           <div style={{ position: 'absolute', right: '-210px' }}><NotificationBell /></div> : 
-           <NotificationBell />
-         }
+      <div style={{ position: 'fixed', top: '1rem', right: 'max(1rem, calc(50vw - 240px + 1rem))', zIndex: 50 }}>
+        <NotificationBell />
       </div>
       <div style={{ paddingBottom: '80px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Outlet />

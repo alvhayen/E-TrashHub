@@ -5,7 +5,7 @@ import { useToast } from '../components/ui/Toast';
 
 export function useApi() {
   const { token, logout } = useAuth();
-  const { showToast } = useToast();
+  const { error: showErrorToast } = useToast();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,15 +40,15 @@ export function useApi() {
       
       // Auto-logout on 401
       if (err.response?.status === 401) {
-        showToast('Sesi Anda telah berakhir. Silakan login kembali.', 'error');
+        showErrorToast('Sesi Anda telah berakhir. Silakan login kembali.');
         logout();
       } else {
-        showToast(errMsg, 'error');
+        showErrorToast(errMsg);
       }
       
       throw err;
     }
-  }, [token, logout, showToast]);
+  }, [token, logout, showErrorToast]);
 
   const refetch = useCallback(() => {
     if (lastRequest) {

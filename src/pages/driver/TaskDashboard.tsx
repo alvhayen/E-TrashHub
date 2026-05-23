@@ -48,7 +48,7 @@ export default function TaskDashboard() {
       <header style={{ padding: '1.5rem', backgroundColor: 'var(--role-driver)', color: '#fff', position: 'sticky', top: 0, zIndex: 10 }}>
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Tugas Hari Ini</h1>
         <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
-          Zona: Surabaya Barat • {tasks.length} titik hari ini
+          Zona: Balikpapan Barat • {tasks.length} titik hari ini
         </div>
         <div style={{ marginTop: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.25rem' }}>

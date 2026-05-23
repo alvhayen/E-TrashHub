@@ -31,7 +31,7 @@ export default function DriverProfile() {
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Kendaraan Armada</div>
-              <div style={{ fontWeight: 700 }}>Pickup Bak L300 (L 1234 AB)</div>
+              <div style={{ fontWeight: 700 }}>Pickup Bak L300 (KT 1234 AB)</div>
             </div>
           </div>
           
@@ -43,7 +43,7 @@ export default function DriverProfile() {
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Zona Operasional</div>
-              <div style={{ fontWeight: 700 }}>Surabaya Barat</div>
+              <div style={{ fontWeight: 700 }}>Balikpapan Barat</div>
             </div>
           </div>
         </Card>

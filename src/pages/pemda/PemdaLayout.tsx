@@ -32,7 +32,7 @@ export default function PemdaLayout() {
             </div>
             <div>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>SIPSN-Bridge</h1>
-              <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Kota Surabaya</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Kota Balikpapan</div>
             </div>
           </div>
         </header>

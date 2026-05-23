@@ -1,32 +1,10 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-enum Role {
-  RUMAH_TANGGA
-  DRIVER
-  ADMIN_TPS3R
-  MITRA_B2B
-  PEMDA
-}
-
-enum Status {
-  PENDING
-  ON_THE_WAY
-  COLLECTED
-  VERIFIED
-  COMPLETED
-}
-
-enum InventoryStatus {
-  READY
-  PROCESSING
-  SOLD_OUT
 }
 
 model User {
@@ -34,7 +12,7 @@ model User {
   email     String   @unique
   password  String
   name      String
-  role      Role
+  role      String   
   address   String?
   phone     String?
   zone      String?
@@ -53,10 +31,10 @@ model PickupRequest {
   id              Int      @id @default(autoincrement())
   userId          Int
   driverId        Int?
-  wasteTypes      String[] // Array of strings (e.g. ["Botol Plastik", "Kertas/Kardus"])
+  wasteTypes      String   // Using String to store JSON array string for SQLite instead of String[]
   estimatedWeight Float
   actualWeight    Float?
-  status          Status   @default(PENDING)
+  status          String   @default("PENDING")
   address         String
   note            String?
   points          Int      @default(0)
@@ -74,7 +52,7 @@ model Inventory {
   commodity   String
   stockKg     Float
   pricePerKg  Float
-  status      InventoryStatus @default(READY)
+  status      String          @default("READY")
   createdAt   DateTime        @default(now())
 
   tps3r User @relation(fields: [tps3rId], references: [id])

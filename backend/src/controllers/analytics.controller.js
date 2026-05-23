@@ -42,10 +42,10 @@ export const getPemdaZones = async (req, res) => {
     // simplified mock-ish data based on available regions
     res.json({
       zones: [
-        { name: 'Surabaya Timur', complianceRate: 92, activeHouseholds: 420 },
-        { name: 'Surabaya Pusat', complianceRate: 88, activeHouseholds: 380 },
-        { name: 'Surabaya Barat', complianceRate: 85, activeHouseholds: 310 },
-        { name: 'Surabaya Selatan', complianceRate: 80, activeHouseholds: 450 }
+        { name: 'Balikpapan Timur', complianceRate: 92, activeHouseholds: 420 },
+        { name: 'Balikpapan Kota', complianceRate: 88, activeHouseholds: 380 },
+        { name: 'Balikpapan Barat', complianceRate: 85, activeHouseholds: 310 },
+        { name: 'Balikpapan Selatan', complianceRate: 80, activeHouseholds: 450 }
       ]
     });
   } catch (error) {

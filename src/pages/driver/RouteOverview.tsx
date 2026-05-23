@@ -3,6 +3,29 @@ import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import { useApi } from '../../hooks/useApi';
 import { Map as MapIcon, ExternalLink } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icons in react-leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+const BALIKPAPAN_CENTER: [number, number] = [-1.2379, 116.8529];
+
+// Generate mock coordinates around Balikpapan for the markers since address is a simple string
+const getMockCoordinate = (idx: number): [number, number] => {
+  const offset = 0.005 * (idx + 1);
+  return [
+    BALIKPAPAN_CENTER[0] + (idx % 2 === 0 ? offset : -offset), 
+    BALIKPAPAN_CENTER[1] + (idx % 3 === 0 ? offset : -offset)
+  ];
+};
 
 export default function RouteOverview() {
   const { request } = useApi();
@@ -15,10 +38,12 @@ export default function RouteOverview() {
   }, [request]);
 
   const pendingTasks = tasks.filter(t => ['PENDING', 'ON_THE_WAY'].includes(t.status));
+  const markers = pendingTasks.map((t, idx) => ({ ...t, position: getMockCoordinate(idx) }));
+  const polylinePositions = markers.map(m => m.position);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <header style={{ padding: '1.5rem', backgroundColor: '#fff', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <header style={{ padding: '1.5rem', backgroundColor: '#fff', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 50 }}>
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Rute Penjemputan</h1>
         <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>Estimasi Jarak: ±12.5 km</div>
       </header>
@@ -26,15 +51,31 @@ export default function RouteOverview() {
       <div style={{ padding: '1rem' }}>
         <div style={{ 
           width: '100%', height: '250px', backgroundColor: '#f1f5f9', borderRadius: 'var(--radius-lg)', 
-          border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--color-text-secondary)', marginBottom: '1.5rem', overflow: 'hidden', position: 'relative'
+          border: '1px solid var(--color-border)', marginBottom: '1.5rem', overflow: 'hidden', position: 'relative',
+          zIndex: 10
         }}>
-          {/* Static Placeholder for Map */}
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at center, #000 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1 }}>
-            <MapIcon size={48} style={{ marginBottom: '0.5rem', color: 'var(--role-driver)' }} />
-            <span style={{ fontWeight: 600 }}>Peta Rute Interaktif</span>
-          </div>
+          <MapContainer 
+            center={BALIKPAPAN_CENTER} 
+            zoom={13} 
+            style={{ width: '100%', height: '100%' }}
+            zoomControl={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {markers.map((marker, idx) => (
+              <Marker key={marker.id} position={marker.position}>
+                <Popup>
+                  <strong>Urutan {idx + 1}: {marker.user?.name}</strong><br />
+                  {marker.address}
+                </Popup>
+              </Marker>
+            ))}
+            {polylinePositions.length > 1 && (
+              <Polyline positions={polylinePositions} color="var(--role-driver)" weight={4} opacity={0.7} />
+            )}
+          </MapContainer>
         </div>
 
         <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>Urutan Titik Lokasi ({pendingTasks.length})</h2>

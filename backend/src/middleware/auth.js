@@ -24,7 +24,10 @@ export const verifyToken = (req, res, next) => {
 
 export const authorizeRole = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
+    const userRole = req.user?.role?.toLowerCase();
+    const normalizedAllowedRoles = allowedRoles.map(role => role.toLowerCase());
+    
+    if (!userRole || !normalizedAllowedRoles.includes(userRole)) {
       return res.status(403).json({ error: 'Forbidden: Insufficient role permissions' });
     }
     next();

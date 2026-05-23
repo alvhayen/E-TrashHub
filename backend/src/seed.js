@@ -15,7 +15,7 @@ async function main() {
     { email: 'budi.driver@email.com', name: 'Budi', role: 'DRIVER' },
     { email: 'admin.tps3r@email.com', name: 'Admin TPS3R', role: 'ADMIN_TPS3R' },
     { email: 'mitra@industri.com', name: 'Mitra Industri', role: 'MITRA_B2B' },
-    { email: 'dinas@surabaya.go.id', name: 'Dinas LH', role: 'PEMDA' }
+    { email: 'dinas@balikpapan.go.id', name: 'Dinas LH', role: 'PEMDA' }
   ];
 
   for (const u of usersData) {
@@ -53,11 +53,11 @@ async function main() {
       data: {
         userId: household.id,
         driverId: data.status !== 'PENDING' ? driver.id : null,
-        wasteTypes: data.types,
+        wasteTypes: JSON.stringify(data.types),
         estimatedWeight: data.weight,
         actualWeight: data.status === 'COMPLETED' || data.status === 'VERIFIED' ? data.weight : null,
         status: data.status,
-        address: 'Jl. Melati No. 45, Surabaya',
+        address: 'Jl. Jenderal Sudirman No. 45, Balikpapan Kota',
         points: data.points
       }
     });

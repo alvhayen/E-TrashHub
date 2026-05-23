@@ -52,7 +52,7 @@ export default function OverviewDashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a' }}>Executive Dashboard</h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.125rem' }}>Analitik Pengelolaan Sampah Kota Surabaya</p>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.125rem' }}>Analitik Pengelolaan Sampah Kota Balikpapan</p>
         </div>
         <div style={{ fontSize: '0.875rem', color: '#059669', backgroundColor: '#d1fae5', padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#059669', animation: 'pulse 2s infinite' }} />

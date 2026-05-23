@@ -6,6 +6,22 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { Search, MapPin, Package, MessageCircle } from 'lucide-react';
 
+import imgKardusBekas from '../../assets/images/kardus_bekas_1779519878946.png';
+import imgKalengAluminium from '../../assets/images/kaleng_aluminium_1779519895348.png';
+import imgBesiTua from '../../assets/images/besi_tua_1779519915559.png';
+import imgBotolPlastik from '../../assets/images/botol_plastik_1779519932063.png';
+import imgGelasPlastik from '../../assets/images/gelas_plastik_1779519948311.png';
+
+const getImageForCommodity = (commodity: string) => {
+  const lowercase = commodity.toLowerCase();
+  if (lowercase.includes('kardus')) return imgKardusBekas;
+  if (lowercase.includes('kaleng')) return imgKalengAluminium;
+  if (lowercase.includes('besi') || lowercase.includes('logam')) return imgBesiTua;
+  if (lowercase.includes('botol')) return imgBotolPlastik;
+  if (lowercase.includes('gelas')) return imgGelasPlastik;
+  return undefined;
+};
+
 export default function Catalog() {
   const { request, loading } = useApi();
   const navigate = useNavigate();
@@ -105,8 +121,8 @@ export default function Catalog() {
           style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', backgroundColor: '#fff', minWidth: '180px', outline: 'none' }}
         >
           <option value="All">Semua Lokasi TPS3R</option>
-          <option value="Surabaya Barat">Surabaya Barat</option>
-          <option value="Surabaya Timur">Surabaya Timur</option>
+          <option value="Balikpapan Barat">Balikpapan Barat</option>
+          <option value="Balikpapan Timur">Balikpapan Timur</option>
         </select>
 
         <select 
@@ -138,15 +154,15 @@ export default function Catalog() {
           }}>
             {filteredItems.map(item => (
               <Card key={item.id} variant="elevated" hoverable padding="lg" style={{ display: 'flex', flexDirection: 'column', height: '100%', border: '1px solid transparent', transition: 'border 0.2s', ':hover': { border: '1px solid #34d399' } } as any}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
-                  <div style={{ 
-                    width: '3.5rem', height: '3.5rem', borderRadius: 'var(--radius-md)', 
-                    backgroundColor: '#ecfdf5', color: '#153D32',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <Package size={28} />
+                <div style={{ position: 'relative', width: '100%', height: '12rem', marginBottom: '1.5rem', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#153D32' }}>
+                  {getImageForCommodity(item.commodity) ? (
+                    <img src={getImageForCommodity(item.commodity)} alt={item.commodity} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <Package size={48} />
+                  )}
+                  <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
+                    <Badge status="READY" />
                   </div>
-                  <Badge status="READY" />
                 </div>
                 
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.3 }}>{item.commodity}</h3>
@@ -162,7 +178,7 @@ export default function Catalog() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
                     <div style={{ backgroundColor: '#f1f5f9', padding: '0.25rem', borderRadius: 'var(--radius-sm)' }}><MapPin size={16} color="#64748b" /></div>
-                    TPS3R Surabaya Barat 📍
+                    TPS3R Balikpapan Barat 📍
                   </div>
                 </div>
 
@@ -172,7 +188,7 @@ export default function Catalog() {
                     icon={MessageCircle} 
                     style={{ backgroundColor: '#25D366', color: '#fff', fontSize: '1rem', padding: '0.75rem' }}
                     onClick={() => {
-                      const text = encodeURIComponent(`Halo, saya tertarik dengan ${item.commodity} sebanyak ${item.stockKg} kg dari TPS3R Surabaya Barat. Apakah tersedia?`);
+                      const text = encodeURIComponent(`Halo, saya tertarik dengan ${item.commodity} sebanyak ${item.stockKg} kg dari TPS3R Balikpapan Barat. Apakah tersedia?`);
                       window.open(`https://wa.me/628123456789?text=${text}`, '_blank');
                     }}
                   >

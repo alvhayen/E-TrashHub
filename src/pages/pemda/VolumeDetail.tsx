@@ -8,17 +8,17 @@ export default function VolumeDetail() {
   const [dateRange, setDateRange] = useState('30d');
 
   const tps3rs = [
-    { name: 'TPS3R Surabaya Barat', volume: 4500, percent: 36 },
-    { name: 'TPS3R Mulyorejo', volume: 3800, percent: 30 },
-    { name: 'TPS3R Rungkut', volume: 2100, percent: 17 },
-    { name: 'TPS3R Jambangan', volume: 2100, percent: 17 }
+    { name: 'TPS3R Balikpapan Barat', volume: 4500, percent: 36 },
+    { name: 'TPS3R Balikpapan Tengah', volume: 3800, percent: 30 },
+    { name: 'TPS3R Balikpapan Timur', volume: 2100, percent: 17 },
+    { name: 'TPS3R Balikpapan Kota', volume: 2100, percent: 17 }
   ];
 
   const trendData = [
-    { name: 'Minggu 1', 'TPS3R Barat': 1000, 'TPS3R Mulyorejo': 900, 'TPS3R Rungkut': 500 },
-    { name: 'Minggu 2', 'TPS3R Barat': 1100, 'TPS3R Mulyorejo': 950, 'TPS3R Rungkut': 520 },
-    { name: 'Minggu 3', 'TPS3R Barat': 1200, 'TPS3R Mulyorejo': 920, 'TPS3R Rungkut': 540 },
-    { name: 'Minggu 4', 'TPS3R Barat': 1200, 'TPS3R Mulyorejo': 1030, 'TPS3R Rungkut': 540 },
+    { name: 'Minggu 1', 'TPS3R Balikpapan Barat': 1000, 'TPS3R Balikpapan Tengah': 900, 'TPS3R Balikpapan Timur': 500 },
+    { name: 'Minggu 2', 'TPS3R Balikpapan Barat': 1100, 'TPS3R Balikpapan Tengah': 950, 'TPS3R Balikpapan Timur': 520 },
+    { name: 'Minggu 3', 'TPS3R Balikpapan Barat': 1200, 'TPS3R Balikpapan Tengah': 920, 'TPS3R Balikpapan Timur': 540 },
+    { name: 'Minggu 4', 'TPS3R Balikpapan Barat': 1200, 'TPS3R Balikpapan Tengah': 1030, 'TPS3R Balikpapan Timur': 540 },
   ];
 
   const handleExport = () => {
@@ -95,9 +95,9 @@ export default function VolumeDetail() {
               <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
               <Tooltip contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'}} />
               <Legend wrapperStyle={{paddingTop: '20px'}} />
-              <Line type="monotone" dataKey="TPS3R Barat" stroke="#059669" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
-              <Line type="monotone" dataKey="TPS3R Mulyorejo" stroke="#3b82f6" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
-              <Line type="monotone" dataKey="TPS3R Rungkut" stroke="#f59e0b" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
+              <Line type="monotone" dataKey="TPS3R Balikpapan Barat" stroke="#059669" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
+              <Line type="monotone" dataKey="TPS3R Balikpapan Tengah" stroke="#3b82f6" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
+              <Line type="monotone" dataKey="TPS3R Balikpapan Timur" stroke="#f59e0b" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
             </LineChart>
           </ResponsiveContainer>
         </div>

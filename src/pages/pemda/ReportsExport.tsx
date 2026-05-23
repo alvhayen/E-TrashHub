@@ -27,7 +27,7 @@ export default function ReportsExport() {
       <Card variant="default" className="print-container" style={{ backgroundColor: '#fff', border: '1px solid var(--color-border)', boxShadow: 'none' }}>
         {/* Printable Area Header */}
         <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Pemerintah Kota Surabaya</h2>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Pemerintah Kota Balikpapan</h2>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Laporan Timbulan & Pengurangan Sampah Berkala</h1>
           <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Periode: {currentMonth}</div>
         </div>
@@ -66,13 +66,13 @@ export default function ReportsExport() {
               <tbody>
                 <tr>
                   <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0' }}>1</td>
-                  <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0' }}>TPS3R Surabaya Barat</td>
+                  <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0' }}>TPS3R Balikpapan Barat</td>
                   <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>135,000</td>
                   <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>120,500</td>
                 </tr>
                 <tr>
                   <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0' }}>2</td>
-                  <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0' }}>TPS3R Mulyorejo</td>
+                  <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0' }}>TPS3R Balikpapan Tengah</td>
                   <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>115,200</td>
                   <td style={{ padding: '0.75rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>100,100</td>
                 </tr>
@@ -94,7 +94,7 @@ export default function ReportsExport() {
                 <div>(SIPSN-Bridge Automator)</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ marginBottom: '4rem' }}>Surabaya, {new Date().toLocaleDateString('id-ID')} <br/> Mengetahui,</div>
+                <div style={{ marginBottom: '4rem' }}>Balikpapan, {new Date().toLocaleDateString('id-ID')} <br/> Mengetahui,</div>
                 <div style={{ fontWeight: 700, textDecoration: 'underline' }}>Kepala Dinas Lingkungan Hidup</div>
                 <div>NIP. __________________</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', marginTop: '1rem', color: '#64748b', fontSize: '0.75rem' }}>

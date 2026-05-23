@@ -8,9 +8,9 @@ export default function MitraProfile() {
   const { user, logout } = useAuth();
 
   const mockHistory = [
-    { id: 1, date: '2026-05-20', item: 'Botol Plastik PET Bersih', amount: '200 kg', status: 'Inquiry Sent', tps: 'TPS3R Surabaya Barat' },
-    { id: 2, date: '2026-05-15', item: 'Kertas Kardus Bekas', amount: '500 kg', status: 'Completed', tps: 'TPS3R Mulyorejo' },
-    { id: 3, date: '2026-05-10', item: 'Logam Kaleng Aluminium', amount: '150 kg', status: 'Completed', tps: 'TPS3R Rungkut' },
+    { id: 1, date: '2026-05-20', item: 'Botol Plastik PET Bersih', amount: '200 kg', status: 'Inquiry Sent', tps: 'TPS3R Balikpapan Barat' },
+    { id: 2, date: '2026-05-15', item: 'Kertas Kardus Bekas', amount: '500 kg', status: 'Completed', tps: 'TPS3R Balikpapan Tengah' },
+    { id: 3, date: '2026-05-10', item: 'Logam Kaleng Aluminium', amount: '150 kg', status: 'Completed', tps: 'TPS3R Balikpapan Timur' },
   ];
 
   return (

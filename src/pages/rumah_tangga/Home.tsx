@@ -43,7 +43,7 @@ export default function Home() {
     const interval = setInterval(fetchPickups, 15000); // 15s polling
     
     // Fetch leaderboard
-    request('GET', '/api/leaderboard', undefined, 1).then(data => {
+    request('GET', '/api/auth/leaderboard', undefined, 1).then(data => {
       if (data && data.leaderboard) setLeaderboard(data.leaderboard);
     }).catch(console.error);
     

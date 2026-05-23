@@ -9,13 +9,17 @@ export const createPickup = async (req, res) => {
     const pickup = await prisma.pickupRequest.create({
       data: {
         userId: req.user.id,
-        wasteTypes,
+        wasteTypes: JSON.stringify(wasteTypes || []),
         estimatedWeight: parseFloat(estimatedWeight),
         address,
         note,
         status: 'PENDING'
       }
     });
+
+    // parse it back for the response
+    pickup.wasteTypes = JSON.parse(pickup.wasteTypes);
+
     res.status(201).json({ pickup });
   } catch (error) {
     console.error(error);
@@ -30,7 +34,13 @@ export const getHouseholdPickups = async (req, res) => {
       where: { userId: req.user.id },
       orderBy: { createdAt: 'desc' }
     });
-    res.json({ pickups });
+    
+    const formattedPickups = pickups.map(p => ({
+      ...p,
+      wasteTypes: JSON.parse(p.wasteTypes || '[]')
+    }));
+
+    res.json({ pickups: formattedPickups });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch pickups' });
@@ -52,7 +62,13 @@ export const getDriverPickups = async (req, res) => {
       },
       orderBy: { createdAt: 'asc' }
     });
-    res.json({ pickups });
+    
+    const formattedPickups = pickups.map(p => ({
+      ...p,
+      wasteTypes: JSON.parse(p.wasteTypes || '[]')
+    }));
+
+    res.json({ pickups: formattedPickups });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch pickups' });
@@ -95,7 +111,13 @@ export const getAdminPickups = async (req, res) => {
       },
       orderBy: { updatedAt: 'desc' }
     });
-    res.json({ pickups });
+    
+    const formattedPickups = pickups.map(p => ({
+      ...p,
+      wasteTypes: JSON.parse(p.wasteTypes || '[]')
+    }));
+
+    res.json({ pickups: formattedPickups });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch pickups' });

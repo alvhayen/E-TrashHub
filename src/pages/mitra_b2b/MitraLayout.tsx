@@ -63,7 +63,7 @@ export default function MitraLayout() {
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ textAlign: 'right', display: 'none', '@media (min-width: 768px)': { display: 'block' } as any }}>
+            <div className="hidden md:block" style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user?.name}</div>
               <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Mitra Industri</div>
             </div>

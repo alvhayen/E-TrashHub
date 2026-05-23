@@ -14,8 +14,8 @@ export default function MaterialDetail() {
   const [item, setItem] = useState<any>(null);
 
   useEffect(() => {
-    request('GET', `/api/inventory/admin`).then(data => {
-      // Mocking fetch all using admin endpoint for the sake of presentation
+    request('GET', `/api/inventory`).then(data => {
+      // Mocking fetch all using general endpoint for the sake of presentation
       const found = data.inventory?.find((i: any) => i.id === parseInt(id || '0'));
       if (found) setItem(found);
     }).catch(console.error);
@@ -72,7 +72,7 @@ export default function MaterialDetail() {
 
             <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: '#0f172a' }}>{item.commodity}</h1>
             <p style={{ fontSize: '1.125rem', color: 'var(--color-text-secondary)', marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: '800px' }}>
-              Material daur ulang ini telah disortir, dibersihkan, dan di-press di {`TPS3R Surabaya Barat`}. Kondisi material standar industri dan siap dikirim ke pabrik pengolahan lanjutan.
+              Material daur ulang ini telah disortir, dibersihkan, dan di-press di {`TPS3R Balikpapan Barat`}. Kondisi material standar industri dan siap dikirim ke pabrik pengolahan lanjutan.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', padding: '2rem', backgroundColor: '#f8fafc', borderRadius: 'var(--radius-xl)', marginBottom: '3rem', border: '1px solid var(--color-border)' }}>
@@ -113,10 +113,10 @@ export default function MaterialDetail() {
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', fontSize: '0.875rem' }}>
               <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>TPS3R Surabaya Barat</div>
+                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>TPS3R Balikpapan Barat</div>
                 <div style={{ color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', lineHeight: 1.4 }}>
                   <MapPin size={16} style={{ flexShrink: 0, marginTop: '2px' }} /> 
-                  Jl. Raya Lontar No. 123, Sambikerep, Surabaya Barat, Jawa Timur 60216
+                  Jl. Letjen Soeprapto No. 123, Balikpapan Barat, Kalimantan Timur 76131
                 </div>
               </div>
               
@@ -149,7 +149,7 @@ export default function MaterialDetail() {
                 size="lg"
                 style={{ backgroundColor: '#25D366', color: '#fff', fontSize: '1.125rem', padding: '1rem' }}
                 onClick={() => {
-                  const text = encodeURIComponent(`Halo TPS3R Surabaya Barat,\n\nSaya tertarik untuk mengakuisisi komoditas:\n*${item.commodity}*\nStok: ${item.stockKg} kg\nHarga: Rp ${item.pricePerKg}/kg\n\nApakah material ini siap di-survey dan dijemput?`);
+                  const text = encodeURIComponent(`Halo TPS3R Balikpapan Barat,\n\nSaya tertarik untuk mengakuisisi komoditas:\n*${item.commodity}*\nStok: ${item.stockKg} kg\nHarga: Rp ${item.pricePerKg}/kg\n\nApakah material ini siap di-survey dan dijemput?`);
                   window.open(`https://wa.me/628123456789?text=${text}`, '_blank');
                 }}
               >

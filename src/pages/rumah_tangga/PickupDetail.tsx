@@ -37,7 +37,7 @@ export default function PickupDetail() {
     };
   }, [id, request]);
 
-  if (loading && !pickup) return <div style={{ padding: '2rem', textAlign: 'center' }}>Memuat...</div>;
+  if (!pickup) return <div style={{ padding: '2rem', textAlign: 'center' }}>Memuat...</div>;
 
   const currentStatusIndex = STATUS_ORDER.indexOf(pickup.status);
 
