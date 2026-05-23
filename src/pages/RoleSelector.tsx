@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Truck, Factory, Briefcase, Landmark, ChevronRight } from 'lucide-react';
+import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
 
 const roles = [
   {
@@ -59,11 +60,12 @@ export default function RoleSelector() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ maxWidth: '600px', width: '100%' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0a2318', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+      <LeafNetworkBg accentColor="#4ade80" opacity={0.9} />
+      <div className="auth-page-content" style={{ maxWidth: '600px', width: '100%', padding: '2rem 1rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Pilih Peran Anda</h1>
-          <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.5 }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Pilih Peran Anda</h1>
+          <p style={{ fontSize: '1rem', lineHeight: 1.5 }}>
             Silakan pilih salah satu peran di bawah ini sesuai dengan peran anda untuk menggunakan aplikasi e-TrashHub.
           </p>
         </div>
@@ -80,16 +82,16 @@ export default function RoleSelector() {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '1.25rem',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e2e8f0',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '1rem',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   textAlign: 'left',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                  backdropFilter: 'blur(8px)',
                   width: '100%'
                 }}
-                className="hover:border-slate-400 hover:shadow-md"
+                className="hover:border-green-400 hover:bg-white/10"
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <div style={{ 
@@ -100,15 +102,15 @@ export default function RoleSelector() {
                     <Icon size={24} />
                   </div>
                   <div>
-                    <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>
+                    <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.25rem' }}>
                       {role.name}
                     </h2>
-                    <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>
+                    <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', margin: 0 }}>
                       {role.description}
                     </p>
                   </div>
                 </div>
-                <div style={{ color: '#94a3b8' }}>
+                <div style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
                   <ChevronRight size={24} />
                 </div>
               </button>

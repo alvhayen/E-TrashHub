@@ -289,3 +289,23 @@ button {
   padding: 2rem;
   overflow-y: auto;
 }
+
+/* Pastikan konten di atas canvas selalu di atas */
+.auth-page-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Karena sekarang background gelap semua, pastikan teks utama menjadi terang (putih/off-white) */
+.auth-page-content h1,
+.auth-page-content h2,
+.auth-page-content p {
+  color: #ffffff;
+}
+
+/* Accessibility: sembunyikan canvas jika reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  canvas[aria-hidden="true"] {
+    display: none;
+  }
+}

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Leaf, Users, ArrowLeft } from 'lucide-react';
+import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
 
 export default function Login() {
   const location = useLocation();
@@ -31,22 +32,23 @@ export default function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-primary)' }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px', margin: '1rem', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a2318', position: 'relative', overflow: 'hidden' }}>
+      <LeafNetworkBg accentColor="#4ade80" opacity={0.9} />
+      <div className="auth-page-content" style={{ backgroundColor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem', width: '100%', maxWidth: '400px', margin: '1rem', padding: '2rem', position: 'relative' }}>
         <button 
           onClick={() => navigate(-1)}
-          style={{ position: 'absolute', top: '1rem', left: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', borderRadius: '50%' }}
-          className="hover:bg-slate-100"
+          style={{ position: 'absolute', top: '1rem', left: '1rem', background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', borderRadius: '50%' }}
+          className="hover:bg-white/20"
           aria-label="Kembali"
         >
           <ArrowLeft size={20} />
         </button>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', backgroundColor: 'var(--color-primary)', borderRadius: 'var(--radius-md)', color: '#fff', marginBottom: '1rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', backgroundColor: '#10B981', borderRadius: '0.5rem', color: '#fff', marginBottom: '1rem' }}>
             <Leaf size={24} />
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-secondary)' }}>e-TrashHub</h1>
-          <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>Login to your account / Masuk ke akun Anda</p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#ffffff' }}>e-TrashHub</h1>
+          <p style={{ color: 'rgba(255,255,255,0.7)', marginTop: '0.5rem' }}>Login to your account / Masuk ke akun Anda</p>
         </div>
 
         {error && (

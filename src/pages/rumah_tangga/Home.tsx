@@ -33,6 +33,26 @@ export default function Home() {
           if (prevStatusesRef.current[p.id] && prevStatusesRef.current[p.id] !== p.status) {
             hasChanges = true;
             addNotification('Status Jemputan Diperbarui!', `Jemputan #${p.id} Anda sekarang berstatus: ${p.status}`);
+            
+            // Push notification alert specifically for ON_THE_WAY
+            if (p.status === 'ON_THE_WAY') {
+              const notifTitle = 'Sopir Dalam Perjalanan! 🚚';
+              const notifBody = `Sopir sedang menuju lokasi Anda untuk jemputan #${p.id}.`;
+              
+              if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                  new Notification(notifTitle, { body: notifBody });
+                } else if (Notification.permission !== 'denied') {
+                  Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                      new Notification(notifTitle, { body: notifBody });
+                    }
+                  });
+                }
+              } else {
+                alert(`${notifTitle}\n${notifBody}`);
+              }
+            }
           }
           prevStatusesRef.current[p.id] = p.status;
         });
