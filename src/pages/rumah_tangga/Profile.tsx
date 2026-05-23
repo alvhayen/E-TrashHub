@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/ui/Toast';
+import { useApi } from '../../hooks/useApi';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/form/Input';
@@ -8,8 +9,9 @@ import { User, MapPin, Phone, Mail, Award, LogOut, Ticket } from 'lucide-react';
 import { pointsToRupiah } from '../../utils/points';
 
 export default function Profile() {
-  const { user, logout } = useAuth();
-  const { success } = useToast();
+  const { user, logout, updateUser } = useAuth();
+  const { success, error } = useToast();
+  const { request, loading } = useApi();
   const [isEditing, setIsEditing] = useState(false);
 
   // In a real app we'd save these via API
@@ -17,10 +19,17 @@ export default function Profile() {
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.address || '');
 
-  const handleSave = () => {
-    setIsEditing(false);
-    success('Profil berhasil diperbarui');
-    // Call API here to update profile if endpoint existed
+  const handleSave = async () => {
+    try {
+      const res = await request('PUT', '/api/auth/profile', { name, phone, address });
+      if (res && res.user) {
+        updateUser(res.user);
+        setIsEditing(false);
+        success('Profil berhasil diperbarui');
+      }
+    } catch (err: any) {
+      error(err?.response?.data?.error || 'Gagal memperbarui profil');
+    }
   };
 
   return (
@@ -72,12 +81,27 @@ export default function Profile() {
                 Ubah
               </button>
             ) : (
-              <button 
-                onClick={handleSave} 
-                style={{ color: 'var(--color-primary)', background: 'transparent', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}
-              >
-                Simpan
-              </button>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <button 
+                  onClick={() => {
+                    setIsEditing(false);
+                    setName(user?.name || '');
+                    setPhone(user?.phone || '');
+                    setAddress(user?.address || '');
+                  }}
+                  disabled={loading}
+                  style={{ color: 'var(--color-text-secondary)', background: 'transparent', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: loading ? 'wait' : 'pointer' }}
+                >
+                  Batal
+                </button>
+                <button 
+                  onClick={handleSave} 
+                  disabled={loading}
+                  style={{ color: 'var(--color-primary)', background: 'transparent', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: loading ? 'wait' : 'pointer' }}
+                >
+                  {loading ? 'Menyimpan...' : 'Simpan'}
+                </button>
+              </div>
             )}
           </div>
           

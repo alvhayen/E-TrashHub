@@ -62,9 +62,9 @@ export default function RoleSelector() {
     <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{ maxWidth: '600px', width: '100%' }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Pilih Peran Demo</h1>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Pilih Peran Anda</h1>
           <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.5 }}>
-            Silakan pilih salah satu peran di bawah ini untuk melihat fitur spesifik dalam aplikasi e-TrashHub.
+            Silakan pilih salah satu peran di bawah ini sesuai dengan peran anda untuk menggunakan aplikasi e-TrashHub.
           </p>
         </div>
 

@@ -8,10 +8,11 @@ import Badge from '../../components/ui/Badge';
 import { MapPin, Navigation } from 'lucide-react';
 
 export default function TaskDashboard() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { request, loading } = useApi();
   const { success, error } = useToast();
   const [tasks, setTasks] = useState<any[]>([]);
+  const [bonusClaimed, setBonusClaimed] = useState(false);
 
   const fetchPickups = async () => {
     try {
@@ -40,17 +41,41 @@ export default function TaskDashboard() {
     }
   };
 
+  const handleClaimBonus = async () => {
+    try {
+      const res = await request('POST', '/api/auth/claim-bonus');
+      if (res && res.user) {
+        updateUser(res.user);
+        success(res.message || 'Bonus 100 Poin berhasil diklaim!');
+        setBonusClaimed(true);
+      }
+    } catch (err: any) {
+      error(err.response?.data?.error || 'Gagal mengklaim bonus');
+    }
+  };
+
   const activeTasks = tasks.filter(t => ['PENDING', 'ON_THE_WAY', 'COLLECTED'].includes(t.status));
   const completedCount = tasks.filter(t => t.status === 'COLLECTED').length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
       <header style={{ padding: '1.5rem', backgroundColor: 'var(--role-driver)', color: '#fff', position: 'sticky', top: 0, zIndex: 10 }}>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Tugas Hari Ini</h1>
-        <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
-          Zona: Balikpapan Barat • {tasks.length} titik hari ini
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Tugas Hari Ini</h1>
+            <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+              Zona: Balikpapan Barat • {tasks.length} titik hari ini
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '0.75rem', opacity: 0.9 }}>Total Poin</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{user?.points || 0} Pds</div>
+          </div>
         </div>
         <div style={{ marginTop: '1rem' }}>
+          <div style={{ fontSize: '0.75rem', textAlign: 'right', marginBottom: '0.25rem', fontWeight: 600, color: '#fef08a' }}>
+            ✨ Selesaikan progres untuk mendapat +100 Poin bonus
+          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.25rem' }}>
             <span>Progres Selesai</span>
             <span>{completedCount}/{tasks.length} selesai</span>
@@ -62,6 +87,19 @@ export default function TaskDashboard() {
       </header>
 
       <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
+        {completedCount === tasks.length && tasks.length > 0 && !bonusClaimed && (
+          <Card variant="elevated" padding="md" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎁</div>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#166534', marginBottom: '0.5rem' }}>Target Tercapai!</h3>
+              <p style={{ color: '#15803d', fontSize: '0.875rem', marginBottom: '1rem' }}>Anda telah menyelesaikan semua {tasks.length} titik penjemputan. Klaim bonus penghasilan Anda sekarang!</p>
+              <Button fullWidth onClick={handleClaimBonus} disabled={loading} style={{ backgroundColor: '#16a34a' }}>
+                {loading ? 'Mengklaim...' : 'Klaim 100 Poin Bonus'}
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {loading && tasks.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-secondary)' }}>Memuat tugas...</div>
         ) : activeTasks.length === 0 ? (

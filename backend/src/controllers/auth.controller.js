@@ -100,7 +100,55 @@ export const getLeaderboard = async (req, res, next) => {
   }
 };
 
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phone, address } = req.body;
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { name, phone, address },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        address: true,
+        phone: true,
+        zone: true,
+        points: true
+      }
+    });
+    updatedUser.role = updatedUser.role.toLowerCase();
+    res.json({ user: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const claimBonus = async (req, res, next) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { points: { increment: 100 } },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        address: true,
+        phone: true,
+        zone: true,
+        points: true
+      }
+    });
+    updatedUser.role = updatedUser.role.toLowerCase();
+    res.json({ message: 'Bonus berhasil diklaim', user: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getMe = async (req, res) => {
+
   try {
     // req.user is set by verifyToken middleware
     const user = await prisma.user.findUnique({

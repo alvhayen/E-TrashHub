@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { useApi } from '../../hooks/useApi';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import { LogOut, Building, Phone, Mail, Clock, ShieldCheck, MapPin } from 'lucide-react';
+import Input from '../../components/form/Input';
+import { LogOut, Building, Phone, Mail, Clock, ShieldCheck, MapPin, Edit2 } from 'lucide-react';
 
 export default function MitraProfile() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
+  const { success, error } = useToast();
+  const { request, loading } = useApi();
+  const [isEditing, setIsEditing] = useState(false);
+
+  // states for editing
+  const [name, setName] = useState(user?.name || '');
+  const [phone, setPhone] = useState(user?.phone || '+62 811-2233-4455');
+  const [address, setAddress] = useState(user?.address || 'Jl. Jend. Sudirman No. 45, Balikpapan');
+
+  const handleSave = async () => {
+    try {
+      const res = await request('PUT', '/api/auth/profile', { name, phone, address });
+      if (res && res.user) {
+        updateUser(res.user);
+        setIsEditing(false);
+        success('Profil berhasil diperbarui');
+      }
+    } catch (err: any) {
+      error(err?.response?.data?.error || 'Gagal memperbarui profil');
+    }
+  };
 
   const mockHistory = [
     { id: 1, date: '2026-05-20', item: 'Botol Plastik PET Bersih', amount: '200 kg', status: 'Inquiry Sent', tps: 'TPS3R Balikpapan Barat' },
@@ -15,39 +39,68 @@ export default function MitraProfile() {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a' }}>Profil Manajemen Bisnis</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a' }}>Profil Manajemen Bisnis</h1>
+        {!isEditing ? (
+          <Button variant="outline" onClick={() => setIsEditing(true)} icon={Edit2}>Edit Profil</Button>
+        ) : (
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Button variant="ghost" onClick={() => {
+              setIsEditing(false);
+              setName(user?.name || '');
+              setPhone(user?.phone || '+62 811-2233-4455');
+              setAddress(user?.address || 'Jl. Jend. Sudirman No. 45, Balikpapan');
+            }} disabled={loading}>Batal</Button>
+            <Button onClick={handleSave} disabled={loading}>{loading ? 'Menyimpan...' : 'Simpan Perubahan'}</Button>
+          </div>
+        )}
+      </div>
 
-      <Card variant="elevated" padding="xl" style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
+      <Card variant="elevated" padding="xl" style={{ display: 'flex', gap: '3rem', alignItems: 'flex-start' }}>
         <div style={{ 
           width: '8rem', height: '8rem', borderRadius: '50%', 
           backgroundColor: '#153D32', color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '3rem', fontWeight: 800,
-          boxShadow: '0 10px 15px -3px rgba(21, 61, 50, 0.3)'
+          boxShadow: '0 10px 15px -3px rgba(21, 61, 50, 0.3)',
+          flexShrink: 0
         }}>
-          {user?.name?.charAt(0).toUpperCase()}
+          {name.charAt(0).toUpperCase()}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a' }}>{user?.name}</h2>
-            <div style={{ backgroundColor: '#ecfdf5', color: '#10b981', padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-              <ShieldCheck size={14} /> Verified Buyer
+          {isEditing ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <Input label="Nama Perusahaan" value={name} onChange={e => setName(e.target.value)} icon={Building} />
+              <Input label="Hotline Procurement" value={phone} onChange={e => setPhone(e.target.value)} icon={Phone} />
+              <Input label="Alamat Kantor" value={address} onChange={e => setAddress(e.target.value)} icon={MapPin} />
             </div>
-          </div>
-          <div style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.125rem' }}>
-            <Building size={20} /> Mitra B2B - Manufaktur Daur Ulang Pihak Ketiga
-          </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a' }}>{name}</h2>
+                <div style={{ backgroundColor: '#ecfdf5', color: '#10b981', padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <ShieldCheck size={14} /> Verified Buyer
+                </div>
+              </div>
+              <div style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.125rem' }}>
+                <Building size={20} /> Mitra B2B - Manufaktur Daur Ulang Pihak Ketiga
+              </div>
+              <div style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.125rem' }}>
+                <MapPin size={20} /> {address}
+              </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', padding: '1.5rem', backgroundColor: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-            <div>
-              <div style={{ color: 'var(--color-text-secondary)', marginBottom: '0.5rem', fontSize: '0.875rem', textTransform: 'uppercase', fontWeight: 600 }}>Email Perusahaan</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, fontSize: '1.125rem' }}><Mail size={18} color="#153D32" /> {user?.email}</div>
-            </div>
-            <div>
-              <div style={{ color: 'var(--color-text-secondary)', marginBottom: '0.5rem', fontSize: '0.875rem', textTransform: 'uppercase', fontWeight: 600 }}>Hotline Procurement</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, fontSize: '1.125rem' }}><Phone size={18} color="#153D32" /> +62 811-2233-4455</div>
-            </div>
-          </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', padding: '1.5rem', backgroundColor: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                <div>
+                  <div style={{ color: 'var(--color-text-secondary)', marginBottom: '0.5rem', fontSize: '0.875rem', textTransform: 'uppercase', fontWeight: 600 }}>Email Perusahaan</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, fontSize: '1.125rem' }}><Mail size={18} color="#153D32" /> {user?.email}</div>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--color-text-secondary)', marginBottom: '0.5rem', fontSize: '0.875rem', textTransform: 'uppercase', fontWeight: 600 }}>Hotline Procurement</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, fontSize: '1.125rem' }}><Phone size={18} color="#153D32" /> {phone}</div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </Card>
 

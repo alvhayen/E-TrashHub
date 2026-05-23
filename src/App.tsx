@@ -54,6 +54,7 @@ import IncomingPickups from './pages/admin_tps3r/IncomingPickups';
 import WeighingForm from './pages/admin_tps3r/WeighingForm';
 import InventoryManager from './pages/admin_tps3r/InventoryManager';
 import AdminReports from './pages/admin_tps3r/AdminReports';
+import AdminFAQ from './pages/admin_tps3r/AdminFAQ';
 
 import MitraLayout from './pages/mitra_b2b/MitraLayout';
 import Catalog from './pages/mitra_b2b/Catalog';
@@ -107,6 +108,7 @@ export default function App() {
               <Route path="weigh/:id" element={<WeighingForm />} />
               <Route path="inventory" element={<InventoryManager />} />
               <Route path="reports" element={<AdminReports />} />
+              <Route path="faq" element={<AdminFAQ />} />
             </Route>
 
             <Route path="/mitra_b2b" element={<ProtectedRoute allowedRoles={['mitra_b2b']}><MitraLayout /></ProtectedRoute>}>

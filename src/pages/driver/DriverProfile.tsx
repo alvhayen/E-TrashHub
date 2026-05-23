@@ -2,7 +2,8 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import { Truck, MapPin, LogOut } from 'lucide-react';
+import { Truck, MapPin, LogOut, Coins } from 'lucide-react';
+import { pointsToRupiah } from '../../utils/points';
 
 export default function DriverProfile() {
   const { user, logout } = useAuth();
@@ -25,6 +26,20 @@ export default function DriverProfile() {
 
       <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1, marginTop: '-1.5rem' }}>
         <Card variant="elevated" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ padding: '0.75rem', backgroundColor: '#e0f2fe', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
+              <Coins size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Total Poin Dikumpulkan</div>
+              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--color-primary)' }}>
+                {user?.points || 0} Pds <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', fontWeight: 500 }}>({pointsToRupiah(user?.points || 0)})</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ height: '1px', backgroundColor: 'var(--color-border)' }} />
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ padding: '0.75rem', backgroundColor: '#e0f2fe', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
               <Truck size={20} />

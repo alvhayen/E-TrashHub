@@ -7,7 +7,7 @@ import Button from '../components/ui/Button';
 const ROLE_INFO: Record<string, any> = {
   'RUMAH_TANGGA': {
     title: 'Peran: Rumah Tangga',
-    description: 'Sebagai Rumah Tangga, Anda adalah pahlawan lingkungan dari rumah. Pilah sampah Anda, minta penjemputan dengan mudah melalui aplikasi, dan kumpulkan poin reward yang dapat ditukarkan dengan berbagai hadiah menarik.',
+    description: 'Sebagai Rumah Tangga, Anda adalah pahlawan lingkungan dari rumah. Pilah sampah Anda, minta penjemputan dengan mudah melalui aplikasi, dan kumpulkan poin reward yang dapat ditukarkan dengan saldo atau uang tunai.',
     icon: Home,
     color: '#3b82f6', // Blue
     bgColor: '#eff6ff',
