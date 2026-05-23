@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Truck, Factory, Briefcase, Landmark, ChevronRight } from 'lucide-react';
+import { Home, Truck, Factory, Briefcase, Landmark, ChevronRight, ArrowLeft } from 'lucide-react';
 import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
 
 const roles = [
@@ -44,7 +44,7 @@ const roles = [
     id: 'PEMDA',
     name: 'Pemda (Pemerintah)',
     description: 'Pantau analitik eksekutif dan kepatuhan zona harian.',
-    email: 'dinas@surabaya.go.id',
+    email: 'dinas@balikpapan.go.id',
     icon: Landmark,
     color: '#10b981',
     bg: '#ecfdf5',
@@ -62,7 +62,17 @@ export default function RoleSelector() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0a2318', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
       <LeafNetworkBg accentColor="#4ade80" opacity={0.9} />
-      <div className="auth-page-content" style={{ maxWidth: '600px', width: '100%', padding: '2rem 1rem' }}>
+      
+      <button 
+        onClick={() => navigate('/onboarding')}
+        style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', borderRadius: '50%', zIndex: 50 }}
+        className="hover:bg-white/20"
+        aria-label="Kembali ke Onboarding"
+      >
+        <ArrowLeft size={20} />
+      </button>
+
+      <div className="auth-page-content" style={{ maxWidth: '600px', width: '100%', padding: '4rem 1rem 2rem 1rem', position: 'relative', zIndex: 10 }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Pilih Peran Anda</h1>
           <p style={{ fontSize: '1rem', lineHeight: 1.5 }}>

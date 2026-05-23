@@ -36,10 +36,10 @@ export default function Login() {
       <LeafNetworkBg accentColor="#4ade80" opacity={0.9} />
       <div className="auth-page-content" style={{ backgroundColor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem', width: '100%', maxWidth: '400px', margin: '1rem', padding: '2rem', position: 'relative' }}>
         <button 
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/roles')}
           style={{ position: 'absolute', top: '1rem', left: '1rem', background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', borderRadius: '50%' }}
           className="hover:bg-white/20"
-          aria-label="Kembali"
+          aria-label="Kembali ke Pilihan Peran"
         >
           <ArrowLeft size={20} />
         </button>
@@ -59,7 +59,7 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>Email Address / Alamat Surel</label>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: '#fff' }}>Email Address / Alamat Surel</label>
             <input 
               type="email" 
               className="input" 
@@ -71,7 +71,7 @@ export default function Login() {
           </div>
           
           <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>Password / Kata Sandi</label>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: '#fff' }}>Password / Kata Sandi</label>
             <input 
               type="password" 
               className="input" 

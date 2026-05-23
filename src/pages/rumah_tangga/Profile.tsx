@@ -14,7 +14,6 @@ export default function Profile() {
   const { request, loading } = useApi();
   const [isEditing, setIsEditing] = useState(false);
 
-  // In a real app we'd save these via API
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.address || '');
@@ -34,9 +33,9 @@ export default function Profile() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <header style={{ padding: '1.5rem', backgroundColor: 'var(--color-primary)', color: '#fff', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>Profil & Akun</h1>
-        
+      {/* Profile Header */}
+      <header style={{ padding: '2rem 1.5rem', backgroundColor: 'var(--color-primary)', color: '#fff', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>Profil &amp; Akun</h1>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
           <div style={{ 
             width: '5rem', height: '5rem', borderRadius: '50%', 
@@ -53,8 +52,10 @@ export default function Profile() {
         </div>
       </header>
 
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1, marginTop: '-2rem' }}>
-        <Card variant="default" style={{ zIndex: 5 }}>
+      {/* Responsive content area */}
+      <div className="profile-desktop-grid" style={{ flex: 1, marginTop: '-2rem' }}>
+        {/* Points card */}
+        <Card variant="default" style={{ zIndex: 5, marginBottom: '0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ padding: '0.75rem', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: 'var(--color-tertiary)', borderRadius: 'var(--radius-full)' }}>
               <Award size={24} />
@@ -70,7 +71,8 @@ export default function Profile() {
           </div>
         </Card>
 
-        <section>
+        {/* Personal info */}
+        <section style={{ paddingTop: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 style={{ fontSize: '1rem', fontWeight: 700 }}>Informasi Pribadi</h2>
             {!isEditing ? (
@@ -83,12 +85,7 @@ export default function Profile() {
             ) : (
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <button 
-                  onClick={() => {
-                    setIsEditing(false);
-                    setName(user?.name || '');
-                    setPhone(user?.phone || '');
-                    setAddress(user?.address || '');
-                  }}
+                  onClick={() => { setIsEditing(false); setName(user?.name || ''); setPhone(user?.phone || ''); setAddress(user?.address || ''); }}
                   disabled={loading}
                   style={{ color: 'var(--color-text-secondary)', background: 'transparent', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: loading ? 'wait' : 'pointer' }}
                 >
@@ -140,12 +137,32 @@ export default function Profile() {
           </Card>
         </section>
 
-        <section style={{ marginTop: '1rem' }}>
+        {/* Logout */}
+        <section style={{ paddingBottom: '2rem' }}>
           <Button variant="danger" ghost fullWidth icon={LogOut} onClick={logout}>
             Keluar / Sign Out
           </Button>
         </section>
       </div>
+
+      <style>{`
+        .profile-desktop-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          padding: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+          .profile-desktop-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 1.5rem 2rem;
+            padding: 2rem 2.5rem;
+            align-items: start;
+          }
+        }
+      `}</style>
     </div>
   );
 }

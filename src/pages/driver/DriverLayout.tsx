@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Truck, Map, CheckCircle, User } from 'lucide-react';
 import BottomNav from '../../components/layout/BottomNav';
+import Sidebar from '../../components/layout/Sidebar';
 
 export default function DriverLayout() {
   const navItems = [
@@ -12,19 +13,37 @@ export default function DriverLayout() {
   ];
 
   return (
-    <div style={{ 
-      maxWidth: '480px', 
-      margin: '0 auto', 
-      minHeight: '100vh',
-      backgroundColor: 'var(--color-bg-primary)',
-      position: 'relative',
-      overflowX: 'hidden',
-      boxShadow: '0 0 20px rgba(0,0,0,0.05)'
-    }}>
-      <div style={{ paddingBottom: '80px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Outlet />
+    <div className="responsive-layout">
+      {/* Sidebar — only visible on desktop (≥1024px) */}
+      <div className="sidebar-desktop-only">
+        <Sidebar
+          navItems={navItems}
+          accentColor="var(--role-driver)"
+          roleName="Driver / Pengepul"
+        />
       </div>
-      <BottomNav navItems={navItems} accentColor="var(--role-driver)" />
+
+      {/* Main content area */}
+      <div className="mobile-content-wrapper">
+        {/* Page content with bottom padding for BottomNav on mobile */}
+        <div style={{ paddingBottom: 'var(--bottom-nav-height, 80px)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+          className="desktop-no-bottom-padding">
+          <Outlet />
+        </div>
+
+        {/* BottomNav — only visible on mobile (<1024px) */}
+        <div className="bottom-nav-wrapper">
+          <BottomNav navItems={navItems} accentColor="var(--role-driver)" />
+        </div>
+      </div>
+
+      <style>{`
+        @media (min-width: 1024px) {
+          .desktop-no-bottom-padding {
+            padding-bottom: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

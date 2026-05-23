@@ -16,10 +16,9 @@ export default function PemdaLayout() {
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)' }}>
       <Sidebar navItems={navItems} accentColor="#059669" roleName="Pemerintah Daerah" />
       <div style={{ flex: 1, height: '100vh', overflowY: 'auto' }}>
-        <header style={{ 
+        <header className="page-header" style={{ 
           backgroundColor: '#fff', 
-          borderBottom: '1px solid var(--color-border)', 
-          padding: '1.25rem 2rem',
+          borderBottom: '1px solid var(--color-border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -38,7 +37,7 @@ export default function PemdaLayout() {
           </div>
         </header>
 
-        <div style={{ padding: '2rem' }}>
+        <div className="page-content">
           <Outlet />
         </div>
       </div>

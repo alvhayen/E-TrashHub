@@ -1,31 +1,39 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Leaf, Globe, Star, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Leaf, Globe, Star, ArrowRight, ArrowLeft, Gift, Recycle, Heart } from 'lucide-react';
 import Button from '../components/ui/Button';
 import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
+import etrashhubLogo from '../assets/images/logo etrashhub.png';
 
 const ONBOARDING_STEPS = [
   {
     title: 'Selamat Datang di e-TrashHub',
     description: 'Solusi cerdas end-to-end terintegrasi untuk pengelolaan sampah modern dan berkelanjutan.',
-    icon: Leaf,
+    image: etrashhubLogo,
     color: '#10b981', // Emerald
     bgColor: '#ecfdf5',
   },
   {
-    title: 'Dampak Sosial & Lingkungan',
-    description: 'Kami tidak hanya mengelola sampah, tetapi merawat bumi dan memberdayakan ekonomi sirkular bagi masyarakat sekitar.',
-    icon: Globe,
+    title: 'Tukar Sampah Jadi Berkah',
+    description: 'Nggak perlu repot buang sampah anorganik. Cukup pesan lewat aplikasi, kurir kami akan menjemputnya langsung ke depan pintu rumahmu. Kamu dapat poin, rumah pun jadi bersih!',
+    icon: Gift,
     color: '#3b82f6', // Blue
     bgColor: '#eff6ff',
   },
   {
-    title: 'Fitur Unggulan',
-    description: 'Dari penjemputan cerdas, manajemen inventaris TPS3R, analitik Pemda, hingga pasar material daur ulang B2B transparan.',
-    icon: Star,
+    title: 'Terhubung Hingga ke Industri',
+    description: 'Sampah yang terkumpul nggak berakhir di TPA. Kami menyalurkannya ke fasilitas TPS3R dan mitra industri daur ulang agar kembali menjadi barang yang bermanfaat.',
+    icon: Recycle,
     color: '#f59e0b', // Amber
     bgColor: '#fffbeb',
+  },
+  {
+    title: 'Satu Langkah Kecil untuk Bumi',
+    description: 'Setiap botol dan kardus yang kamu pilah turut mengurangi emisi karbon dan menyelamatkan bumi kita. Yuk, mulai kebiasaan baik ini dari sekarang!',
+    icon: Heart,
+    color: '#ec4899', // Pink
+    bgColor: '#fdf2f8',
   }
 ];
 
@@ -91,10 +99,15 @@ export default function Onboarding() {
                     backgroundColor: ONBOARDING_STEPS[currentStep].bgColor, 
                     color: ONBOARDING_STEPS[currentStep].color,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    marginBottom: '2rem'
+                    marginBottom: '2rem',
+                    overflow: 'hidden'
                   }}
                 >
-                  {React.createElement(ONBOARDING_STEPS[currentStep].icon, { size: 64 })}
+                  {ONBOARDING_STEPS[currentStep].image ? (
+                    <img src={ONBOARDING_STEPS[currentStep].image} alt="Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+                  ) : (
+                    ONBOARDING_STEPS[currentStep].icon && React.createElement(ONBOARDING_STEPS[currentStep].icon, { size: 64 })
+                  )}
                 </div>
                 
                 <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#ecfdf5', marginBottom: '1rem', lineHeight: 1.2 }}>

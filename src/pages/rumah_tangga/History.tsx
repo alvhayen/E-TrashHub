@@ -33,7 +33,7 @@ export default function History() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <header style={{ padding: '1.5rem', backgroundColor: '#fff', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <header className="page-header">
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '1rem' }}>Riwayat Jemputan</h1>
         
         <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem', scrollbarWidth: 'none' }}>
@@ -61,7 +61,7 @@ export default function History() {
         </div>
       </header>
 
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+      <div className="page-content" style={{ flex: 1 }}>
         {loading && pickups.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '2rem' }}>Memuat riwayat...</div>
         ) : filteredPickups.length === 0 ? (
@@ -71,40 +71,62 @@ export default function History() {
             subtitle={filter === 'semua' ? 'Anda belum memesan penjemputan.' : `Tidak ada penjemputan dengan status ${filter}.`}
           />
         ) : (
-          filteredPickups.map(pickup => (
-            <Card 
-              key={pickup.id} 
-              variant="bordered" 
-              padding="sm" 
-              onClick={() => navigate(`/rumah_tangga/pickup/${pickup.id}`)}
-              style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
-                  <Calendar size={14} />
-                  {new Date(pickup.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </div>
-                <Badge status={pickup.status} />
-              </div>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>
-                    {pickup.wasteTypes.join(', ')}
+          <div className="history-grid">
+            {filteredPickups.map(pickup => (
+              <Card 
+                key={pickup.id} 
+                variant="bordered" 
+                padding="sm" 
+                onClick={() => navigate(`/rumah_tangga/pickup/${pickup.id}`)}
+                style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
+                    <Calendar size={14} />
+                    {new Date(pickup.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </div>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
-                    Est: {pickup.estimatedWeight} kg {pickup.actualWeight && `• Aktual: ${pickup.actualWeight} kg`}
+                  <Badge status={pickup.status} />
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>
+                      {pickup.wasteTypes.join(', ')}
+                    </div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
+                      Est: {pickup.estimatedWeight} kg {pickup.actualWeight && `• Aktual: ${pickup.actualWeight} kg`}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {pickup.points > 0 && <span style={{ fontWeight: 700, color: 'var(--color-tertiary)', fontSize: '0.875rem' }}>+{pickup.points} Pts</span>}
+                    <ChevronRight size={20} color="var(--color-text-secondary)" />
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  {pickup.points > 0 && <span style={{ fontWeight: 700, color: 'var(--color-tertiary)', fontSize: '0.875rem' }}>+{pickup.points} Pts</span>}
-                  <ChevronRight size={20} color="var(--color-text-secondary)" />
-                </div>
-              </div>
-            </Card>
-          ))
+              </Card>
+            ))}
+          </div>
         )}
       </div>
+
+      <style>{`
+        .history-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        @media (min-width: 768px) {
+          .history-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+          }
+        }
+        @media (min-width: 1280px) {
+          .history-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+      `}</style>
     </div>
   );
 }

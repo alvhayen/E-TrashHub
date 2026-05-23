@@ -309,3 +309,144 @@ button {
     display: none;
   }
 }
+
+/* =============================================
+   RESPONSIVE UTILITIES
+   ============================================= */
+
+/* Responsive container for mobile-first roles (Rumah Tangga, Driver) */
+.responsive-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg-primary);
+  position: relative;
+}
+
+/* Mobile: centered narrow column, Desktop: full-width with sidebar */
+.mobile-content-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-primary);
+  position: relative;
+  overflow-x: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+@media (min-width: 1024px) {
+  .mobile-content-wrapper {
+    max-width: 100%;
+    box-shadow: none;
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Show/hide helpers */
+.show-mobile-only {
+  display: flex;
+}
+.show-desktop-only {
+  display: none;
+}
+.hide-on-desktop {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+  .show-desktop-only {
+    display: flex !important;
+  }
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+/* Responsive page content padding */
+.page-content {
+  padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .page-content {
+    padding: 2rem 2.5rem;
+  }
+}
+
+/* Responsive 2-column grid for desktop */
+.responsive-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Desktop max-width page container */
+.desktop-page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Bottom nav only on mobile */
+.bottom-nav-wrapper {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .bottom-nav-wrapper {
+    display: none;
+  }
+}
+
+/* Sidebar only on desktop for mobile-first roles */
+.sidebar-desktop-only {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-desktop-only {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Responsive header padding */
+.page-header {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+@media (min-width: 1024px) {
+  .page-header {
+    padding: 1.5rem 2.5rem;
+  }
+}
+
+/* Notification bell position responsive */
+.notif-bell-wrapper {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+}
+
+@media (min-width: 1024px) {
+  .notif-bell-wrapper {
+    right: 2rem;
+  }
+}

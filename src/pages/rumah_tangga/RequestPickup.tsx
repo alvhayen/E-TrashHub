@@ -59,83 +59,100 @@ export default function RequestPickup() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <header style={{ padding: '1.5rem', backgroundColor: '#fff', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <header className="page-header">
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Pesan Jemputan</h1>
       </header>
 
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
-        {/* Waste Types */}
-        <section>
-          <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>1. Pilih Jenis Sampah (Bisa &gt;1)</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
-            {WASTE_TYPES.map(type => (
-              <ToggleCard
-                key={type.id}
-                icon={type.icon}
-                label={type.label}
-                sublabel={type.sublabel}
-                selected={selectedTypes.includes(type.id)}
-                onClick={() => toggleType(type.id)}
-              />
-            ))}
-          </div>
-        </section>
+      {/* Desktop: 2-column, Mobile: 1-column */}
+      <div className="request-pickup-layout" style={{ flex: 1 }}>
+        {/* Left/Main column */}
+        <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {/* Waste Types */}
+          <section>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>1. Pilih Jenis Sampah (Bisa &gt;1)</h2>
+            <div className="waste-type-grid">
+              {WASTE_TYPES.map(type => (
+                <ToggleCard
+                  key={type.id}
+                  icon={type.icon}
+                  label={type.label}
+                  sublabel={type.sublabel}
+                  selected={selectedTypes.includes(type.id)}
+                  onClick={() => toggleType(type.id)}
+                />
+              ))}
+            </div>
+          </section>
 
-        {/* Weight Estimate */}
-        <section>
-          <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>2. Estimasi Berat</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {WEIGHT_ESTIMATES.map(we => (
-              <button
-                key={we.id}
-                onClick={() => setSelectedWeight(we.id)}
-                style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '1rem', borderRadius: 'var(--radius-lg)',
-                  border: `2px solid ${selectedWeight === we.id ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  backgroundColor: selectedWeight === we.id ? 'rgba(16, 185, 129, 0.05)' : '#fff',
-                  fontFamily: 'inherit', cursor: 'pointer', transition: 'all 0.2s'
-                }}
-              >
-                <span style={{ fontWeight: 600, color: selectedWeight === we.id ? 'var(--color-primary)' : 'inherit' }}>{we.label}</span>
-                <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-tertiary)' }}>{we.points}</span>
-              </button>
-            ))}
-          </div>
-          <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#d97706', borderRadius: 'var(--radius-sm)', fontSize: '0.875rem', fontWeight: 600 }}>
-            💡 Kirim {'>'}5 kg = +50 poin bonus ekstra!
-          </div>
-        </section>
+          {/* Weight Estimate */}
+          <section>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>2. Estimasi Berat</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {WEIGHT_ESTIMATES.map(we => (
+                <button
+                  key={we.id}
+                  onClick={() => setSelectedWeight(we.id)}
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '1rem', borderRadius: 'var(--radius-lg)',
+                    border: `2px solid ${selectedWeight === we.id ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                    backgroundColor: selectedWeight === we.id ? 'rgba(16, 185, 129, 0.05)' : '#fff',
+                    fontFamily: 'inherit', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >
+                  <span style={{ fontWeight: 600, color: selectedWeight === we.id ? 'var(--color-primary)' : 'inherit' }}>{we.label}</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-tertiary)' }}>{we.points}</span>
+                </button>
+              ))}
+            </div>
+            <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#d97706', borderRadius: 'var(--radius-sm)', fontSize: '0.875rem', fontWeight: 600 }}>
+              💡 Kirim &gt;5 kg = +50 poin bonus ekstra!
+            </div>
+          </section>
 
-        {/* Address and Notes */}
-        <section>
-          <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>3. Detail Penjemputan</h2>
-          <Card variant="bordered" padding="sm" style={{ marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ color: 'var(--color-primary)', marginTop: '0.25rem' }}><MapPin size={20} /></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>Alamat Pengambilan</div>
-                <div style={{ fontSize: '0.875rem', fontWeight: 500, lineHeight: 1.5 }}>
-                  {user?.address || 'Alamat belum diatur, silakan perbarui di Profil Anda.'}
+          {/* Address and Notes */}
+          <section>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>3. Detail Penjemputan</h2>
+            <Card variant="bordered" padding="sm" style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                <div style={{ color: 'var(--color-primary)', marginTop: '0.25rem' }}><MapPin size={20} /></div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>Alamat Pengambilan</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, lineHeight: 1.5 }}>
+                    {user?.address || 'Alamat belum diatur, silakan perbarui di Profil Anda.'}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-          
-          <textarea
-            value={note}
-            onChange={e => setNote(e.target.value)}
-            placeholder="Catatan untuk driver (opsional, misal: titip di pos satpam)"
-            style={{
-              width: '100%', padding: '1rem', borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)', fontFamily: 'inherit',
-              fontSize: '0.875rem', minHeight: '100px', resize: 'vertical'
-            }}
-          />
-        </section>
+            </Card>
+            
+            <textarea
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              placeholder="Catatan untuk driver (opsional, misal: titip di pos satpam)"
+              style={{
+                width: '100%', padding: '1rem', borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--color-border)', fontFamily: 'inherit',
+                fontSize: '0.875rem', minHeight: '100px', resize: 'vertical'
+              }}
+            />
+          </section>
+
+          {/* Submit button — visible inline on desktop */}
+          <div className="submit-desktop-only">
+            <Button 
+              fullWidth size="lg" 
+              onClick={handleSubmit} 
+              loading={loading}
+              disabled={selectedTypes.length === 0 || !selectedWeight}
+            >
+              🚛 Pesan Penjemputan
+            </Button>
+          </div>
+        </div>
       </div>
 
-      <div style={{ padding: '1.5rem', backgroundColor: '#fff', borderTop: '1px solid var(--color-border)', position: 'sticky', bottom: 0, zIndex: 10 }}>
+      {/* Sticky submit button — only on mobile */}
+      <div className="submit-mobile-sticky" style={{ padding: '1.5rem', backgroundColor: '#fff', borderTop: '1px solid var(--color-border)', position: 'sticky', bottom: 0, zIndex: 10 }}>
         <Button 
           fullWidth size="lg" 
           onClick={handleSubmit} 
@@ -145,6 +162,26 @@ export default function RequestPickup() {
           🚛 Pesan Penjemputan
         </Button>
       </div>
+
+      <style>{`
+        .waste-type-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+        .submit-mobile-sticky { display: block; }
+        .submit-desktop-only { display: none; }
+
+        @media (min-width: 768px) {
+          .waste-type-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .submit-mobile-sticky { display: none; }
+          .submit-desktop-only { display: block; }
+        }
+      `}</style>
     </div>
   );
 }

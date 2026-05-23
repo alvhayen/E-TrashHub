@@ -28,15 +28,12 @@ export default function TaskDashboard() {
   }, [request]);
 
   const handleUpdateStatus = async (id: number, newStatus: string) => {
-    // Optimistic update
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
-    
     try {
       await request('PATCH', `/api/pickup/${id}/status`, { status: newStatus });
       success('Status berhasil diperbarui!');
     } catch (err: any) {
       error(err.response?.data?.error || 'Gagal memperbarui status');
-      // Revert on failure
       fetchPickups();
     }
   };
@@ -59,12 +56,13 @@ export default function TaskDashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <header style={{ padding: '1.5rem', backgroundColor: 'var(--role-driver)', color: '#fff', position: 'sticky', top: 0, zIndex: 10 }}>
+      <header style={{ padding: '1.5rem', backgroundColor: 'var(--role-driver)', color: '#fff', position: 'sticky', top: 0, zIndex: 10 }}
+        className="driver-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Tugas Hari Ini</h1>
             <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
-              Zona: Balikpapan Barat • {tasks.length} titik hari ini
+              Zona: Balikpapan Barat &bull; {tasks.length} titik hari ini
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -86,7 +84,7 @@ export default function TaskDashboard() {
         </div>
       </header>
 
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
         {completedCount === tasks.length && tasks.length > 0 && !bonusClaimed && (
           <Card variant="elevated" padding="md" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
             <div style={{ textAlign: 'center' }}>
@@ -109,67 +107,87 @@ export default function TaskDashboard() {
             <p>Tidak ada titik penjemputan aktif saat ini.</p>
           </div>
         ) : (
-          activeTasks.map((task, index) => (
-            <Card key={task.id} variant="elevated" padding="md" style={{ borderLeft: `6px solid var(--role-driver)` }}>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <div style={{ 
-                  width: '2rem', height: '2rem', borderRadius: '50%', backgroundColor: 'var(--role-driver)', color: '#fff', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0
-                }}>
-                  {index + 1}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                    <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>{task.user?.name || 'Rumah Tangga'}</h3>
-                    <Badge status={task.status} pulse={task.status === 'ON_THE_WAY'} />
+          <div className="task-grid">
+            {activeTasks.map((task, index) => (
+              <Card key={task.id} variant="elevated" padding="md" style={{ borderLeft: `6px solid var(--role-driver)` }}>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ 
+                    width: '2rem', height: '2rem', borderRadius: '50%', backgroundColor: 'var(--role-driver)', color: '#fff', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0
+                  }}>
+                    {index + 1}
                   </div>
-                  
-                  <div 
-                    style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.75rem', cursor: 'pointer' }}
-                    onClick={() => window.open(`https://maps.google.com/?q=${task.address}`, '_blank')}
-                  >
-                    <MapPin size={16} color="var(--color-text-secondary)" style={{ marginTop: '0.125rem', flexShrink: 0 }} />
-                    <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', fontWeight: 500, lineHeight: 1.4, textDecoration: 'underline' }}>
-                      {task.address}
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                    {task.wasteTypes.map((type: string) => (
-                      <span key={type} style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.125rem 0.5rem', backgroundColor: '#f1f5f9', color: '#475569', borderRadius: 'var(--radius-sm)' }}>
-                        {type}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>{task.user?.name || 'Rumah Tangga'}</h3>
+                      <Badge status={task.status} pulse={task.status === 'ON_THE_WAY'} />
+                    </div>
+                    
+                    <div 
+                      style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.75rem', cursor: 'pointer' }}
+                      onClick={() => window.open(`https://maps.google.com/?q=${task.address}`, '_blank')}
+                    >
+                      <MapPin size={16} color="var(--color-text-secondary)" style={{ marginTop: '0.125rem', flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', fontWeight: 500, lineHeight: 1.4, textDecoration: 'underline' }}>
+                        {task.address}
                       </span>
-                    ))}
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.125rem 0.5rem', backgroundColor: '#e0f2fe', color: '#0369a1', borderRadius: 'var(--radius-sm)' }}>
-                      Est: {task.estimatedWeight} kg
-                    </span>
-                  </div>
+                    </div>
 
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-tertiary)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    <Navigation size={14} /> Terjadwal: 08:00 - 10:00
-                  </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                      {task.wasteTypes.map((type: string) => (
+                        <span key={type} style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.125rem 0.5rem', backgroundColor: '#f1f5f9', color: '#475569', borderRadius: 'var(--radius-sm)' }}>
+                          {type}
+                        </span>
+                      ))}
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.125rem 0.5rem', backgroundColor: '#e0f2fe', color: '#0369a1', borderRadius: 'var(--radius-sm)' }}>
+                        Est: {task.estimatedWeight} kg
+                      </span>
+                    </div>
 
-                  {task.status === 'PENDING' && (
-                    <Button fullWidth size="lg" onClick={() => handleUpdateStatus(task.id, 'ON_THE_WAY')} style={{ backgroundColor: 'var(--role-driver)', fontSize: '1rem' }}>
-                      🔵 Jemput Sekarang
-                    </Button>
-                  )}
-                  {task.status === 'ON_THE_WAY' && (
-                    <Button fullWidth size="lg" onClick={() => handleUpdateStatus(task.id, 'COLLECTED')} style={{ backgroundColor: 'var(--color-primary)', fontSize: '1rem' }}>
-                      ✅ Sampah Diambil
-                    </Button>
-                  )}
-                  {task.status === 'COLLECTED' && (
-                    <Button fullWidth size="lg" disabled style={{ backgroundColor: '#f59e0b', fontSize: '1rem' }}>
-                      🏭 Menuju TPS3R →
-                    </Button>
-                  )}
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-tertiary)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Navigation size={14} /> Terjadwal: 08:00 - 10:00
+                    </div>
+
+                    {task.status === 'PENDING' && (
+                      <Button fullWidth size="lg" onClick={() => handleUpdateStatus(task.id, 'ON_THE_WAY')} style={{ backgroundColor: 'var(--role-driver)', fontSize: '1rem' }}>
+                        🔵 Jemput Sekarang
+                      </Button>
+                    )}
+                    {task.status === 'ON_THE_WAY' && (
+                      <Button fullWidth size="lg" onClick={() => handleUpdateStatus(task.id, 'COLLECTED')} style={{ backgroundColor: 'var(--color-primary)', fontSize: '1rem' }}>
+                        ✅ Sampah Diambil
+                      </Button>
+                    )}
+                    {task.status === 'COLLECTED' && (
+                      <Button fullWidth size="lg" disabled style={{ backgroundColor: '#f59e0b', fontSize: '1rem' }}>
+                        🏭 Menuju TPS3R →
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))
+              </Card>
+            ))}
+          </div>
         )}
       </div>
+
+      <style>{`
+        .task-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+          .task-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+          }
+          .driver-header {
+            padding: 1.5rem 2.5rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

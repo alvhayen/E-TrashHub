@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Home, PackagePlus, FileText, User } from 'lucide-react';
 import BottomNav from '../../components/layout/BottomNav';
+import Sidebar from '../../components/layout/Sidebar';
 import NotificationBell from '../../components/ui/NotificationBell';
 
 export default function HouseholdLayout() {
@@ -13,22 +14,52 @@ export default function HouseholdLayout() {
   ];
 
   return (
-    <div style={{ 
-      maxWidth: '480px', 
-      margin: '0 auto', 
-      minHeight: '100vh',
-      backgroundColor: 'var(--color-bg-primary)',
-      position: 'relative',
-      overflowX: 'hidden',
-      boxShadow: '0 0 20px rgba(0,0,0,0.05)'
-    }}>
-      <div style={{ position: 'fixed', top: '1rem', right: 'max(1rem, calc(50vw - 240px + 1rem))', zIndex: 50 }}>
-        <NotificationBell />
+    <div className="responsive-layout">
+      {/* Sidebar — only visible on desktop (≥1024px) */}
+      <div className="sidebar-desktop-only">
+        <Sidebar
+          navItems={navItems}
+          accentColor="var(--role-rumah-tangga)"
+          roleName="Rumah Tangga"
+        />
       </div>
-      <div style={{ paddingBottom: '80px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Outlet />
+
+      {/* Main content area */}
+      <div className="mobile-content-wrapper">
+        {/* Notification Bell */}
+        <div className="notif-bell-wrapper">
+          <NotificationBell />
+        </div>
+
+        {/* Page content with bottom padding for BottomNav on mobile */}
+        <div style={{ paddingBottom: 'var(--bottom-nav-height, 80px)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+          className="desktop-no-bottom-padding">
+          <Outlet />
+        </div>
+
+        {/* BottomNav — only visible on mobile (<1024px) */}
+        <div className="bottom-nav-wrapper">
+          <BottomNav navItems={navItems} accentColor="var(--role-rumah-tangga)" />
+        </div>
       </div>
-      <BottomNav navItems={navItems} accentColor="var(--role-rumah-tangga)" />
+
+      <style>{`
+        @media (min-width: 1024px) {
+          .desktop-no-bottom-padding {
+            padding-bottom: 0 !important;
+          }
+          .notif-bell-wrapper {
+            position: sticky;
+            top: 0;
+            right: 0;
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem 2rem;
+            background: var(--color-bg-primary);
+            z-index: 10;
+          }
+        }
+      `}</style>
     </div>
   );
 }

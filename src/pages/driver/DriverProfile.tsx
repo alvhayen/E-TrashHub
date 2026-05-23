@@ -10,6 +10,7 @@ export default function DriverProfile() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+      {/* Profile Header */}
       <header style={{ padding: '2rem 1.5rem', backgroundColor: 'var(--role-driver)', color: '#fff', textAlign: 'center' }}>
         <div style={{ 
           width: '5rem', height: '5rem', borderRadius: '50%', 
@@ -24,7 +25,7 @@ export default function DriverProfile() {
         <div style={{ opacity: 0.9, fontSize: '0.875rem' }}>Pengemudi Armada (Driver)</div>
       </header>
 
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1, marginTop: '-1.5rem' }}>
+      <div className="driver-profile-content">
         <Card variant="elevated" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ padding: '0.75rem', backgroundColor: '#e0f2fe', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
@@ -63,12 +64,30 @@ export default function DriverProfile() {
           </div>
         </Card>
 
-        <section style={{ marginTop: 'auto' }}>
+        <section>
           <Button variant="danger" ghost fullWidth icon={LogOut} onClick={logout} size="lg">
             Keluar / Sign Out
           </Button>
         </section>
       </div>
+
+      <style>{`
+        .driver-profile-content {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          margin-top: -1.5rem;
+          flex: 1;
+        }
+        @media (min-width: 1024px) {
+          .driver-profile-content {
+            max-width: 600px;
+            padding: 2rem 2.5rem;
+            margin-top: -1.5rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -51,27 +51,9 @@ export default function AccessibilityHelp() {
       <button
         onClick={() => setIsOpen(true)}
         aria-label="Bantuan Suara dan Aksesibilitas"
-        style={{
-          position: 'fixed',
-          bottom: '100px', // Above bottom nav
-          right: '1.5rem',
-          width: '48px',
-          height: '48px',
-          borderRadius: '50%',
-          backgroundColor: '#0f172a',
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          border: 'none',
-          cursor: 'pointer',
-          zIndex: 9999,
-          transition: 'transform 0.2s',
-        }}
-        className="hover:scale-110"
+        className="help-btn hover:scale-110"
       >
-        <HelpCircle size={28} />
+        <HelpCircle className="help-icon" />
       </button>
 
       {isOpen && (
@@ -153,6 +135,40 @@ export default function AccessibilityHelp() {
         @keyframes slideUpSelect {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .help-btn {
+          position: fixed;
+          bottom: 100px;
+          right: 1.5rem;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background-color: rgba(15, 23, 42, 0.3);
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          border: none;
+          cursor: pointer;
+          z-index: 9999;
+          transition: transform 0.2s, background-color 0.2s;
+        }
+        .help-icon {
+          width: 20px;
+          height: 20px;
+        }
+        @media (min-width: 768px) {
+          .help-btn {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(15, 23, 42, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          }
+          .help-icon {
+            width: 28px;
+            height: 28px;
+          }
         }
       `}</style>
     </>

@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import { useApi } from '../../hooks/useApi';
 import { CheckCircle2, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function CompletedTasks() {
   const { request, loading } = useApi();
@@ -18,11 +20,11 @@ export default function CompletedTasks() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <header style={{ padding: '1.5rem', backgroundColor: '#fff', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <header className="page-header">
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Tugas Selesai</h1>
       </header>
 
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
         <Card variant="default" style={{ backgroundColor: 'var(--role-driver)', color: '#fff', marginBottom: '0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
@@ -41,23 +43,45 @@ export default function CompletedTasks() {
         ) : tasks.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-secondary)' }}>Belum ada tugas yang selesai.</div>
         ) : (
-          tasks.map(task => (
-            <Card key={task.id} variant="bordered" padding="sm">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                <div style={{ fontWeight: 700, fontSize: '1rem' }}>{task.user?.name}</div>
-                <Badge status={task.status} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                  <Clock size={14} /> 
-                  {new Date(task.updatedAt || task.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+          <div className="completed-grid">
+            {tasks.map(task => (
+              <Card key={task.id} variant="bordered" padding="sm">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 700, fontSize: '1rem' }}>{task.user?.name}</div>
+                  <Badge status={task.status} />
                 </div>
-                <div style={{ fontWeight: 600 }}>Est: {task.estimatedWeight} kg</div>
-              </div>
-            </Card>
-          ))
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <Clock size={14} /> 
+                    {new Date(task.updatedAt || task.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                  <div style={{ fontWeight: 600 }}>Est: {task.estimatedWeight} kg</div>
+                </div>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
+
+      <style>{`
+        .completed-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        @media (min-width: 768px) {
+          .completed-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+          }
+        }
+        @media (min-width: 1280px) {
+          .completed-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+      `}</style>
     </div>
   );
 }

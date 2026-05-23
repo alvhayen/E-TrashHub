@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import Card from '../../components/ui/Card';
 import StatCard from '../../components/ui/StatCard';
-import { ArrowUp, ArrowDown, Activity, Trash2, CheckCircle2, Users, Leaf, Cloud, Droplets } from 'lucide-react';
+import { ArrowUp, ArrowDown, Activity, Trash2, CheckCircle2, Users, Leaf, Cloud, Droplets, Sparkles, X } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 export default function OverviewDashboard() {
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString('id-ID'));
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+
+  const generateSummary = () => {
+    setIsGenerating(true);
+    setSummary(null);
+    setTimeout(() => {
+      setSummary("Berdasarkan data hari ini, terdapat peningkatan 5% pada volume sampah anorganik. Tingkat pengelolaan mencapai 78% dengan tren positif di 3 minggu terakhir. Kepatuhan pemilahan tertinggi berada di Zona Barat-A (92%), namun Zona Pusat-E memerlukan perhatian khusus karena kepatuhannya masih 68%. Kami merekomendasikan intervensi edukasi berkelanjutan di Zona Pusat-E untuk meningkatkan partisipasi warga.");
+      setIsGenerating(false);
+    }, 2000);
+  };
 
   // Mock data as specified
   const volumeData = [
@@ -54,11 +65,42 @@ export default function OverviewDashboard() {
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a' }}>Executive Dashboard</h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.125rem' }}>Analitik Pengelolaan Sampah Kota Balikpapan</p>
         </div>
-        <div style={{ fontSize: '0.875rem', color: '#059669', backgroundColor: '#d1fae5', padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#059669', animation: 'pulse 2s infinite' }} />
-          Live Update: {lastUpdated}
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button 
+            onClick={generateSummary}
+            disabled={isGenerating}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: '0.5rem', 
+              backgroundColor: 'var(--color-primary)', color: '#fff', 
+              border: 'none', padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', 
+              fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
+              transition: 'background-color 0.2s', opacity: isGenerating ? 0.7 : 1
+            }}
+          >
+            <Sparkles size={16} />
+            {isGenerating ? 'Menganalisis...' : 'AI Summarize'}
+          </button>
+          <div style={{ fontSize: '0.875rem', color: '#059669', backgroundColor: '#d1fae5', padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#059669', animation: 'pulse 2s infinite' }} />
+            Live Update: {lastUpdated}
+          </div>
         </div>
       </div>
+
+      {summary && (
+        <div style={{ padding: '1.5rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--radius-lg)', display: 'flex', gap: '1.25rem', alignItems: 'flex-start', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+          <div style={{ padding: '0.75rem', backgroundColor: '#d1fae5', borderRadius: '50%', color: '#059669', flexShrink: 0 }}>
+            <Sparkles size={24} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#065f46', marginBottom: '0.5rem' }}>Ringkasan Eksekutif AI</h3>
+            <p style={{ color: '#064e3b', lineHeight: 1.6, fontSize: '0.95rem' }}>{summary}</p>
+          </div>
+          <button onClick={() => setSummary(null)} style={{ background: 'transparent', border: 'none', color: '#059669', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <X size={20} />
+          </button>
+        </div>
+      )}
 
       {/* Impact Calculator Widget (City-scale extrapolation mapping) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '0.5rem' }}>
