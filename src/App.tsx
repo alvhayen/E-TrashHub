@@ -52,7 +52,8 @@ import AdminLayout from './pages/admin_tps3r/AdminLayout';
 import AdminDashboard from './pages/admin_tps3r/AdminDashboard';
 import IncomingPickups from './pages/admin_tps3r/IncomingPickups';
 import WeighingForm from './pages/admin_tps3r/WeighingForm';
-import InventoryManager from './pages/admin_tps3r/InventoryManager';
+import StockManager from './pages/admin_tps3r/StockManager';
+import ShipmentManager from './pages/admin_tps3r/ShipmentManager';
 import AdminReports from './pages/admin_tps3r/AdminReports';
 import AdminFAQ from './pages/admin_tps3r/AdminFAQ';
 
@@ -73,7 +74,22 @@ import Register from './pages/Register';
 import Onboarding from './pages/Onboarding';
 import RoleOnboarding from './pages/RoleOnboarding';
 import Unauthorized from './pages/Unauthorized';
+import PendingApproval from './pages/PendingApproval';
 import NotFound from './pages/NotFound';
+import LandingPage from './pages/LandingPage';
+
+// New Auth & Public Pages
+import WasteCatalog from './pages/public/WasteCatalog';
+import NewLogin from './pages/auth/Login';
+import NewRegister from './pages/auth/Register';
+import PendingVerification from './pages/auth/PendingVerification';
+
+import ExpeditionList from './pages/driver/ExpeditionList';
+import ExpeditionDetail from './pages/driver/ExpeditionDetail';
+
+import SuperAdminLayout from './pages/superadmin/SuperAdminLayout';
+import SuperAdminOverview from './pages/superadmin/SuperAdminOverview';
+import VerificationQueue from './pages/superadmin/VerificationQueue';
 
 export default function App() {
   return (
@@ -83,53 +99,74 @@ export default function App() {
         <AuthProvider>
           <BrowserRouter>
             <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* PUBLIC ROUTES */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/catalog" element={<WasteCatalog />} />
             <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/role-onboarding/:roleId" element={<RoleOnboarding />} />
-            <Route path="/roles" element={<RoleSelector />} />
-            
-            <Route path="/rumah_tangga" element={<ProtectedRoute allowedRoles={['rumah_tangga']}><HouseholdLayout /></ProtectedRoute>}>
-              <Route index element={<Home />} />
+            <Route path="/role-onboarding/:role" element={<RoleOnboarding />} />
+            <Route path="/login" element={<NewLogin />} />
+            <Route path="/register/:role" element={<NewRegister />} />
+            <Route path="/pending-verification" element={<PendingVerification />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+
+            {/* PROTECTED ROUTES */}
+            <Route path="/household" element={<ProtectedRoute allowedRoles={['rumah_tangga']}><HouseholdLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate to="home" replace />} />
+              <Route path="home" element={<Home />} />
+              {/* <Route path="scanner" element={<WasteScanner />} /> */}
               <Route path="request" element={<RequestPickup />} />
               <Route path="history" element={<History />} />
+              <Route path="history/:id" element={<PickupDetail />} />
+              {/* <Route path="receipt/:id" element={<CarbonReceipt />} />
+              <Route path="ecoscore" element={<EcoScore />} />
+              <Route path="upcycling" element={<UpcyclingGuide />} /> */}
               <Route path="profile" element={<Profile />} />
-              <Route path="pickup/:id" element={<PickupDetail />} />
+              {/* Redirect old path for compatibility */}
+              <Route path="pickup/:id" element={<Navigate to="../history/:id" replace />} />
             </Route>
 
             <Route path="/driver" element={<ProtectedRoute allowedRoles={['driver']}><DriverLayout /></ProtectedRoute>}>
-              <Route index element={<TaskDashboard />} />
+              <Route index element={<Navigate to="tasks" replace />} />
+              <Route path="tasks" element={<TaskDashboard />} />
               <Route path="route" element={<RouteOverview />} />
               <Route path="completed" element={<CompletedTasks />} />
+              <Route path="expedition" element={<ExpeditionList />} />
+              <Route path="expedition/:id" element={<ExpeditionDetail />} />
               <Route path="profile" element={<DriverProfile />} />
             </Route>
 
-            <Route path="/admin_tps3r" element={<ProtectedRoute allowedRoles={['admin_tps3r']}><AdminLayout /></ProtectedRoute>}>
-              <Route index element={<AdminDashboard />} />
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin_tps3r']}><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="incoming" element={<IncomingPickups />} />
               <Route path="weigh/:id" element={<WeighingForm />} />
-              <Route path="inventory" element={<InventoryManager />} />
+              <Route path="stock" element={<StockManager />} />
+              <Route path="shipment" element={<ShipmentManager />} />
               <Route path="reports" element={<AdminReports />} />
-              <Route path="faq" element={<AdminFAQ />} />
             </Route>
 
-            <Route path="/mitra_b2b" element={<ProtectedRoute allowedRoles={['mitra_b2b']}><MitraLayout /></ProtectedRoute>}>
-              <Route index element={<Catalog />} />
-              <Route path="material/:id" element={<MaterialDetail />} />
+            <Route path="/mitra" element={<ProtectedRoute allowedRoles={['mitra_b2b']}><MitraLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate to="catalog" replace />} />
+              <Route path="catalog" element={<Catalog />} />
+              <Route path="detail/:id" element={<MaterialDetail />} />
               <Route path="profile" element={<MitraProfile />} />
-              <Route path="faq" element={<MitraFAQ />} />
             </Route>
 
             <Route path="/pemda" element={<ProtectedRoute allowedRoles={['pemda']}><PemdaLayout /></ProtectedRoute>}>
-              <Route index element={<OverviewDashboard />} />
+              <Route index element={<Navigate to="overview" replace />} />
+              <Route path="overview" element={<OverviewDashboard />} />
               <Route path="volume" element={<VolumeDetail />} />
               <Route path="compliance" element={<CompliancePage />} />
               <Route path="reports" element={<ReportsExport />} />
-              <Route path="faq" element={<PemdaFAQ />} />
             </Route>
 
-            <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="/" element={<Navigate to="/onboarding" replace />} />
+            <Route path="/superadmin" element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate to="overview" replace />} />
+              <Route path="overview" element={<SuperAdminOverview />} />
+              <Route path="verification" element={<VerificationQueue />} />
+              {/* <Route path="users" element={<UserManagement />} /> */}
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AccessibilityHelp />

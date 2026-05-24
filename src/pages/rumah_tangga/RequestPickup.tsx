@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, Trash2, Box, FileText, Database, Plus, MapPin } from 'lucide-react';
+import { MapPin, Info, ExternalLink } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApi } from '../../hooks/useApi';
 import { useToast } from '../../components/ui/Toast';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import ToggleCard from '../../components/form/ToggleCard';
+import axios from 'axios';
+import { getWasteImage } from '../../utils/wasteImages';
 
-const WASTE_TYPES = [
-  { id: 'Botol Plastik', icon: Package, label: 'Botol Plastik', sublabel: 'PET, HDPE' },
-  { id: 'Gelas Plastik', icon: Trash2, label: 'Gelas Plastik', sublabel: 'PP, Minuman' },
-  { id: 'Tutup Botol', icon: Box, label: 'Tutup Botol', sublabel: 'Plastik keras' },
-  { id: 'Kertas/Kardus', icon: FileText, label: 'Kertas/Kardus', sublabel: 'Kering & bersih' },
-  { id: 'Logam/Kaleng', icon: Database, label: 'Logam/Kaleng', sublabel: 'Aluminium' },
-  { id: 'Lainnya', icon: Plus, label: 'Lainnya', sublabel: 'Kaca, dll' }
+const HARDCODED_WASTE_TYPES = [
+  { id: 'Botol Plastik', name: 'Botol Plastik', slug: 'botol-plastik', priceEstMin: 1500, priceEstMax: 2500, imageUrl: '' },
+  { id: 'Gelas Plastik', name: 'Gelas Plastik', slug: 'gelas-plastik', priceEstMin: 1000, priceEstMax: 2000, imageUrl: '' },
+  { id: 'Kertas/Kardus', name: 'Kertas/Kardus', slug: 'kertas-kardus', priceEstMin: 1200, priceEstMax: 1800, imageUrl: '' },
+  { id: 'Logam/Kaleng', name: 'Logam/Kaleng', slug: 'logam-kaleng', priceEstMin: 3000, priceEstMax: 5000, imageUrl: '' },
+  { id: 'Lainnya', name: 'Lainnya', slug: 'lainnya', priceEstMin: 0, priceEstMax: 0, imageUrl: '' }
 ];
 
 const WEIGHT_ESTIMATES = [
@@ -25,13 +25,30 @@ const WEIGHT_ESTIMATES = [
 
 export default function RequestPickup() {
   const { user } = useAuth();
-  const { request, loading } = useApi();
+  const { request, loading: submitLoading } = useApi();
   const { success, error } = useToast();
   const navigate = useNavigate();
 
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedWeight, setSelectedWeight] = useState<string | null>(null);
   const [note, setNote] = useState('');
+
+  useEffect(() => {
+    axios.get('/api/public/waste-categories')
+      .then(res => {
+        if (res.data.success && res.data.categories.length > 0) {
+          setCategories(res.data.categories);
+        } else {
+          setCategories(HARDCODED_WASTE_TYPES);
+        }
+      })
+      .catch(() => {
+        setCategories(HARDCODED_WASTE_TYPES);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const toggleType = (id: string) => {
     setSelectedTypes(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
@@ -45,7 +62,7 @@ export default function RequestPickup() {
 
     try {
       await request('POST', '/api/pickup', {
-        wasteTypes: selectedTypes,
+        wasteTypes: selectedTypes, // Using IDs or names
         estimatedWeight: currentWeightObj.val,
         address: user?.address || 'Alamat tidak diinput',
         note: note
@@ -63,28 +80,81 @@ export default function RequestPickup() {
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Pesan Jemputan</h1>
       </header>
 
-      {/* Desktop: 2-column, Mobile: 1-column */}
       <div className="request-pickup-layout" style={{ flex: 1 }}>
-        {/* Left/Main column */}
         <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Waste Types */}
+          
           <section>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>1. Pilih Jenis Sampah (Bisa &gt;1)</h2>
             <div className="waste-type-grid">
-              {WASTE_TYPES.map(type => (
-                <ToggleCard
-                  key={type.id}
-                  icon={type.icon}
-                  label={type.label}
-                  sublabel={type.sublabel}
-                  selected={selectedTypes.includes(type.id)}
-                  onClick={() => toggleType(type.id)}
-                />
-              ))}
+              {loading ? (
+                Array.from({length: 6}).map((_, i) => (
+                  <div key={i} className="skeleton-card" style={{ height: '180px', borderRadius: '12px', background: '#e2e8f0', animation: 'pulse 1.5s infinite' }}></div>
+                ))
+              ) : (
+                categories.map(cat => {
+                  const isSelected = selectedTypes.includes(cat.id || cat.name);
+                  const imageUrl = cat.imageUrl || getWasteImage(cat.slug);
+                  
+                  return (
+                    <div 
+                      key={cat.id || cat.name}
+                      onClick={() => toggleType(cat.id || cat.name)}
+                      style={{
+                        background: 'white',
+                        border: `2px solid ${isSelected ? '#10B981' : '#e2e8f0'}`,
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        transform: isSelected ? 'translateY(-2px)' : 'none',
+                        boxShadow: isSelected ? '0 8px 16px rgba(16, 185, 129, 0.15)' : 'none',
+                        position: 'relative'
+                      }}
+                    >
+                      <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1', background: '#f1f5f9' }}>
+                        <img 
+                          src={imageUrl} 
+                          alt={cat.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e: any) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                        />
+                        <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, color: '#cbd5e1' }}>
+                          {cat.name[0]}
+                        </div>
+                        
+                        {/* Selected Overlays */}
+                        {isSelected && (
+                          <>
+                            <div style={{ position: 'absolute', inset: 0, background: 'rgba(16, 185, 129, 0.1)' }}></div>
+                            <div style={{ position: 'absolute', top: '8px', right: '8px', background: '#10B981', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.85rem' }}>✓</div>
+                          </>
+                        )}
+                      </div>
+                      
+                      <div style={{ padding: '10px 12px' }}>
+                        <div style={{ fontWeight: 700, fontSize: '13px', color: '#1e293b', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cat.name}</div>
+                        {cat.priceEstMin > 0 ? (
+                          <div style={{ color: '#10B981', fontSize: '11px', fontWeight: 600 }}>
+                            Rp {cat.priceEstMin.toLocaleString('id-ID')} - {cat.priceEstMax.toLocaleString('id-ID')}<span style={{ color: '#94a3b8', fontWeight: 500 }}>/kg</span>
+                          </div>
+                        ) : (
+                          <div style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 500 }}>Harga Bervariasi</div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
+            
+            <button 
+              onClick={() => navigate('/catalog?context=sell')}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#0ea5e9', fontSize: '0.85rem', fontWeight: 600, marginTop: '16px', cursor: 'pointer' }}
+            >
+              <Info size={16} /> Tidak yakin ini sampah apa? → Lihat Panduan Pilah Sampah
+            </button>
           </section>
 
-          {/* Weight Estimate */}
           <section>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>2. Estimasi Berat</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -110,7 +180,6 @@ export default function RequestPickup() {
             </div>
           </section>
 
-          {/* Address and Notes */}
           <section>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>3. Detail Penjemputan</h2>
             <Card variant="bordered" padding="sm" style={{ marginBottom: '1rem' }}>
@@ -137,12 +206,11 @@ export default function RequestPickup() {
             />
           </section>
 
-          {/* Submit button — visible inline on desktop */}
           <div className="submit-desktop-only">
             <Button 
               fullWidth size="lg" 
               onClick={handleSubmit} 
-              loading={loading}
+              loading={submitLoading}
               disabled={selectedTypes.length === 0 || !selectedWeight}
             >
               🚛 Pesan Penjemputan
@@ -151,12 +219,11 @@ export default function RequestPickup() {
         </div>
       </div>
 
-      {/* Sticky submit button — only on mobile */}
       <div className="submit-mobile-sticky" style={{ padding: '1.5rem', backgroundColor: '#fff', borderTop: '1px solid var(--color-border)', position: 'sticky', bottom: 0, zIndex: 10 }}>
         <Button 
           fullWidth size="lg" 
           onClick={handleSubmit} 
-          loading={loading}
+          loading={submitLoading}
           disabled={selectedTypes.length === 0 || !selectedWeight}
         >
           🚛 Pesan Penjemputan
@@ -167,17 +234,15 @@ export default function RequestPickup() {
         .waste-type-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 0.75rem;
+          gap: 10px;
         }
         .submit-mobile-sticky { display: block; }
         .submit-desktop-only { display: none; }
 
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .waste-type-grid {
             grid-template-columns: repeat(3, 1fr);
           }
-        }
-        @media (min-width: 1024px) {
           .submit-mobile-sticky { display: none; }
           .submit-desktop-only { display: block; }
         }

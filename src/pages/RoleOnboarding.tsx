@@ -76,7 +76,7 @@ export default function RoleOnboarding() {
   }
 
   const handleContinue = () => {
-    navigate('/login', { state: { email, password: 'password123' } });
+    navigate('/login', { state: { email } });
   };
 
   const handleBack = () => {

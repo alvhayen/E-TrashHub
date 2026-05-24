@@ -22,9 +22,9 @@ export default function Badge({ status, pulse = false }: BadgeProps) {
       dotColor = '#f59e0b';
       break;
     case 'on_the_way':
-      bgColor = '#e0f2fe';
-      textColor = '#0369a1';
-      dotColor = '#0ea5e9';
+      bgColor = '#ccfbf1';
+      textColor = '#0f766e';
+      dotColor = '#14b8a6';
       break;
     case 'collected':
       bgColor = '#ffedd5';

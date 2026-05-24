@@ -3,9 +3,10 @@ import React, { useEffect, useRef } from 'react';
 interface LeafNetworkBgProps {
   accentColor?: string;
   opacity?: number;
+  className?: string;
 }
 
-export default function LeafNetworkBg({ accentColor = '#10B981', opacity = 1 }: LeafNetworkBgProps) {
+export default function LeafNetworkBg({ accentColor = '#10B981', opacity = 1, className = '' }: LeafNetworkBgProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
 
@@ -257,6 +258,7 @@ export default function LeafNetworkBg({ accentColor = '#10B981', opacity = 1 }: 
   return (
     <canvas
       ref={canvasRef}
+      className={className}
       aria-hidden="true"
       style={{
         position: 'absolute',

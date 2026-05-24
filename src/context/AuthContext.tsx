@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => {
-        setUser(res.data.user);
+        setUser({ ...res.data.user, status: res.data.user.status || 'active' });
       })
       .catch((err) => {
         console.error('Auth check failed:', err);
@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token]);
 
   const login = (newToken: string, newUser: User) => {
+    // If the server returns pending, the frontend caller should handle it.
+    // However, if called directly, we set it:
     localStorage.setItem('token', newToken);
     setToken(newToken);
     setUser(newUser);

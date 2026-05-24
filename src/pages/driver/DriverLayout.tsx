@@ -1,13 +1,18 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Truck, Map, CheckCircle, User } from 'lucide-react';
+import { Truck, Map, CheckCircle, User, Package } from 'lucide-react';
 import BottomNav from '../../components/layout/BottomNav';
 import Sidebar from '../../components/layout/Sidebar';
+import { useAuth } from '../../context/AuthContext';
 
 export default function DriverLayout() {
+  const { user } = useAuth();
+  const isMitra = user?.driverType === 'MITRA_TPS3R';
+
   const navItems = [
     { icon: Truck, label: 'Tugas', path: '/driver' },
     { icon: Map, label: 'Rute', path: '/driver/route' },
+    ...(isMitra ? [{ icon: Package, label: 'Ekspedisi', path: '/driver/expedition' }] : []),
     { icon: CheckCircle, label: 'Selesai', path: '/driver/completed' },
     { icon: User, label: 'Profil', path: '/driver/profile' }
   ];

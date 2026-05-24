@@ -28,7 +28,7 @@ export default function DriverProfile() {
       <div className="driver-profile-content">
         <Card variant="elevated" padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', backgroundColor: '#e0f2fe', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
+            <div style={{ padding: '0.75rem', backgroundColor: '#ccfbf1', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
               <Coins size={20} />
             </div>
             <div>
@@ -42,7 +42,7 @@ export default function DriverProfile() {
           <div style={{ height: '1px', backgroundColor: 'var(--color-border)' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', backgroundColor: '#e0f2fe', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
+            <div style={{ padding: '0.75rem', backgroundColor: '#ccfbf1', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
               <Truck size={20} />
             </div>
             <div>
@@ -54,7 +54,7 @@ export default function DriverProfile() {
           <div style={{ height: '1px', backgroundColor: 'var(--color-border)' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', backgroundColor: '#e0f2fe', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
+            <div style={{ padding: '0.75rem', backgroundColor: '#ccfbf1', color: 'var(--role-driver)', borderRadius: 'var(--radius-full)' }}>
               <MapPin size={20} />
             </div>
             <div>

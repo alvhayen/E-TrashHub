@@ -8,7 +8,7 @@ import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
 export default function Login() {
   const location = useLocation();
   const [email, setEmail] = useState(() => location.state?.email || '');
-  const [password, setPassword] = useState(() => location.state?.password || '');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -22,10 +22,20 @@ export default function Login() {
 
     try {
       const res = await axios.post('/api/auth/login', { email, password });
-      login(res.data.token, res.data.user);
-      navigate(`/${res.data.user.role}`);
+      const userData = { ...res.data.user, status: res.data.user.status || 'active' };
+      login(res.data.token, userData);
+
+      // Redirect pending users to the approval waiting page
+      if (userData.status === 'pending') {
+        navigate('/pending-approval');
+      } else if (userData.status === 'suspended') {
+        setError('Akun Anda telah dinonaktifkan. Hubungi administrator untuk informasi lebih lanjut.');
+        return;
+      } else {
+        navigate(`/${userData.role}`);
+      }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to login');
+      setError(err.response?.data?.error || 'Gagal masuk. Periksa email dan kata sandi Anda.');
     } finally {
       setLoading(false);
     }

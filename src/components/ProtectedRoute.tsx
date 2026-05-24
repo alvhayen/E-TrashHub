@@ -19,6 +19,15 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     return <Navigate to="/login" replace />;
   }
 
+  // Block pending or suspended users from accessing protected routes
+  if (user.status === 'pending') {
+    return <Navigate to="/pending-approval" replace />;
+  }
+
+  if (user.status === 'suspended') {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
   if (!allowedRoles.includes(user.role)) {
     // If not allowed, redirect to their designated dashboard
     return <Navigate to={`/${user.role}`} replace />;

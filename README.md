@@ -1,88 +1,42 @@
-# e-TrashHub (SIPSN-Bridge)
+# e-TrashHub
 
-Selamat datang di repositori e-TrashHub, sebuah solusi *Executive Platform* untuk digitalisasi pengelolaan sampah dari hulu ke hilir. Proyek ini dibangun untuk kompetisi **Juara Vibe Coding**.
+e-TrashHub adalah platform pengelolaan sampah terpadu yang menjembatani rumah tangga, pengepul/driver, TPS3R, mitra industri (B2B), dan pemerintah daerah, di bawah pengawasan langsung sistem verifikasi terpusat oleh Super Admin.
 
-## 🏗️ Architecture
+## Daftar Akun Demo (Seed Data)
+| Peran | Email | Kata Sandi | Status |
+|-------|-------|------------|--------|
+| Super Admin | `superadmin@etrashhub.id` | `superadmin123` | ACTIVE |
+| Rumah Tangga | `sari@email.com` | `password123` | ACTIVE |
+| Rumah Tangga | `budi.rt@email.com` | `password123` | ACTIVE |
+| Driver Freelance | `driver.freelance@email.com` | `password123` | ACTIVE |
+| Driver Mitra TPS3R | `driver.mitra@email.com` | `password123` | ACTIVE |
+| Admin TPS3R | `admin.tps3r@email.com` | `password123` | ACTIVE |
+| Admin TPS3R | `admin.tps3r2@email.com` | `password123` | ACTIVE |
+| Admin TPS3R | `pending.tps3r@email.com` | `password123` | PENDING |
+| Mitra Industri | `mitra@industri.com` | `password123` | ACTIVE |
+| Pemda | `dinas@surabaya.go.id` | `password123` | ACTIVE |
+| Pemda | `pending.pemda@email.com` | `password123` | PENDING |
 
-```ascii
-[ Household ]       [ Driver ]       [ TPS3R Admin ]     [ Mitra B2B ]      [ Pemda ]
-      |                 |                   |                   |               |
-      v                 v                   v                   v               v
-+-----------------------------------------------------------------------------------+
-|                           Frontend (React 18 + Vite)                              |
-+-----------------------------------------------------------------------------------+
-                                        | (REST APIs)
-+-----------------------------------------------------------------------------------+
-|                        Backend (Node.js + Express)                                |
-|                                                                                   |
-|  [ Auth Auth ]   [ Pickup Engine ]   [ Inventory & B2B ]   [ Analytics Agg ]     |
-+-----------------------------------------------------------------------------------+
-                                        | (Prisma ORM)
-                                        v
-                            +-----------------------+
-                            |    SQLite Database    |
-                            +-----------------------+
-```
+## User Flow Utama
+1. **Rumah Tangga Flow**
+   * Melihat **Katalog Publik** tanpa login untuk mengecek harga sampah saat ini.
+   * Melakukan registrasi, kemudian memutar form pemesanan jemputan (*Request Pickup*) menggunakan kartu gambar visual.
+   * Melacak perjalanan supir secara *real-time* hingga sampah ditimbang.
+   * Mendapatkan poin berdasarkan berat dan jenis komoditas.
 
-## 🚀 Quick Start (Development)
+2. **Driver Mitra Flow**
+   * Berbeda dengan Driver Freelance yang hanya menjemput dari nasabah (RT).
+   * Driver Mitra memegang kapabilitas untuk melacak dan menjalankan **Ekspedisi**.
+   * Memulai perjalanan ekspedisi antar-TPS3R atau ke Mitra Industri, memantau *manifest* muatan, dan menyelesaikan *dropping* di tujuan.
 
-Proyek ini telah dikonfigurasi sebagai *full-stack monorepo*. Cukup jalankan perintah berikut di root folder:
+3. **Admin TPS3R Flow**
+   * Mendaftar dan masuk ke **Antrian Verifikasi** (status PENDING).
+   * Setelah diverifikasi, dapat memantau kedatangan **Penjemputan Masuk**.
+   * Menimbang muatan sampah, lalu masuk ke **Manajemen Stok** untuk menyortir persediaan.
+   * Membuka komoditas menjadi mode publik agar dilirik oleh Mitra Industri.
+   * Menugaskan Driver Mitra untuk memulai Ekspedisi pengantaran skala tonase.
 
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Setup Database (Prisma)
-npx prisma generate
-npx prisma db push
-
-# 3. Seed Mock Data
-npx tsx backend/src/seed.ts
-
-# 4. Run Development Server (Frontend + Backend in one command)
-npm run dev
-```
-
-Aplikasi bisa diakses di **http://localhost:3000** 
-
-## 🔐 Demo Accounts
-
-Gunakan salah satu dari akun berikut untuk melihat dashboard masing-masing *role*:
-
-| Role | Username (Email) | Password |
-|---|---|---|
-| **Rumah Tangga** | `budi@gmail.com` | `password` |
-| **Driver / Pengepul** | `driver1@gmail.com` | `password` |
-| **Admin TPS3R** | `tps3r_barat@admin.com` | `password` |
-| **Mitra B2B/Industri** | `b2b@indofood.com` | `password` |
-| **Pemda (Pemerintah)** | `pemda@surabaya.go.id` | `password` |
-
-## 🌟 Feature List per Role
-
-1. **Rumah Tangga**
-   - *Pickup Request* material daur ulang
-   - History & Tracking request realtime
-   - Reward Point System
-2. **Driver**
-   - Dashboard penjemputan (*Task Queue*)
-   - Perubahan status (ON_THE_WAY → COLLECTED)
-3. **Admin TPS3R (Fasilitas)**
-   - Penerimaan limbah (*Incoming*)
-   - Input berat aktual (*Weighing*) & verifikasi poin nasabah
-   - Manajemen Stock Inventory (Siap dijual B2B)
-4. **Mitra B2B (Industri)**
-   - Katalog e-Procurement dari berbagai TPS3R
-   - WhatsApp auto-generated Inquiries
-5. **Pemda (Pemerintah Daerah)**
-   - SIPSN Executive Analytics
-   - Real-time Volume & Kepatuhan Zona
-   - Rekap Laporan Ekspor
-
-## 🛠 Tech Stack
-
-- **Frontend:** React 18, Vite, React Router, Tailwind CSS, Recharts, Lucide Icons
-- **Backend:** Node.js, Express, Prisma ORM, SQLite
-- **Authentication:** JWT (JSON Web Tokens), bcrypt
-
----
-*Created for **Juara Vibe Coding** using Google AI Studio Agentic Tools.*
+4. **Super Admin Flow**
+   * Mengamankan integritas sistem di *dashboard* khusus level sistem.
+   * Melihat antrian calon Admin TPS3R atau perwakilan Pemda.
+   * Mengevaluasi data instansi, lalu menyetujui (**Approve**) atau menolak pendaftaran dengan **wajib menyertakan alasan** penolakan agar langsung terkirim ke *email* pendaftar.
