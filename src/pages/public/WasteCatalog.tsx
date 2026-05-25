@@ -72,7 +72,7 @@ export default function WasteCatalog() {
             {filteredCategories.map(cat => (
               <div key={cat.id} className="waste-card" onClick={() => setSelectedCategory(cat)}>
                 <div className="waste-img-wrapper">
-                  <img src={cat.imageUrl} alt={cat.name} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                  <img src={cat.imageUrl} alt={cat.name} onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextElementSibling instanceof HTMLElement) e.currentTarget.nextElementSibling.style.display = 'flex'; }} />
                   <div className="img-fallback" style={{display: 'none'}}>{cat.name[0]}</div>
                 </div>
                 <div className="waste-info">
@@ -99,7 +99,7 @@ export default function WasteCatalog() {
             <button className="modal-close" onClick={() => setSelectedCategory(null)}><X size={24} /></button>
             
             <div className="modal-img">
-              <img src={selectedCategory.imageUrl} alt={selectedCategory.name} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+              <img src={selectedCategory.imageUrl} alt={selectedCategory.name} onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextElementSibling instanceof HTMLElement) e.currentTarget.nextElementSibling.style.display = 'flex'; }} />
               <div className="img-fallback" style={{display: 'none'}}>{selectedCategory.name[0]}</div>
             </div>
             

@@ -1,4 +1,4 @@
-export type Role = 'rumah_tangga' | 'driver' | 'admin_tps3r' | 'mitra_b2b' | 'pemda';
+export type Role = 'rumah_tangga' | 'driver' | 'admin_tps3r' | 'mitra_b2b' | 'pemda' | 'super_admin';
 
 export type AccountStatus = 'active' | 'pending' | 'suspended';
 

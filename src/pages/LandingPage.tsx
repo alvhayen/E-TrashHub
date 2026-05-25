@@ -45,7 +45,7 @@ const useCountUpOnView = (endValue, decimals = 0, duration = 2000) => {
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
+
   const HARDCODED_WASTE_TYPES = [
     { id: '1', name: 'Botol Plastik', slug: 'botol-plastik', priceEstMin: 1500, priceEstMax: 2500, sortingTips: 'Kosongkan sisa air, remukkan botol', imageUrl: '/images/waste/botol-plastik.webp' },
     { id: '2', name: 'Gelas Plastik', slug: 'gelas-plastik', priceEstMin: 1000, priceEstMax: 2000, sortingTips: 'Buang sisa minuman, bersihkan', imageUrl: '/images/waste/gelas-plastik.webp' },
@@ -64,13 +64,7 @@ export default function LandingPage() {
   const { count: co2Count, ref: co2Ref } = useCountUpOnView(71.25, 2);
   const { count: citiesCount, ref: citiesRef } = useCountUpOnView(4, 0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 80);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+
 
   useEffect(() => {
     // Fetch public waste categories
@@ -102,8 +96,8 @@ export default function LandingPage() {
     },
     {
       id: 'DRIVER',
-      name: 'Driver',
-      icon: '🚛',
+      name: 'Kurir/Volunteer',
+      icon: '🛵',
       desc: 'Jemput sampah dan dapatkan penghasilan tambahan',
       bgClass: 'role-card-driver'
     },
@@ -123,8 +117,8 @@ export default function LandingPage() {
     },
     {
       id: 'PEMDA',
-      name: 'Pemda',
-      icon: '🏛️',
+      name: 'Masyarakat',
+      icon: '👥',
       desc: 'Pantau statistik pengelolaan sampah skala kota',
       bgClass: 'role-card-pemda'
     }
@@ -133,7 +127,7 @@ export default function LandingPage() {
   return (
     <div className="landing-page">
       {/* SECTION 1: NAVBAR */}
-      <nav className={`landing-nav ${scrolled ? 'nav-scrolled' : ''}`}>
+      <nav className="landing-nav">
         <div className="nav-container">
           <div className="nav-logo">
             <span className="logo-icon">♻️</span> e-TrashHub
@@ -144,8 +138,8 @@ export default function LandingPage() {
             <a href="#dampak">Dampak</a>
           </div>
           <div className="nav-actions">
-            <button className="btn-outline" onClick={() => navigate('/auth/login')}>Masuk</button>
-            <button className="btn-solid" onClick={() => navigate('/auth/register/RUMAH_TANGGA')}>Mulai Gratis →</button>
+            <button className="btn-outline" onClick={() => navigate('/login')}>Masuk</button>
+            <button className="btn-solid" onClick={() => navigate('/register/RUMAH_TANGGA')}>Mulai Gratis →</button>
             <button className="mobile-menu"><Menu size={24} /></button>
           </div>
         </div>
@@ -162,14 +156,13 @@ export default function LandingPage() {
               e-TrashHub menghubungkan rumah tangga, pengepul, TPS3R, dan industri dalam satu ekosistem yang menguntungkan semua pihak.
             </p>
             <div className="hero-cta-group">
-              <button className="btn-primary-large" onClick={() => navigate('/auth/register/RUMAH_TANGGA')}>
+              <button className="btn-primary-large" onClick={() => navigate('/register/RUMAH_TANGGA')}>
                 Mulai Jual Sampah →
               </button>
               <button className="btn-ghost-large" onClick={() => document.getElementById('cara-kerja')?.scrollIntoView({behavior: 'smooth'})}>
                 <Play size={20} /> Pelajari Cara Kerjanya
               </button>
             </div>
-            <p className="social-proof">Sudah digunakan oleh 1.240+ rumah tangga · ⭐ 4.9/5</p>
           </div>
           
           <div className="hero-visual">
@@ -246,7 +239,7 @@ export default function LandingPage() {
             <div 
               key={role.id} 
               className={`role-card ${role.bgClass}`}
-              onClick={() => navigate(`/auth/register/${role.id}`)}
+              onClick={() => navigate(`/register/${role.id}`)}
             >
               <div className="role-icon">{role.icon}</div>
               <h3 className="role-name">{role.name}</h3>
