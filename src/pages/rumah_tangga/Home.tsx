@@ -160,7 +160,7 @@ export default function Home() {
                    Live
                 </div>
               </div>
-              <Card variant="bordered" onClick={() => navigate(`/rumah_tangga/pickup/${activePickup.id}`)}>
+              <Card variant="bordered" onClick={() => navigate(`/household/history/${activePickup.id}`)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
                     <Badge status={activePickup.status} pulse />
@@ -175,7 +175,7 @@ export default function Home() {
 
           {/* Quick Action */}
           <div>
-            <Button fullWidth size="lg" onClick={() => navigate('/rumah_tangga/request')} style={{ fontSize: '1.125rem' }}>
+            <Button fullWidth size="lg" onClick={() => navigate('/household/request')} style={{ fontSize: '1.125rem' }}>
               Pesan Jemput Sekarang <ArrowRight size={20} />
             </Button>
           </div>

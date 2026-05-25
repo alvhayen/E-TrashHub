@@ -42,7 +42,7 @@ export default function WeighingForm() {
         note
       });
       success(`✅ Verifikasi berhasil! ${totalPoints} poin dikirim ke ${pickup.user?.name}`);
-      navigate('/admin_tps3r/incoming');
+      navigate('/admin/incoming');
     } catch (err: any) {
       error(err.response?.data?.error || 'Gagal melakukan verifikasi');
     }

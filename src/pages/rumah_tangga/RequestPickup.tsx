@@ -68,7 +68,10 @@ export default function RequestPickup() {
         note: note
       });
       success('Penjemputan berhasil dipesan! 🎉');
-      navigate('/rumah_tangga/history');
+      // Add 1.5s delay to show the success state before redirecting
+      setTimeout(() => {
+        navigate('/household/history');
+      }, 1500);
     } catch (err: any) {
       error(err.response?.data?.error || 'Gagal memesan penjemputan');
     }

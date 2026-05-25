@@ -5,12 +5,12 @@ import { LayoutDashboard, Inbox, Package, FileText, HelpCircle, Scale, Truck } f
 
 export default function AdminLayout() {
   const navItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin_tps3r' },
-    { icon: Inbox, label: 'Sampah Masuk', path: '/admin_tps3r/incoming' },
-    { icon: Scale, label: 'Timbang & Verifikasi', path: '/admin_tps3r/weighing-queue' },
-    { icon: Package, label: 'Manajemen Stok', path: '/admin_tps3r/stock' },
-    { icon: Truck, label: 'Manajemen Pengiriman', path: '/admin_tps3r/shipment' },
-    { icon: FileText, label: 'Laporan', path: '/admin_tps3r/reports' }
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+    { icon: Inbox, label: 'Sampah Masuk', path: '/admin/incoming' },
+    { icon: Scale, label: 'Timbang & Verifikasi', path: '/admin/weighing-queue' },
+    { icon: Package, label: 'Manajemen Stok', path: '/admin/stock' },
+    { icon: Truck, label: 'Manajemen Pengiriman', path: '/admin/shipment' },
+    { icon: FileText, label: 'Laporan', path: '/admin/reports' }
   ];
 
   return (

@@ -149,7 +149,7 @@ export default function RoleOnboarding() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                onClick={() => navigate('/register')} 
+                onClick={() => navigate(`/register/${roleId}`)} 
                 style={{ width: '100%', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}
               >
                 Belum punya akun? Daftar

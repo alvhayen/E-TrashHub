@@ -1,96 +1,37 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// ─── ENUMS ───────────────────────────────────────────
-
-enum Role {
-  RUMAH_TANGGA
-  DRIVER
-  ADMIN_TPS3R
-  MITRA_B2B
-  PEMDA
-  SUPER_ADMIN
-}
-
-enum VerificationStatus {
-  ACTIVE     // langsung aktif setelah register (RT, Driver, Mitra)
-  PENDING    // menunggu super admin (TPS3R, Pemda)
-  REJECTED   // ditolak super admin
-}
-
-enum DriverType {
-  FREELANCE
-  MITRA_TPS3R
-}
-
-enum HouseRole {
-  KEPALA_KELUARGA
-  PASANGAN
-  ANAK
-  LAINNYA
-}
-
-enum IndustryType {
-  INDUSTRI
-  PENGRAJIN
-  PELAJAR
-}
-
-enum PickupStatus {
-  PENDING
-  ON_THE_WAY
-  COLLECTED
-  VERIFIED
-  COMPLETED
-  CANCELLED
-}
-
-enum InventoryStatus {
-  READY
-  PROCESSING
-  SOLD_OUT
-}
-
-enum ExpeditionType {
-  TPS3R_TO_TPS3R
-  TPS3R_TO_MITRA
-}
-
-enum ExpeditionStatus {
-  ASSIGNED
-  ON_THE_WAY
-  ARRIVED
-  CONFIRMED
-  CANCELLED
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // ─── MODELS ───────────────────────────────────────────
 
 model User {
-  id                 String             @id @default(cuid())
-  email              String             @unique
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
   password           String
   name               String
-  role               Role
+  role               String   // RUMAH_TANGGA, DRIVER, ADMIN_TPS3R, MITRA_B2B, PEMDA, SUPER_ADMIN
   phone              String?
-  verificationStatus VerificationStatus @default(ACTIVE)
-  points             Int                @default(0)
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
+  verificationStatus String   @default("ACTIVE") // ACTIVE, PENDING, REJECTED
+  points             Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @default(now())
+
+  // Legacy fields (keep for backward compat)
+  address            String?
+  zone               String?
 
   // Role RUMAH_TANGGA
-  houseRole          HouseRole?
-  address            String?
+  houseRole          String?  // KEPALA_KELUARGA, PASANGAN, ANAK, LAINNYA
   postalCode         String?
 
   // Role DRIVER
-  driverType         DriverType?
+  driverType         String?  // FREELANCE, MITRA_TPS3R
   domicile           String?
 
   // Role ADMIN_TPS3R
@@ -98,65 +39,68 @@ model User {
   tpsAddress         String?
 
   // Role MITRA_B2B
-  industryType       IndustryType?
+  industryType       String?  // INDUSTRI, PENGRAJIN, PELAJAR
   companyAddress     String?
   companyPostalCode  String?
 
   // Role PEMDA
-  region             String?            // kabupaten/kota
+  region             String?
   officeAddress      String?
 
   // Relations
-  pickupRequests     PickupRequest[]    @relation("HouseholdPickups")
-  driverPickups      PickupRequest[]    @relation("DriverPickups")
-  inventory          Inventory[]
-  transactions       Transaction[]
-  voucherRedemptions VoucherRedemption[]
-  expeditionsAsDriver Expedition[]      @relation("ExpeditionDriver")
-  verificationQueue  VerificationQueue?
+  pickupRequestsAsUser   PickupRequest[]     @relation("UserPickups")
+  pickupRequestsAsDriver PickupRequest[]     @relation("DriverPickups")
+  inventories            Inventory[]
+  transactions           Transaction[]
+  voucherRedemptions     VoucherRedemption[]
+  expeditionsAsDriver    Expedition[]        @relation("ExpeditionDriver")
+  verificationQueue      VerificationQueue?
 }
 
 model WasteCategory {
-  id            String   @id @default(cuid())
+  id            Int      @id @default(autoincrement())
   name          String   @unique
-  slug          String   @unique  // botol-plastik, kertas-kardus, dll
-  imageUrl      String            // path ke gambar ilustrasi
-  priceEstMin   Int               // estimasi harga per kg min (Rp)
-  priceEstMax   Int               // estimasi harga per kg max (Rp)
+  slug          String   @unique
+  imageUrl      String
+  priceEstMin   Int
+  priceEstMax   Int
   description   String
-  sortingTips   String            // cara pilah yang benar
+  sortingTips   String
   isActive      Boolean  @default(true)
   sortOrder     Int      @default(0)
   createdAt     DateTime @default(now())
 
-  pickupItems   PickupItem[]
+  pickupItems    PickupItem[]
   inventoryItems Inventory[]
 }
 
 model PickupRequest {
-  id              String       @id @default(cuid())
-  userId          String
-  driverId        String?
-  status          PickupStatus @default(PENDING)
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  driverId        Int?
+  status          String   @default("PENDING") // PENDING, ON_THE_WAY, COLLECTED, VERIFIED, COMPLETED, CANCELLED
   address         String
   note            String?
-  estimatedWeight String       // "Ringan"|"Sedang"|"Berat"
+  estimatedWeight String   // "Ringan"|"Sedang"|"Berat"
   actualWeight    Float?
   points          Int?
-  environmentalImpact Json?   // { co2, water, energy, trees }
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  environmentalImpact String? // JSON string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
 
-  user    User        @relation("HouseholdPickups", fields: [userId], references: [id])
-  driver  User?       @relation("DriverPickups", fields: [driverId], references: [id])
-  items   PickupItem[]
+  // Legacy field for backward compat with old data
+  wasteTypes      String?
+
+  user         User          @relation("UserPickups", fields: [userId], references: [id])
+  driver       User?         @relation("DriverPickups", fields: [driverId], references: [id])
+  items        PickupItem[]
   transactions Transaction[]
 }
 
 model PickupItem {
-  id              String        @id @default(cuid())
-  pickupRequestId String
-  wasteCategoryId String
+  id              Int    @id @default(autoincrement())
+  pickupRequestId Int
+  wasteCategoryId Int
   estimatedQty    String?
 
   pickupRequest PickupRequest @relation(fields: [pickupRequestId], references: [id])
@@ -164,51 +108,51 @@ model PickupItem {
 }
 
 model Inventory {
-  id              String          @id @default(cuid())
-  tps3rId         String
-  wasteCategoryId String
-  commodity       String          // nama tampilan (bisa berbeda dari kategori)
+  id              Int      @id @default(autoincrement())
+  tps3rId         Int
+  wasteCategoryId Int?
+  commodity       String
   stockKg         Float
-  pricePerKg      Int
-  status          InventoryStatus @default(READY)
-  isPublic        Boolean         @default(true)  // tampil di katalog Mitra
+  pricePerKg      Float
+  status          String   @default("READY") // READY, PROCESSING, SOLD_OUT
+  isPublic        Boolean  @default(true)
   description     String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
 
-  tps3r         User          @relation(fields: [tps3rId], references: [id])
-  wasteCategory WasteCategory @relation(fields: [wasteCategoryId], references: [id])
+  tps3r           User           @relation(fields: [tps3rId], references: [id])
+  wasteCategory   WasteCategory? @relation(fields: [wasteCategoryId], references: [id])
   expeditionItems ExpeditionItem[]
 }
 
 model Expedition {
-  id            String           @id @default(cuid())
-  driverId      String
-  type          ExpeditionType
-  status        ExpeditionStatus @default(ASSIGNED)
-  originId      String           // User.id (TPS3R asal)
-  destinationId String           // User.id (TPS3R tujuan atau Mitra)
-  originName    String           // snapshot nama
-  destinationName String         // snapshot nama
-  originAddress String
+  id                 Int      @id @default(autoincrement())
+  driverId           Int
+  type               String   // TPS3R_TO_TPS3R, TPS3R_TO_MITRA
+  status             String   @default("ASSIGNED") // ASSIGNED, ON_THE_WAY, ARRIVED, CONFIRMED, CANCELLED
+  originId           Int
+  destinationId      Int
+  originName         String
+  destinationName    String
+  originAddress      String
   destinationAddress String
-  manifest      Json?            // { items: [{name, qty, weight}] }
-  waybillNumber String?          // nomor surat jalan
-  notes         String?
-  assignedAt    DateTime         @default(now())
-  departedAt    DateTime?
-  arrivedAt     DateTime?
-  confirmedAt   DateTime?
-  updatedAt     DateTime         @updatedAt
+  manifest           String?  // JSON string
+  waybillNumber      String?
+  notes              String?
+  assignedAt         DateTime @default(now())
+  departedAt         DateTime?
+  arrivedAt          DateTime?
+  confirmedAt        DateTime?
+  updatedAt          DateTime @default(now())
 
   driver User            @relation("ExpeditionDriver", fields: [driverId], references: [id])
   items  ExpeditionItem[]
 }
 
 model ExpeditionItem {
-  id           String @id @default(cuid())
-  expeditionId String
-  inventoryId  String
+  id           Int    @id @default(autoincrement())
+  expeditionId Int
+  inventoryId  Int
   weightKg     Float
   notes        String?
 
@@ -217,34 +161,34 @@ model ExpeditionItem {
 }
 
 model VerificationQueue {
-  id          String             @id @default(cuid())
-  userId      String             @unique
-  role        Role
-  submittedAt DateTime           @default(now())
-  reviewedBy  String?            // Super Admin userId
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  role        String
+  submittedAt DateTime @default(now())
+  reviewedBy  String?
   reviewedAt  DateTime?
-  status      VerificationStatus @default(PENDING)
-  notes       String?            // catatan dari super admin
+  status      String   @default("PENDING") // ACTIVE, PENDING, REJECTED
+  notes       String?
 
   user User @relation(fields: [userId], references: [id])
 }
 
 model Transaction {
-  id            String   @id @default(cuid())
-  userId        String
-  pickupId      String?
-  points        Int
-  type          String   // EARNED | REDEEMED
-  description   String
-  createdAt     DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  pickupId    Int?
+  points      Int
+  type        String   // EARNED, REDEEMED, EARN, REDEEM, DEDUCTION
+  description String
+  createdAt   DateTime @default(now())
 
-  user    User          @relation(fields: [userId], references: [id])
-  pickup  PickupRequest? @relation(fields: [pickupId], references: [id])
+  user   User           @relation(fields: [userId], references: [id])
+  pickup PickupRequest? @relation(fields: [pickupId], references: [id])
 }
 
 model VoucherRedemption {
-  id          String   @id @default(cuid())
-  userId      String
+  id          Int      @id @default(autoincrement())
+  userId      Int
   voucherName String
   pointsUsed  Int
   createdAt   DateTime @default(now())

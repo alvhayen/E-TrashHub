@@ -77,7 +77,7 @@ export default function History() {
                 key={pickup.id} 
                 variant="bordered" 
                 padding="sm" 
-                onClick={() => navigate(`/rumah_tangga/pickup/${pickup.id}`)}
+                onClick={() => navigate(`/household/history/${pickup.id}`)}
                 style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

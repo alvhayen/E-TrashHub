@@ -103,10 +103,16 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/catalog" element={<WasteCatalog />} />
             <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/role-onboarding/:role" element={<RoleOnboarding />} />
+            <Route path="/roles" element={<RoleSelector />} />
+            <Route path="/role-onboarding/:roleId" element={<RoleOnboarding />} />
             <Route path="/login" element={<NewLogin />} />
+            <Route path="/auth/login" element={<NewLogin />} />
+            <Route path="/register" element={<RoleSelector />} />
             <Route path="/register/:role" element={<NewRegister />} />
+            <Route path="/auth/register/:role" element={<NewRegister />} />
             <Route path="/pending-verification" element={<PendingVerification />} />
+            <Route path="/auth/pending-verification" element={<PendingVerification />} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
             {/* PROTECTED ROUTES */}

@@ -60,7 +60,16 @@ export default function Register() {
       } else {
         // Rumah tangga — direct access
         login(res.data.token, { ...userData, status: userData.status || 'active' });
-        navigate(`/${userData.role.toLowerCase()}`);
+        const roleRoutes: Record<string, string> = {
+          RUMAH_TANGGA: 'household',
+          DRIVER: 'driver',
+          ADMIN_TPS3R: 'admin',
+          MITRA_B2B: 'mitra',
+          PEMDA: 'pemda',
+          SUPER_ADMIN: 'superadmin'
+        };
+        const targetPath = roleRoutes[userData.role.toUpperCase()] || userData.role.toLowerCase();
+        navigate(`/${targetPath}`);
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Gagal mendaftar. Silakan coba lagi.');

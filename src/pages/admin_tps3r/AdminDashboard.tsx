@@ -63,13 +63,13 @@ export default function AdminDashboard() {
         <Card variant="default" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700 }}>Akses Cepat</h2>
           <button 
-            onClick={() => navigate('/admin_tps3r/incoming')}
+            onClick={() => navigate('/admin/incoming')}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem', backgroundColor: '#fef3c7', border: '1px solid #fde68a', borderRadius: 'var(--radius-md)', cursor: 'pointer', color: '#d97706', fontWeight: 600 }}
           >
             Timbang Jemputan Masuk <ArrowRight size={20} />
           </button>
           <button 
-            onClick={() => navigate('/admin_tps3r/inventory')}
+            onClick={() => navigate('/admin/inventory')}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 'var(--radius-md)', cursor: 'pointer', color: '#047857', fontWeight: 600 }}
           >
             Kelola Inventori <ArrowRight size={20} />

@@ -45,7 +45,16 @@ export default function Login() {
       } else if (userData.role === 'SUPER_ADMIN') {
         navigate('/superadmin');
       } else {
-        navigate(`/${userData.role.toLowerCase()}`);
+        const roleRoutes: Record<string, string> = {
+          RUMAH_TANGGA: 'household',
+          DRIVER: 'driver',
+          ADMIN_TPS3R: 'admin',
+          MITRA_B2B: 'mitra',
+          PEMDA: 'pemda',
+          SUPER_ADMIN: 'superadmin'
+        };
+        const targetPath = roleRoutes[userData.role.toUpperCase()] || userData.role.toLowerCase();
+        navigate(`/${targetPath}`);
       }
     } catch (err: any) {
       if (err.response?.data?.code === 'PENDING_VERIFICATION') {

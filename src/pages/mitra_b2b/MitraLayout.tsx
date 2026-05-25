@@ -8,9 +8,9 @@ export default function MitraLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { icon: ShoppingBag, label: 'Katalog Material', path: '/mitra_b2b' },
-    { icon: User, label: 'Profil Perusahaan', path: '/mitra_b2b/profile' },
-    { icon: HelpCircle, label: 'FAQ', path: '/mitra_b2b/faq' },
+    { icon: ShoppingBag, label: 'Katalog Material', path: '/mitra' },
+    { icon: User, label: 'Profil Perusahaan', path: '/mitra/profile' },
+    { icon: HelpCircle, label: 'FAQ', path: '/mitra/faq' },
   ];
 
   return (
@@ -38,7 +38,7 @@ export default function MitraLayout() {
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/mitra_b2b'}
+              end={item.path === '/mitra'}
               style={({ isActive }) => ({ 
                 color: isActive ? '#34d399' : 'rgba(255,255,255,0.7)', 
                 textDecoration: 'none', 
@@ -111,7 +111,7 @@ export default function MitraLayout() {
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/mitra_b2b'}
+              end={item.path === '/mitra'}
               onClick={() => setMobileMenuOpen(false)}
               style={({ isActive }) => ({
                 display: 'flex', alignItems: 'center', gap: '0.75rem',

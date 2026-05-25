@@ -107,7 +107,16 @@ export default function Register() {
       } else {
         // Auto login
         login(res.data.token, res.data.user);
-        navigate(`/${targetRole.toLowerCase()}`);
+        const roleRoutes: Record<string, string> = {
+          RUMAH_TANGGA: 'household',
+          DRIVER: 'driver',
+          ADMIN_TPS3R: 'admin',
+          MITRA_B2B: 'mitra',
+          PEMDA: 'pemda',
+          SUPER_ADMIN: 'superadmin'
+        };
+        const targetPath = roleRoutes[targetRole.toUpperCase()] || targetRole.toLowerCase();
+        navigate(`/${targetPath}`);
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Pendaftaran gagal. Periksa kembali data Anda.');

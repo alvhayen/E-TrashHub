@@ -28,9 +28,21 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     return <Navigate to="/unauthorized" replace />;
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  // Perform case-insensitive check
+  const roleMatches = allowedRoles.some(r => r.toLowerCase() === user.role.toLowerCase());
+
+  if (!roleMatches) {
     // If not allowed, redirect to their designated dashboard
-    return <Navigate to={`/${user.role}`} replace />;
+    const roleRoutes: Record<string, string> = {
+      RUMAH_TANGGA: 'household',
+      DRIVER: 'driver',
+      ADMIN_TPS3R: 'admin',
+      MITRA_B2B: 'mitra',
+      PEMDA: 'pemda',
+      SUPER_ADMIN: 'superadmin'
+    };
+    const targetPath = roleRoutes[user.role.toUpperCase()] || user.role.toLowerCase();
+    return <Navigate to={`/${targetPath}`} replace />;
   }
 
   return <>{children}</>;

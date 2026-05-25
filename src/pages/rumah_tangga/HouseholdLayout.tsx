@@ -7,10 +7,10 @@ import NotificationBell from '../../components/ui/NotificationBell';
 
 export default function HouseholdLayout() {
   const navItems = [
-    { icon: Home, label: 'Beranda', path: '/rumah_tangga' },
-    { icon: PackagePlus, label: 'Jemput', path: '/rumah_tangga/request' },
-    { icon: FileText, label: 'Riwayat', path: '/rumah_tangga/history' },
-    { icon: User, label: 'Akun', path: '/rumah_tangga/profile' }
+    { icon: Home, label: 'Beranda', path: '/household' },
+    { icon: PackagePlus, label: 'Jemput', path: '/household/request' },
+    { icon: FileText, label: 'Riwayat', path: '/household/history' },
+    { icon: User, label: 'Akun', path: '/household/profile' }
   ];
 
   return (

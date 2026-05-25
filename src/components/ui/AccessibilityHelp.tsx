@@ -3,16 +3,16 @@ import { HelpCircle, X, Contrast } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
 const getContextualHelp = (pathname: string) => {
-  if (pathname.includes('/rumah_tangga/request')) return 'Halaman ini digunakan untuk memesan penjemputan sampah. Isi formulir dengan jenis sampah, estimasi berat, dan alamat Anda.';
-  if (pathname.includes('/rumah_tangga/history')) return 'Ini adalah halaman riwayat transaksi Anda. Anda dapat melihat status penjemputan sebelumnya di sini.';
-  if (pathname.includes('/rumah_tangga/pickup/')) return 'Detail penjemputan aktif Anda. Pantau status penjemputan secara waktu nyata (real-time) di halaman ini.';
-  if (pathname.includes('/rumah_tangga')) return 'Beranda Rumah Tangga. Anda dapat melihat ringkasan poin, dampak lingkungan, dan jemputan aktif Anda di sini.';
+  if (pathname.includes('/household/request')) return 'Halaman ini digunakan untuk memesan penjemputan sampah. Isi formulir dengan jenis sampah, estimasi berat, dan alamat Anda.';
+  if (pathname.includes('/household/history')) return 'Ini adalah halaman riwayat transaksi Anda. Anda dapat melihat status penjemputan sebelumnya di sini.';
+  if (pathname.includes('/household/history/')) return 'Detail penjemputan aktif Anda. Pantau status penjemputan secara waktu nyata (real-time) di halaman ini.';
+  if (pathname.includes('/household')) return 'Beranda Rumah Tangga. Anda dapat melihat ringkasan poin, dampak lingkungan, dan jemputan aktif Anda di sini.';
   
   if (pathname.includes('/driver/route')) return 'Halaman rute. Di sini Anda bisa melihat urutan penjemputan yang efisien menuju lokasi nasabah.';
   if (pathname.includes('/driver')) return 'Dasbor Driver. Lihat daftar tugas penjemputan Anda hari ini dan perbarui status setelah penjemputan selesai.';
   
-  if (pathname.includes('/admin_tps3r/incoming')) return 'Penerimaan TPS3R. Lakukan verifikasi dan penimbangan aktual untuk sampah yang baru tiba.';
-  if (pathname.includes('/admin_tps3r/inventory')) return 'Manajemen Inventaris. Pantau stok komoditas daur ulang yang siap dijual ke Mitra B2B.';
+  if (pathname.includes('/admin/incoming')) return 'Penerimaan TPS3R. Lakukan verifikasi dan penimbangan aktual untuk sampah yang baru tiba.';
+  if (pathname.includes('/admin/inventory')) return 'Manajemen Inventaris. Pantau stok komoditas daur ulang yang siap dijual ke Mitra B2B.';
   
   if (pathname.includes('/pemda')) return 'Dasbor Eksekutif Pemda. Pantau metrik pengolahan sampah, kepatuhan zona, dan ekspor data di sini.';
   

@@ -48,7 +48,7 @@ export default function IncomingPickups() {
                   <td style={{ padding: '1rem 0.75rem' }}>{p.wasteTypes.join(', ')}</td>
                   <td style={{ padding: '1rem 0.75rem' }}>{p.estimatedWeight} kg</td>
                   <td style={{ padding: '1rem 0.75rem', textAlign: 'right' }}>
-                    <Button size="sm" onClick={() => navigate(`/admin_tps3r/weigh/${p.id}`)} style={{ backgroundColor: 'var(--role-admin)' }}>
+                    <Button size="sm" onClick={() => navigate(`/admin/weigh/${p.id}`)} style={{ backgroundColor: 'var(--role-admin)' }}>
                       Timbang →
                     </Button>
                   </td>

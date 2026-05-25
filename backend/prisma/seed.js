@@ -79,6 +79,21 @@ async function main() {
     },
   });
 
+  // Keep old driver for backward compat
+  await prisma.user.upsert({
+    where: { email: 'budi.driver@email.com' },
+    update: { verificationStatus: 'ACTIVE', driverType: 'FREELANCE' },
+    create: {
+      email: 'budi.driver@email.com',
+      password: passwordHash,
+      name: 'Budi (Driver)',
+      role: 'DRIVER',
+      verificationStatus: 'ACTIVE',
+      driverType: 'FREELANCE',
+      domicile: 'Jakarta',
+    },
+  });
+
   // 4. Create Admin TPS3R
   const adminTPS1 = await prisma.user.upsert({
     where: { email: 'admin.tps3r@email.com' },
@@ -189,12 +204,12 @@ async function main() {
 
   // 8. Waste Categories
   const categories = [
-    { name: 'Botol Plastik', slug: 'botol-plastik', imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=400', priceEstMin: 1500, priceEstMax: 2500, description: 'Botol air mineral bersih', sortingTips: 'Kosongkan sisa air, remukkan botol' },
-    { name: 'Gelas Plastik', slug: 'gelas-plastik', imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=400', priceEstMin: 1000, priceEstMax: 2000, description: 'Gelas plastik minuman bersih', sortingTips: 'Buang sisa minuman, bersihkan' },
-    { name: 'Kertas/Kardus', slug: 'kertas-kardus', imageUrl: 'https://images.unsplash.com/photo-1581574919402-5b09d95b6d7a?w=400', priceEstMin: 1200, priceEstMax: 1800, description: 'Kertas bekas, kardus utuh/potongan', sortingTips: 'Lipat kardus, pastikan kertas tidak basah' },
-    { name: 'Logam/Kaleng', slug: 'logam-kaleng', imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', priceEstMin: 3000, priceEstMax: 5000, description: 'Kaleng minuman, potongan logam', sortingTips: 'Kosongkan sisa cairan, remukkan kaleng' },
-    { name: 'Tutup Botol', slug: 'tutup-botol', imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=400', priceEstMin: 500, priceEstMax: 1000, description: 'Tutup botol plastik berbagai warna', sortingTips: 'Pisahkan dari botolnya, kumpulkan dalam wadah' },
-    { name: 'Kain/Tekstil', slug: 'kain-tekstil', imageUrl: 'https://images.unsplash.com/photo-1581574919402-5b09d95b6d7a?w=400', priceEstMin: 200, priceEstMax: 500, description: 'Pakaian bekas layak pakai atau perca', sortingTips: 'Cuci bersih, lipat rapi' },
+    { name: 'Botol Plastik', slug: 'botol-plastik', imageUrl: '/images/waste/botol-plastik.webp', priceEstMin: 1500, priceEstMax: 2500, description: 'Botol air mineral bersih', sortingTips: 'Kosongkan sisa air, remukkan botol' },
+    { name: 'Gelas Plastik', slug: 'gelas-plastik', imageUrl: '/images/waste/gelas-plastik.webp', priceEstMin: 1000, priceEstMax: 2000, description: 'Gelas plastik minuman bersih', sortingTips: 'Buang sisa minuman, bersihkan' },
+    { name: 'Kertas/Kardus', slug: 'kertas-kardus', imageUrl: '/images/waste/kertas-kardus.webp', priceEstMin: 1200, priceEstMax: 1800, description: 'Kertas bekas, kardus utuh/potongan', sortingTips: 'Lipat kardus, pastikan kertas tidak basah' },
+    { name: 'Logam/Kaleng', slug: 'logam-kaleng', imageUrl: '/images/waste/logam-kaleng.webp', priceEstMin: 3000, priceEstMax: 5000, description: 'Kaleng minuman, potongan logam', sortingTips: 'Kosongkan sisa cairan, remukkan kaleng' },
+    { name: 'Tutup Botol', slug: 'tutup-botol', imageUrl: '/images/waste/tutup-botol.webp', priceEstMin: 500, priceEstMax: 1000, description: 'Tutup botol plastik berbagai warna', sortingTips: 'Pisahkan dari botolnya, kumpulkan dalam wadah' },
+    { name: 'Kain/Tekstil', slug: 'kain-tekstil', imageUrl: '/images/waste/kain-tekstil.webp', priceEstMin: 200, priceEstMax: 500, description: 'Pakaian bekas layak pakai atau perca', sortingTips: 'Cuci bersih, lipat rapi' },
   ];
 
   const createdCategories = {};
@@ -207,105 +222,21 @@ async function main() {
   }
 
   // 9. Inventory items at TPS3R pertama
-  const inventoryItems = [
-    { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['botol-plastik'].id, commodity: 'Botol PET Bersih', stockKg: 150.5, pricePerKg: 3000, isPublic: true },
-    { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['kertas-kardus'].id, commodity: 'Kardus Bekas', stockKg: 200, pricePerKg: 2000, isPublic: true },
-    { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['logam-kaleng'].id, commodity: 'Kaleng Alumunium', stockKg: 50, pricePerKg: 6000, isPublic: true },
-    { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['gelas-plastik'].id, commodity: 'Gelas PP Bersih', stockKg: 75.2, pricePerKg: 2500, isPublic: false },
-    { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['tutup-botol'].id, commodity: 'Tutup Botol HDPE', stockKg: 20.5, pricePerKg: 1500, isPublic: false },
-  ];
+  // Check if inventory already exists to avoid duplicates
+  const existingInv = await prisma.inventory.findFirst({ where: { tps3rId: adminTPS1.id } });
+  if (!existingInv) {
+    const inventoryItems = [
+      { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['botol-plastik'].id, commodity: 'Botol PET Bersih', stockKg: 150.5, pricePerKg: 3000, isPublic: true },
+      { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['kertas-kardus'].id, commodity: 'Kardus Bekas', stockKg: 200, pricePerKg: 2000, isPublic: true },
+      { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['logam-kaleng'].id, commodity: 'Kaleng Alumunium', stockKg: 50, pricePerKg: 6000, isPublic: true },
+      { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['gelas-plastik'].id, commodity: 'Gelas PP Bersih', stockKg: 75.2, pricePerKg: 2500, isPublic: false },
+      { tps3rId: adminTPS1.id, wasteCategoryId: createdCategories['tutup-botol'].id, commodity: 'Tutup Botol HDPE', stockKg: 20.5, pricePerKg: 1500, isPublic: false },
+    ];
 
-  const createdInventory = [];
-  for (const inv of inventoryItems) {
-    const item = await prisma.inventory.create({ data: inv });
-    createdInventory.push(item);
+    for (const inv of inventoryItems) {
+      await prisma.inventory.create({ data: inv });
+    }
   }
-
-  // 10. PickupRequests
-  const pickup1 = await prisma.pickupRequest.create({
-    data: {
-      userId: userRT1.id,
-      driverId: driverFreelance.id,
-      status: 'COMPLETED',
-      address: 'Jl. Melati No. 5',
-      estimatedWeight: 'Sedang',
-      actualWeight: 5.5,
-      points: 150,
-      items: {
-        create: [
-          { wasteCategoryId: createdCategories['botol-plastik'].id, estimatedQty: '1 kresek' },
-        ]
-      }
-    }
-  });
-
-  const pickup2 = await prisma.pickupRequest.create({
-    data: {
-      userId: userRT2.id,
-      driverId: driverMitra.id,
-      status: 'ON_THE_WAY',
-      address: 'Jl. Merdeka No. 12',
-      estimatedWeight: 'Ringan',
-      items: {
-        create: [
-          { wasteCategoryId: createdCategories['kertas-kardus'].id, estimatedQty: 'Tumpukan kecil' },
-        ]
-      }
-    }
-  });
-
-  const pickup3 = await prisma.pickupRequest.create({
-    data: {
-      userId: userRT1.id,
-      status: 'PENDING',
-      address: 'Jl. Melati No. 5',
-      estimatedWeight: 'Berat',
-      items: {
-        create: [
-          { wasteCategoryId: createdCategories['logam-kaleng'].id, estimatedQty: '1 karung' },
-        ]
-      }
-    }
-  });
-
-  // 11. Expeditions
-  const exp1 = await prisma.expedition.create({
-    data: {
-      driverId: driverMitra.id,
-      type: 'TPS3R_TO_TPS3R',
-      status: 'ON_THE_WAY',
-      originId: adminTPS1.id,
-      destinationId: adminTPS2.id,
-      originName: 'TPS3R Mawar',
-      destinationName: 'TPS3R Melati',
-      originAddress: 'Jl. Mawar No. 10',
-      destinationAddress: 'Jl. Melati No. 20',
-      items: {
-        create: [
-          { inventoryId: createdInventory[0].id, weightKg: 50 },
-        ]
-      }
-    }
-  });
-
-  const exp2 = await prisma.expedition.create({
-    data: {
-      driverId: driverMitra.id,
-      type: 'TPS3R_TO_MITRA',
-      status: 'CONFIRMED',
-      originId: adminTPS1.id,
-      destinationId: mitraIndustri.id,
-      originName: 'TPS3R Mawar',
-      destinationName: 'PT Daur Ulang Jaya',
-      originAddress: 'Jl. Mawar No. 10',
-      destinationAddress: 'Kawasan Industri Pulogadung',
-      items: {
-        create: [
-          { inventoryId: createdInventory[1].id, weightKg: 100 },
-        ]
-      }
-    }
-  });
 
   console.log('Seed data successfully created!');
 }
