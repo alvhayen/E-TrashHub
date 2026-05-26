@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom/server';
+import { MemoryRouter } from 'react-router-dom';
 import App from './src/App';
 import PendingApproval from './src/pages/PendingApproval';
 import { AuthProvider } from './src/context/AuthContext';
@@ -9,7 +9,7 @@ import { NotificationProvider } from './src/context/NotificationContext';
 
 try {
   const html = renderToString(
-    <StaticRouter location="/pending-approval">
+    <MemoryRouter initialEntries={["/pending-approval"]}>
       <ToastProvider>
         <NotificationProvider>
           <AuthProvider>
@@ -17,7 +17,7 @@ try {
           </AuthProvider>
         </NotificationProvider>
       </ToastProvider>
-    </StaticRouter>
+    </MemoryRouter>
   );
   console.log("RENDER SUCCESS", html.substring(0, 100));
 } catch (e) {

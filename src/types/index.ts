@@ -13,6 +13,7 @@ export interface User {
   points?: number;
   tps3r_id?: number;
   tps3r_name?: string;
+  driverType?: 'MITRA_TPS3R' | 'INDEPENDENT' | string;
 }
 
 export interface AuthResponse {

@@ -6,8 +6,7 @@ import { LayoutDashboard, Inbox, Package, FileText, HelpCircle, Scale, Truck } f
 export default function AdminLayout() {
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-    { icon: Inbox, label: 'Sampah Masuk', path: '/admin/incoming' },
-    { icon: Scale, label: 'Timbang & Verifikasi', path: '/admin/weighing-queue' },
+    { icon: Scale, label: 'Timbang & Verifikasi', path: '/admin/incoming' },
     { icon: Package, label: 'Manajemen Stok', path: '/admin/stock' },
     { icon: Truck, label: 'Manajemen Pengiriman', path: '/admin/shipment' },
     { icon: FileText, label: 'Laporan', path: '/admin/reports' }
