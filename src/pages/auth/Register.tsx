@@ -314,6 +314,21 @@ export default function Register() {
             </button>
           </form>
         )}
+
+        {/* TODO: RESTORE AUTH — login link dinonaktifkan sementara
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', marginBottom: '1rem' }}>
+            Sudah punya akun?{' '}
+            <button 
+              type="button"
+              onClick={() => navigate(`/login${targetRole ? `?role=${targetRole}` : ''}`)}
+              style={{ background: 'none', border: 'none', color: '#34d399', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+            >
+              Masuk di sini
+            </button>
+          </div>
+        </div>
+        */}
       </div>
     </div>
   );

@@ -11,7 +11,8 @@ export default function PendingApproval() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    // TODO: RESTORE AUTH — navigate('/login');
+    navigate('/');
   };
 
   const roleLabel = user?.role === 'driver' ? 'Driver / Pengepul' : user?.role?.replace('_', ' ') || 'Pengguna';
@@ -142,7 +143,8 @@ export default function PendingApproval() {
             variant="outline"
             size="lg"
             icon={ArrowLeft}
-            onClick={() => navigate('/login')}
+            // TODO: RESTORE AUTH — onClick={() => navigate('/login')}
+            onClick={() => navigate('/')}
             style={{ width: '100%', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}
           >
             Kembali ke Login

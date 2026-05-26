@@ -39,8 +39,9 @@ export default function LoginGateModal({ contextAction, targetRole, onClose }) {
         </p>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+          {/* TODO: RESTORE AUTH — navigate(`/auth/login?role=${targetRole}`) */}
           <button 
-            onClick={() => navigate(`/auth/login?role=${targetRole}`)}
+            onClick={() => navigate(`/role-onboarding/${targetRole}`)}
             style={{
               background: '#10B981', color: 'white', border: 'none', padding: '14px',
               borderRadius: '12px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer'
@@ -49,8 +50,9 @@ export default function LoginGateModal({ contextAction, targetRole, onClose }) {
             Masuk
           </button>
           
+          {/* TODO: RESTORE AUTH — navigate(`/auth/register/${targetRole}`) */}
           <button 
-            onClick={() => navigate(`/auth/register/${targetRole}`)}
+            onClick={() => navigate(`/role-onboarding/${targetRole}`)}
             style={{
               background: 'transparent', color: '#10B981', border: '1.5px solid #10B981', padding: '14px',
               borderRadius: '12px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer'

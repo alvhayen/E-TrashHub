@@ -1,3 +1,5 @@
+// TODO: RESTORE AUTH — JWT interceptor dinonaktifkan sementara
+// Original file sent Authorization: Bearer <token> header and auto-logged-out on 401
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -18,11 +20,13 @@ export function useApi() {
     setError(null);
     setLastRequest({ method, url, data: reqData });
     try {
+      // TODO: RESTORE AUTH — ganti x-mock-role dengan Authorization: Bearer <token>
+      const mockRole = localStorage.getItem('dev_mock_role') || 'RUMAH_TANGGA';
       const response = await axios({
         method,
         url,
         data: reqData,
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 'x-mock-role': mockRole }
       });
       setLoading(false);
       setData(response.data);
@@ -38,13 +42,13 @@ export function useApi() {
       const errMsg = err.response?.data?.error || err.message || 'An error occurred';
       setError(errMsg);
       
-      // Auto-logout on 401
-      if (err.response?.status === 401) {
-        showErrorToast('Sesi Anda telah berakhir. Silakan login kembali.');
-        logout();
-      } else {
+      // TODO: RESTORE AUTH — re-enable auto-logout on 401
+      // if (err.response?.status === 401) {
+      //   showErrorToast('Sesi Anda telah berakhir. Silakan login kembali.');
+      //   logout();
+      // } else {
         showErrorToast(errMsg);
-      }
+      // }
       
       throw err;
     }

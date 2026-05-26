@@ -138,8 +138,8 @@ export default function LandingPage() {
             <a href="#dampak">Dampak</a>
           </div>
           <div className="nav-actions">
-            <button className="btn-outline" onClick={() => navigate('/login')}>Masuk</button>
-            <button className="btn-solid" onClick={() => navigate('/register/RUMAH_TANGGA')}>Mulai Gratis →</button>
+            <button className="btn-outline" onClick={() => navigate('/roles')}>Masuk</button>
+            <button className="btn-solid" onClick={() => navigate('/role-onboarding/RUMAH_TANGGA')}>Mulai Gratis →</button>
             <button className="mobile-menu"><Menu size={24} /></button>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function LandingPage() {
               e-TrashHub menghubungkan rumah tangga, pengepul, TPS3R, dan industri dalam satu ekosistem yang menguntungkan semua pihak.
             </p>
             <div className="hero-cta-group">
-              <button className="btn-primary-large" onClick={() => navigate('/register/RUMAH_TANGGA')}>
+              <button className="btn-primary-large" onClick={() => navigate('/role-onboarding/RUMAH_TANGGA')}>
                 Mulai Jual Sampah →
               </button>
               <button className="btn-ghost-large" onClick={() => document.getElementById('cara-kerja')?.scrollIntoView({behavior: 'smooth'})}>
@@ -239,7 +239,7 @@ export default function LandingPage() {
             <div 
               key={role.id} 
               className={`role-card ${role.bgClass}`}
-              onClick={() => navigate(`/register/${role.id}`)}
+              onClick={() => navigate(`/role-onboarding/${role.id}`)}
             >
               <div className="role-icon">{role.icon}</div>
               <h3 className="role-name">{role.name}</h3>
@@ -333,7 +333,7 @@ export default function LandingPage() {
         <div className="footer-cta">
           <h2>Siap bergabung dalam ekosistem hijau?</h2>
           <div className="footer-cta-buttons">
-            <button className="btn-solid-light" onClick={() => navigate('/onboarding')}>Mulai Gratis Sekarang</button>
+            <button className="btn-solid-light" onClick={() => navigate('/roles')}>Mulai Gratis Sekarang</button>
             <button className="btn-outline-light" onClick={() => document.getElementById('tentang')?.scrollIntoView({behavior: 'smooth'})}>Pelajari Lebih Lanjut</button>
           </div>
         </div>

@@ -7,6 +7,10 @@ import authRoutes from './backend/src/routes/auth.routes.js';
 import pickupRoutes from './backend/src/routes/pickup.routes.js';
 import inventoryRoutes from './backend/src/routes/inventory.routes.js';
 import analyticsRoutes from './backend/src/routes/analytics.routes.js';
+// TODO: RESTORE AUTH — routes ditambahkan agar semua endpoint aktif di dev server
+import expeditionRoutes from './backend/src/routes/expedition.routes.js';
+import superadminRoutes from './backend/src/routes/superadmin.routes.js';
+import publicRoutes from './backend/src/routes/public.routes.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
 
 async function startServer() {
@@ -18,10 +22,16 @@ async function startServer() {
 
   // Real Database API Routes
   app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+  // Public routes (no auth required)
+  app.use('/api/public', publicRoutes);
+
   app.use('/api/auth', authRoutes);
   app.use('/api/pickup', pickupRoutes);
   app.use('/api/inventory', inventoryRoutes);
   app.use('/api/analytics', analyticsRoutes);
+  app.use('/api/expedition', expeditionRoutes);
+  app.use('/api/superadmin', superadminRoutes);
 
   // Global Error Handler
   app.use(errorHandler);
@@ -49,3 +59,4 @@ async function startServer() {
 }
 
 startServer();
+

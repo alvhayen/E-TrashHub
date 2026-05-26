@@ -1,67 +1,34 @@
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+// TODO: RESTORE AUTH — Original file backed up. All middleware bypassed for debug.
+// import jwt from 'jsonwebtoken';
+// import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-etrashhub';
+// const prisma = new PrismaClient();
+// const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-etrashhub';
 
 export const verifyToken = (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
-    }
+  // TODO: RESTORE AUTH — skip JWT verification sementara
+  // Inject mock user berdasarkan header X-Mock-Role (untuk testing manual)
+  const mockRole = req.headers['x-mock-role'] || 'RUMAH_TANGGA';
 
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    req.user = decoded; // { id, email, role, name, driverType, verificationStatus }
-    next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Unauthorized: Token expired' });
-    }
-    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
-  }
+  const mockUsers = {
+    RUMAH_TANGGA: { id: 1, email: 'sari@email.com',          name: 'Sari',           role: 'RUMAH_TANGGA', driverType: null,          verificationStatus: 'ACTIVE' },
+    DRIVER:       { id: 2, email: 'budi.driver@email.com',   name: 'Budi',           role: 'DRIVER',       driverType: 'FREELANCE',   verificationStatus: 'ACTIVE' },
+    ADMIN_TPS3R:  { id: 3, email: 'admin.tps3r@email.com',   name: 'Admin TPS3R',    role: 'ADMIN_TPS3R',  driverType: null,          verificationStatus: 'ACTIVE' },
+    MITRA_B2B:    { id: 4, email: 'mitra@industri.com',      name: 'Mitra Industri', role: 'MITRA_B2B',    driverType: null,          verificationStatus: 'ACTIVE' },
+    PEMDA:        { id: 5, email: 'dinas@surabaya.go.id',    name: 'Dinas Pemda',    role: 'PEMDA',        driverType: null,          verificationStatus: 'ACTIVE' },
+    SUPER_ADMIN:  { id: 6, email: 'superadmin@etrashhub.id', name: 'Super Admin',    role: 'SUPER_ADMIN',  driverType: null,          verificationStatus: 'ACTIVE' },
+  };
+
+  req.user = mockUsers[mockRole] ?? mockUsers['RUMAH_TANGGA'];
+  next();
 };
 
-export const checkActiveStatus = async (req, res, next) => {
-  try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+export const authorizeRole = (...roles) => (req, res, next) => {
+  // TODO: RESTORE AUTH — skip role check sementara
+  next();
+};
 
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: { verificationStatus: true, role: true }
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if (user.verificationStatus === 'PENDING') {
-      return res.status(403).json({ error: 'Forbidden: Account pending verification', code: 'PENDING_VERIFICATION' });
-    }
-
-    if (user.verificationStatus === 'REJECTED') {
-      return res.status(403).json({ error: 'Forbidden: Account rejected', code: 'REJECTED' });
-    }
-
-    next();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-}
-
-export const authorizeRole = (...allowedRoles) => {
-  return (req, res, next) => {
-    const userRole = req.user?.role?.toUpperCase();
-    const normalizedAllowedRoles = allowedRoles.map(role => role.toUpperCase());
-    
-    if (!userRole || !normalizedAllowedRoles.includes(userRole)) {
-      return res.status(403).json({ error: 'Forbidden: Insufficient role permissions' });
-    }
-    next();
-  };
+export const checkActiveStatus = (req, res, next) => {
+  // TODO: RESTORE AUTH — skip status check sementara
+  next();
 };

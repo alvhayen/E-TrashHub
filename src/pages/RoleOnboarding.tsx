@@ -4,11 +4,14 @@ import { motion } from 'motion/react';
 import { Home, Truck, Factory, Briefcase, Landmark, ArrowRight, ArrowLeft } from 'lucide-react';
 import Button from '../components/ui/Button';
 import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
+import { useAuth } from '../context/AuthContext';
+import { Role } from '../types';
 
 const ROLE_INFO: Record<string, any> = {
   'RUMAH_TANGGA': {
     title: 'Peran: Rumah Tangga',
     description: 'Sebagai Rumah Tangga, Anda adalah pahlawan lingkungan dari rumah. Pilah sampah Anda, minta penjemputan dengan mudah melalui aplikasi, dan kumpulkan poin reward yang dapat ditukarkan dengan saldo atau uang tunai.',
+    email: 'sari@email.com',
     icon: Home,
     color: '#3b82f6', // Blue
     iconBgColor: '#eff6ff',
@@ -19,6 +22,7 @@ const ROLE_INFO: Record<string, any> = {
   'DRIVER': {
     title: 'Peran: Driver / Pengepul',
     description: 'Sebagai Pahlawan Kebersihan, Anda bertugas menerima pesanan penjemputan sampah. Gunakan rute yang dioptimalkan dalam aplikasi untuk mencapai lokasi dengan cepat, tingkatkan efisiensi kerja, serta maksimalkan pendapatan harian Anda.',
+    email: 'budi.driver@email.com',
     icon: Truck,
     color: '#f59e0b', // Amber
     iconBgColor: '#fffbeb',
@@ -29,6 +33,7 @@ const ROLE_INFO: Record<string, any> = {
   'ADMIN_TPS3R': {
     title: 'Peran: Admin TPS3R',
     description: 'Sebagai Admin TPS3R, Anda adalah pusat pengelolaan daur ulang. Lakukan pencatatan otomatis berat sampah dari pahlawan kebersihan, kelola inventaris material sirkular, dan jual langsung ke mitra B2B dengan mudah dan transparan.',
+    email: 'admin.tps3r@email.com',
     icon: Factory,
     color: '#8b5cf6', // Violet
     iconBgColor: '#f5f3ff',
@@ -39,6 +44,7 @@ const ROLE_INFO: Record<string, any> = {
   'MITRA_B2B': {
     title: 'Peran: Mitra Industri (B2B)',
     description: 'Sebagai Mitra Industri, Anda merupakan penggerak utama ekonomi sirkular. Beli material daur ulang berkualitas secara borongan langsung dari TPS3R terpercaya untuk menunjang kebutuhan bahan baku industri Anda.',
+    email: 'mitra@industri.com',
     icon: Briefcase,
     color: '#ec4899', // Pink
     iconBgColor: '#fdf2f8',
@@ -49,6 +55,7 @@ const ROLE_INFO: Record<string, any> = {
   'PEMDA': {
     title: 'Peran: Pemerintah Daerah',
     description: 'Sebagai Pemerintah Daerah, Anda adalah pemantau ekosistem cerdas. Akses dashboard analitik real-time mengenai volume persampahan masyarakat (RTRW), evaluasi kinerja TPS3R, dan pastikan kepatuhan lingkungan harian berjalan baik.',
+    email: 'dinas@balikpapan.go.id',
     icon: Landmark,
     color: '#10b981', // Emerald
     iconBgColor: '#ecfdf5',
@@ -63,6 +70,7 @@ export default function RoleOnboarding() {
   const { roleId } = useParams<{ roleId: string }>();
   const location = useLocation();
   const email = location.state?.email || '';
+  const { login } = useAuth();
 
   const role = roleId ? ROLE_INFO[roleId] : null;
 
@@ -75,8 +83,41 @@ export default function RoleOnboarding() {
     );
   }
 
-  const handleContinue = () => {
-    navigate('/login', { state: { email } });
+  const handleStart = () => {
+    const roleMapping: Record<string, Role> = {
+      'RUMAH_TANGGA': 'rumah_tangga',
+      'DRIVER': 'driver',
+      'ADMIN_TPS3R': 'admin_tps3r',
+      'MITRA_B2B': 'mitra_b2b',
+      'PEMDA': 'pemda'
+    };
+    
+    const actualRole = roleMapping[roleId || ''] || 'rumah_tangga';
+    
+    const mockUser = {
+      id: Math.floor(Math.random() * 1000) + 1,
+      email: role.email || 'demo@example.com',
+      name: role.title.replace('Peran: ', ''),
+      role: actualRole,
+      status: 'active' as const,
+      address: 'Jl. Demo No. 123',
+      phone: '081234567890',
+      points: 1500,
+      tps3r_id: actualRole === 'admin_tps3r' ? 1 : undefined,
+      tps3r_name: actualRole === 'admin_tps3r' ? 'TPS3R Mawar' : undefined
+    };
+    
+    login('dummy-token-for-frontend-demo', mockUser);
+    
+    const dashboardMapping: Record<string, string> = {
+      'rumah_tangga': '/household',
+      'driver': '/driver',
+      'admin_tps3r': '/admin',
+      'mitra_b2b': '/mitra',
+      'pemda': '/pemda'
+    };
+    
+    navigate(dashboardMapping[actualRole] || '/');
   };
 
   const handleBack = () => {
@@ -137,22 +178,12 @@ export default function RoleOnboarding() {
               <Button 
                 variant="primary" 
                 size="lg" 
-                onClick={handleContinue} 
+                onClick={handleStart} 
                 style={{ width: '100%', backgroundColor: '#4ade80', color: '#064e3b' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  Lanjut ke Login <ArrowRight size={20} />
+                  Mulai Sekarang <ArrowRight size={20} />
                 </div>
-              </Button>
-            </div>
-            <div style={{ maxWidth: '400px', width: '100%' }}>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                onClick={() => navigate(`/register/${roleId}`)} 
-                style={{ width: '100%', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}
-              >
-                Belum punya akun? Daftar
               </Button>
             </div>
           </div>
@@ -161,3 +192,4 @@ export default function RoleOnboarding() {
     </div>
   );
 }
+

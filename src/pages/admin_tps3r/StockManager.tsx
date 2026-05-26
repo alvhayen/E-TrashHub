@@ -9,7 +9,7 @@ export default function StockManager() {
   const [loading, setLoading] = useState(true);
   const [showExpeditionModal, setShowExpeditionModal] = useState(false);
   const [selectedStockForExpedition, setSelectedStockForExpedition] = useState(null);
-  const { addToast } = useToast();
+  const { success, error } = useToast();
 
   useEffect(() => {
     fetchStocks();
@@ -29,7 +29,7 @@ export default function StockManager() {
       }));
       setStocks(res.data.data);
     } catch (err) {
-      addToast('Gagal memuat stok', 'error');
+      error('Gagal memuat stok');
     } finally {
       setLoading(false);
     }
@@ -39,9 +39,9 @@ export default function StockManager() {
     try {
       // await axios.patch(`/api/admin/inventory/${id}`, { isPublic: !currentStatus });
       setStocks(stocks.map((s: any) => s.id === id ? { ...s, isPublic: !currentStatus } : s));
-      addToast('Status visibilitas diperbarui', 'success');
+      success('Status visibilitas diperbarui');
     } catch (err) {
-      addToast('Gagal memperbarui status', 'error');
+      error('Gagal memperbarui status');
     }
   };
 

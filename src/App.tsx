@@ -8,7 +8,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/ui/Toast';
 import { NotificationProvider } from './context/NotificationContext';
-import ProtectedRoute from './components/ProtectedRoute';
+// TODO: RESTORE AUTH — ProtectedRoute import dipertahankan tapi tidak digunakan
+// import ProtectedRoute from './components/ProtectedRoute';
 
 function OfflineBanner() {
   const [isOffline, setIsOffline] = useState(typeof window !== 'undefined' ? !navigator.onLine : false);
@@ -31,7 +32,6 @@ function OfflineBanner() {
     </div>
   );
 }
-import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AccessibilityHelp from './components/ui/AccessibilityHelp';
 
@@ -70,8 +70,6 @@ import CompliancePage from './pages/pemda/CompliancePage';
 import ReportsExport from './pages/pemda/ReportsExport';
 import PemdaFAQ from './pages/pemda/PemdaFAQ';
 import RoleSelector from './pages/RoleSelector';
-import Register from './pages/Register';
-import Onboarding from './pages/Onboarding';
 import RoleOnboarding from './pages/RoleOnboarding';
 import Unauthorized from './pages/Unauthorized';
 import PendingApproval from './pages/PendingApproval';
@@ -80,9 +78,10 @@ import LandingPage from './pages/LandingPage';
 
 // New Auth & Public Pages
 import WasteCatalog from './pages/public/WasteCatalog';
-import NewLogin from './pages/auth/Login';
-import NewRegister from './pages/auth/Register';
-import PendingVerification from './pages/auth/PendingVerification';
+// TODO: RESTORE AUTH — login/register pages dinonaktifkan sementara
+// import NewLogin from './pages/auth/Login';
+// import NewRegister from './pages/auth/Register';
+// import PendingVerification from './pages/auth/PendingVerification';
 
 import ExpeditionList from './pages/driver/ExpeditionList';
 import ExpeditionDetail from './pages/driver/ExpeditionDetail';
@@ -91,6 +90,9 @@ import SuperAdminLayout from './pages/superadmin/SuperAdminLayout';
 import SuperAdminOverview from './pages/superadmin/SuperAdminOverview';
 import VerificationQueue from './pages/superadmin/VerificationQueue';
 
+// TODO: RESTORE AUTH — hapus RoleSwitcher setelah auth dibangun ulang
+import RoleSwitcher from './components/dev/RoleSwitcher';
+
 export default function App() {
   return (
     <ToastProvider>
@@ -98,40 +100,38 @@ export default function App() {
         <OfflineBanner />
         <AuthProvider>
           <BrowserRouter>
+            {/* TODO: RESTORE AUTH — ProtectedRoute dihapus sementara dari semua route */}
             <Routes>
             {/* PUBLIC ROUTES */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/catalog" element={<WasteCatalog />} />
-            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/roles" element={<RoleSelector />} />
             <Route path="/role-onboarding/:roleId" element={<RoleOnboarding />} />
-            <Route path="/login" element={<NewLogin />} />
-            <Route path="/auth/login" element={<NewLogin />} />
-            <Route path="/register" element={<RoleSelector />} />
-            <Route path="/register/:role" element={<NewRegister />} />
-            <Route path="/auth/register/:role" element={<NewRegister />} />
-            <Route path="/pending-verification" element={<PendingVerification />} />
-            <Route path="/auth/pending-verification" element={<PendingVerification />} />
+
+            {/* TODO: RESTORE AUTH — login/register routes dinonaktifkan sementara */}
+            {/* <Route path="/login" element={<NewLogin />} /> */}
+            {/* <Route path="/auth/login" element={<NewLogin />} /> */}
+            {/* <Route path="/register" element={<RoleSelector />} /> */}
+            {/* <Route path="/register/:role" element={<NewRegister />} /> */}
+            {/* <Route path="/auth/register/:role" element={<NewRegister />} /> */}
+            {/* <Route path="/pending-verification" element={<PendingVerification />} /> */}
+            {/* <Route path="/auth/pending-verification" element={<PendingVerification />} /> */}
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* PROTECTED ROUTES */}
-            <Route path="/household" element={<ProtectedRoute allowedRoles={['rumah_tangga']}><HouseholdLayout /></ProtectedRoute>}>
+            {/* HOUSEHOLD — tanpa ProtectedRoute */}
+            <Route path="/household" element={<HouseholdLayout />}>
               <Route index element={<Navigate to="home" replace />} />
               <Route path="home" element={<Home />} />
-              {/* <Route path="scanner" element={<WasteScanner />} /> */}
               <Route path="request" element={<RequestPickup />} />
               <Route path="history" element={<History />} />
               <Route path="history/:id" element={<PickupDetail />} />
-              {/* <Route path="receipt/:id" element={<CarbonReceipt />} />
-              <Route path="ecoscore" element={<EcoScore />} />
-              <Route path="upcycling" element={<UpcyclingGuide />} /> */}
               <Route path="profile" element={<Profile />} />
-              {/* Redirect old path for compatibility */}
               <Route path="pickup/:id" element={<Navigate to="../history/:id" replace />} />
             </Route>
 
-            <Route path="/driver" element={<ProtectedRoute allowedRoles={['driver']}><DriverLayout /></ProtectedRoute>}>
+            {/* DRIVER — tanpa ProtectedRoute */}
+            <Route path="/driver" element={<DriverLayout />}>
               <Route index element={<Navigate to="tasks" replace />} />
               <Route path="tasks" element={<TaskDashboard />} />
               <Route path="route" element={<RouteOverview />} />
@@ -141,7 +141,8 @@ export default function App() {
               <Route path="profile" element={<DriverProfile />} />
             </Route>
 
-            <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin_tps3r']}><AdminLayout /></ProtectedRoute>}>
+            {/* ADMIN TPS3R — tanpa ProtectedRoute */}
+            <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="incoming" element={<IncomingPickups />} />
@@ -151,14 +152,16 @@ export default function App() {
               <Route path="reports" element={<AdminReports />} />
             </Route>
 
-            <Route path="/mitra" element={<ProtectedRoute allowedRoles={['mitra_b2b']}><MitraLayout /></ProtectedRoute>}>
+            {/* MITRA B2B — tanpa ProtectedRoute */}
+            <Route path="/mitra" element={<MitraLayout />}>
               <Route index element={<Navigate to="catalog" replace />} />
               <Route path="catalog" element={<Catalog />} />
               <Route path="detail/:id" element={<MaterialDetail />} />
               <Route path="profile" element={<MitraProfile />} />
             </Route>
 
-            <Route path="/pemda" element={<ProtectedRoute allowedRoles={['pemda']}><PemdaLayout /></ProtectedRoute>}>
+            {/* PEMDA — tanpa ProtectedRoute */}
+            <Route path="/pemda" element={<PemdaLayout />}>
               <Route index element={<Navigate to="overview" replace />} />
               <Route path="overview" element={<OverviewDashboard />} />
               <Route path="volume" element={<VolumeDetail />} />
@@ -166,20 +169,21 @@ export default function App() {
               <Route path="reports" element={<ReportsExport />} />
             </Route>
 
-            <Route path="/superadmin" element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminLayout /></ProtectedRoute>}>
+            {/* SUPER ADMIN — tanpa ProtectedRoute */}
+            <Route path="/superadmin" element={<SuperAdminLayout />}>
               <Route index element={<Navigate to="overview" replace />} />
               <Route path="overview" element={<SuperAdminOverview />} />
               <Route path="verification" element={<VerificationQueue />} />
-              {/* <Route path="users" element={<UserManagement />} /> */}
             </Route>
 
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AccessibilityHelp />
+          {/* TODO: RESTORE AUTH — hapus RoleSwitcher */}
+          <RoleSwitcher />
         </BrowserRouter>
       </AuthProvider>
       </NotificationProvider>
     </ToastProvider>
   );
 }
-

@@ -31,7 +31,8 @@ export default function Unauthorized() {
             if (user?.role) {
               navigate(`/${user.role}`);
             } else {
-              navigate('/login');
+              // TODO: RESTORE AUTH — navigate('/login');
+              navigate('/');
             }
           }}
         >

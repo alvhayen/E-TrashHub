@@ -39,7 +39,8 @@ export default function NotFound() {
           if (user?.role) {
             navigate(`/${user.role}`);
           } else {
-            navigate('/login');
+            // TODO: RESTORE AUTH — navigate('/login');
+            navigate('/');
           }
         }}
       >

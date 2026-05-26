@@ -73,10 +73,10 @@ export default function RoleSelector() {
       <LeafNetworkBg accentColor="#4ade80" opacity={0.9} />
       
       <button 
-        onClick={() => navigate('/onboarding')}
+        onClick={() => navigate('/')}
         style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', borderRadius: '50%', zIndex: 50 }}
         className="hover:bg-white/20"
-        aria-label="Kembali ke Onboarding"
+        aria-label="Kembali ke Beranda"
       >
         <ArrowLeft size={20} />
       </button>
@@ -215,6 +215,7 @@ export default function RoleSelector() {
           </div>
         </div>
 
+        {/* TODO: RESTORE AUTH — login manual dinonaktifkan sementara
         <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
           <button 
             onClick={() => navigate('/login')}
@@ -227,6 +228,7 @@ export default function RoleSelector() {
             Lewati dan Login Manual
           </button>
         </div>
+        */}
       </div>
     </div>
   );
