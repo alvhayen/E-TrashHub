@@ -9,7 +9,7 @@ export default function ExpeditionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addToast } = useToast();
+  const { success, error } = useToast();
   
   const [expedition, setExpedition] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +28,7 @@ export default function ExpeditionDetail() {
       const res = await axios.get(`/api/expedition/${id}`);
       setExpedition(res.data.data);
     } catch (err) {
-      addToast('Gagal memuat detail ekspedisi', 'error');
+      error('Gagal memuat detail ekspedisi');
     } finally {
       setLoading(false);
     }
@@ -38,10 +38,10 @@ export default function ExpeditionDetail() {
     setActionLoading(true);
     try {
       await axios.patch(`/api/expedition/${id}/${action}`);
-      addToast(`Status berhasil diperbarui`, 'success');
+      success(`Status berhasil diperbarui`);
       fetchDetail();
     } catch (err: any) {
-      addToast(err.response?.data?.error || 'Gagal mengubah status', 'error');
+      error(err.response?.data?.error || 'Gagal mengubah status');
     } finally {
       setActionLoading(false);
     }
