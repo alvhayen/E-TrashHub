@@ -138,7 +138,7 @@ export default function LandingPage() {
             <a href="#dampak">Dampak</a>
           </div>
           <div className="nav-actions">
-            <button className="btn-outline" onClick={() => navigate('/roles')}>Masuk</button>
+            <button className="btn-outline" onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}>Masuk</button>
             <button className="btn-solid" onClick={() => navigate('/role-onboarding/RUMAH_TANGGA')}>Mulai Gratis →</button>
             <button className="mobile-menu"><Menu size={24} /></button>
           </div>
@@ -229,7 +229,7 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 5: ROLE SELECTOR */}
-      <section className="role-selector-section">
+      <section id="roles" className="role-selector-section">
         <div className="section-header center">
           <h2>Siapa kamu di ekosistem ini?</h2>
           <p>e-TrashHub punya tempat untuk semua orang dalam rantai pengelolaan sampah</p>
@@ -333,7 +333,7 @@ export default function LandingPage() {
         <div className="footer-cta">
           <h2>Siap bergabung dalam ekosistem hijau?</h2>
           <div className="footer-cta-buttons">
-            <button className="btn-solid-light" onClick={() => navigate('/roles')}>Mulai Gratis Sekarang</button>
+            <button className="btn-solid-light" onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}>Mulai Gratis Sekarang</button>
             <button className="btn-outline-light" onClick={() => document.getElementById('tentang')?.scrollIntoView({behavior: 'smooth'})}>Pelajari Lebih Lanjut</button>
           </div>
         </div>

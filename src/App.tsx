@@ -69,7 +69,7 @@ import VolumeDetail from './pages/pemda/VolumeDetail';
 import CompliancePage from './pages/pemda/CompliancePage';
 import ReportsExport from './pages/pemda/ReportsExport';
 import PemdaFAQ from './pages/pemda/PemdaFAQ';
-import RoleSelector from './pages/RoleSelector';
+
 import RoleOnboarding from './pages/RoleOnboarding';
 import Unauthorized from './pages/Unauthorized';
 import PendingApproval from './pages/PendingApproval';
@@ -105,7 +105,7 @@ export default function App() {
             {/* PUBLIC ROUTES */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/catalog" element={<WasteCatalog />} />
-            <Route path="/roles" element={<RoleSelector />} />
+
             <Route path="/role-onboarding/:roleId" element={<RoleOnboarding />} />
 
             {/* TODO: RESTORE AUTH — login/register routes dinonaktifkan sementara */}

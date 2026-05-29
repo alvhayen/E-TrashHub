@@ -17,8 +17,7 @@ export default function StockManager() {
 
   const fetchStocks = async () => {
     try {
-      // Mocked endpoint mapping to the existing /api/admin/inventory if it exists, or simulated
-      const res = await axios.get('/api/admin/inventory').catch(() => ({
+      const res = await axios.get('/api/inventory/admin').catch(() => ({
         data: {
           data: [
             { id: 1, name: 'Botol PET Bersih', category: { name: 'Botol Plastik PET' }, weight: 150, pricePerKg: 3000, isPublic: true },
@@ -27,7 +26,7 @@ export default function StockManager() {
           ]
         }
       }));
-      setStocks(res.data.data);
+      setStocks(res?.data?.data || []);
     } catch (err) {
       error('Gagal memuat stok');
     } finally {

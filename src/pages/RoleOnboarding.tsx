@@ -78,7 +78,7 @@ export default function RoleOnboarding() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p>Peran tidak ditemukan.</p>
-        <button onClick={() => navigate('/roles')}>Kembali ke Pilihan Peran</button>
+        <button onClick={() => navigate('/')}>Kembali ke Beranda</button>
       </div>
     );
   }
@@ -121,7 +121,7 @@ export default function RoleOnboarding() {
   };
 
   const handleBack = () => {
-    navigate('/roles');
+    navigate('/');
   };
 
   return (
