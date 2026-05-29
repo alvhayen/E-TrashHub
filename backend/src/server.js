@@ -1,3 +1,6 @@
+// CATATAN: File ini adalah server standalone untuk development terpisah.
+// Dalam setup monorepo ini, gunakan 'npm run dev' di root yang menjalankan server.ts.
+// Jangan jalankan file ini bersamaan dengan server.ts.
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';

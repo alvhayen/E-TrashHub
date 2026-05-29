@@ -2,6 +2,13 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Helper to safely parse pickup JSON fields for response
+const parsePickup = (p) => ({
+  ...p,
+  wasteTypes: (() => { try { return JSON.parse(p.wasteTypes || '[]'); } catch { return p.wasteTypes ? [p.wasteTypes] : []; } })(),
+  environmentalImpact: (() => { try { return p.environmentalImpact ? JSON.parse(p.environmentalImpact) : null; } catch { return null; } })()
+});
+
 // POST /pickup — household creates pickup request (requires RUMAH_TANGGA role)
 export const createPickup = async (req, res) => {
   try {
@@ -10,17 +17,14 @@ export const createPickup = async (req, res) => {
       data: {
         userId: req.user.id,
         wasteTypes: JSON.stringify(wasteTypes || []),
-        estimatedWeight: parseFloat(estimatedWeight),
+        estimatedWeight: estimatedWeight, // Store as string label: "Ringan"/"Sedang"/"Berat"
         address,
         note,
         status: 'PENDING'
       }
     });
 
-    // parse it back for the response
-    pickup.wasteTypes = JSON.parse(pickup.wasteTypes);
-
-    res.status(201).json({ pickup });
+    res.status(201).json({ pickup: parsePickup(pickup) });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to create pickup request' });
@@ -35,10 +39,7 @@ export const getHouseholdPickups = async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     
-    const formattedPickups = pickups.map(p => ({
-      ...p,
-      wasteTypes: JSON.parse(p.wasteTypes || '[]')
-    }));
+    const formattedPickups = pickups.map(parsePickup);
 
     res.json({ pickups: formattedPickups });
   } catch (error) {
@@ -63,10 +64,7 @@ export const getDriverPickups = async (req, res) => {
       orderBy: { createdAt: 'asc' }
     });
     
-    const formattedPickups = pickups.map(p => ({
-      ...p,
-      wasteTypes: JSON.parse(p.wasteTypes || '[]')
-    }));
+    const formattedPickups = pickups.map(parsePickup);
 
     res.json({ pickups: formattedPickups });
   } catch (error) {
@@ -93,7 +91,7 @@ export const updateStatus = async (req, res) => {
       }
     });
 
-    res.json({ pickup });
+    res.json({ pickup: parsePickup(pickup) });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update status' });
@@ -112,10 +110,7 @@ export const getAdminPickups = async (req, res) => {
       orderBy: { updatedAt: 'desc' }
     });
     
-    const formattedPickups = pickups.map(p => ({
-      ...p,
-      wasteTypes: JSON.parse(p.wasteTypes || '[]')
-    }));
+    const formattedPickups = pickups.map(parsePickup);
 
     res.json({ pickups: formattedPickups });
   } catch (error) {
@@ -143,6 +138,14 @@ export const verifyPickup = async (req, res) => {
     const bonusPoints = Math.floor(weightInfo / 5) * 50;
     const pointsEarned = basePoints + bonusPoints;
 
+    // Calculate environmental impact
+    const environmentalImpact = JSON.stringify({
+      co2Offset: (weightInfo * 2.5).toFixed(2),
+      waterSaved: Math.round(weightInfo * 15),
+      energySaved: Math.round(weightInfo * 5.8),
+      treesEquivalent: (weightInfo / 10).toFixed(1)
+    });
+
     const [pickup, userUpdate, transaction] = await prisma.$transaction([
       prisma.pickupRequest.update({
         where: { id: pickupId },
@@ -150,6 +153,7 @@ export const verifyPickup = async (req, res) => {
           actualWeight: weightInfo,
           status: 'COMPLETED',
           points: pointsEarned,
+          environmentalImpact,
           note: note ? note : existingPickup.note
         }
       }),
@@ -168,7 +172,7 @@ export const verifyPickup = async (req, res) => {
       })
     ]);
 
-    res.json({ pickup, pointsEarned, newTotal: userUpdate.points });
+    res.json({ pickup: parsePickup(pickup), pointsEarned, newTotal: userUpdate.points });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to verify pickup' });

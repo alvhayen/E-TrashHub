@@ -7,11 +7,11 @@ export default function Dashboard() {
 
   const getRoleColor = () => {
     switch (user?.role) {
-      case 'rumah_tangga': return 'var(--role-rumah-tangga)';
-      case 'driver': return 'var(--role-driver)';
-      case 'admin_tps3r': return 'var(--role-admin)';
-      case 'mitra_b2b': return 'var(--role-mitra)';
-      case 'pemda': return 'var(--role-pemda)';
+      case 'RUMAH_TANGGA': return 'var(--role-rumah-tangga)';
+      case 'DRIVER': return 'var(--role-driver)';
+      case 'ADMIN_TPS3R': return 'var(--role-admin)';
+      case 'MITRA_B2B': return 'var(--role-mitra)';
+      case 'PEMDA': return 'var(--role-pemda)';
       default: return 'var(--color-primary)';
     }
   };

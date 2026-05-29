@@ -29,7 +29,7 @@ export const getQueue = async (req, res) => {
 
 export const approveQueue = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const { notes } = req.body;
 
     const queueItem = await prisma.verificationQueue.findUnique({ where: { id } });
@@ -41,7 +41,7 @@ export const approveQueue = async (req, res) => {
         data: {
           status: 'ACTIVE',
           reviewedAt: new Date(),
-          reviewedBy: req.user.id,
+          reviewedBy: String(req.user.id),
           notes: notes || null
         }
       });
@@ -64,7 +64,7 @@ export const approveQueue = async (req, res) => {
 
 export const rejectQueue = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const { notes } = req.body;
 
     if (!notes) return res.status(400).json({ error: 'Notes (reason for rejection) is required' });
@@ -78,7 +78,7 @@ export const rejectQueue = async (req, res) => {
         data: {
           status: 'REJECTED',
           reviewedAt: new Date(),
-          reviewedBy: req.user.id,
+          reviewedBy: String(req.user.id),
           notes
         }
       });

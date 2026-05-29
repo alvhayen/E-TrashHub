@@ -85,14 +85,14 @@ export default function RoleOnboarding() {
 
   const handleStart = () => {
     const roleMapping: Record<string, Role> = {
-      'RUMAH_TANGGA': 'rumah_tangga',
-      'DRIVER': 'driver',
-      'ADMIN_TPS3R': 'admin_tps3r',
-      'MITRA_B2B': 'mitra_b2b',
-      'PEMDA': 'pemda'
+      'RUMAH_TANGGA': 'RUMAH_TANGGA',
+      'DRIVER': 'DRIVER',
+      'ADMIN_TPS3R': 'ADMIN_TPS3R',
+      'MITRA_B2B': 'MITRA_B2B',
+      'PEMDA': 'PEMDA'
     };
     
-    const actualRole = roleMapping[roleId || ''] || 'rumah_tangga';
+    const actualRole = roleMapping[roleId || ''] || 'RUMAH_TANGGA';
     
     const mockUser = {
       id: Math.floor(Math.random() * 1000) + 1,
@@ -103,18 +103,18 @@ export default function RoleOnboarding() {
       address: 'Jl. Demo No. 123',
       phone: '081234567890',
       points: 1500,
-      tps3r_id: actualRole === 'admin_tps3r' ? 1 : undefined,
-      tps3r_name: actualRole === 'admin_tps3r' ? 'TPS3R Mawar' : undefined
+      tps3r_id: actualRole === 'ADMIN_TPS3R' ? 1 : undefined,
+      tps3r_name: actualRole === 'ADMIN_TPS3R' ? 'TPS3R Mawar' : undefined
     };
     
     login('dummy-token-for-frontend-demo', mockUser);
     
     const dashboardMapping: Record<string, string> = {
-      'rumah_tangga': '/household',
-      'driver': '/driver',
-      'admin_tps3r': '/admin',
-      'mitra_b2b': '/mitra',
-      'pemda': '/pemda'
+      'RUMAH_TANGGA': '/household',
+      'DRIVER': '/driver',
+      'ADMIN_TPS3R': '/admin',
+      'MITRA_B2B': '/mitra',
+      'PEMDA': '/pemda'
     };
     
     navigate(dashboardMapping[actualRole] || '/');

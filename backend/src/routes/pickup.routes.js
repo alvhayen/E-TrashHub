@@ -14,15 +14,15 @@ const router = express.Router();
 
 router.use(verifyToken);
 
-router.post('/', authorizeRole('rumah_tangga'), createPickup);
-router.get('/household', authorizeRole('rumah_tangga'), getHouseholdPickups);
+router.post('/', authorizeRole('RUMAH_TANGGA'), createPickup);
+router.get('/household', authorizeRole('RUMAH_TANGGA'), getHouseholdPickups);
 
-router.get('/driver', authorizeRole('driver'), getDriverPickups);
-router.patch('/:id/status', authorizeRole('driver'), updateStatus);
+router.get('/driver', authorizeRole('DRIVER'), getDriverPickups);
+router.patch('/:id/status', authorizeRole('DRIVER'), updateStatus);
 
-router.get('/admin', authorizeRole('admin_tps3r'), getAdminPickups);
-router.post('/:id/verify', authorizeRole('admin_tps3r'), verifyPickup);
+router.get('/admin', authorizeRole('ADMIN_TPS3R'), getAdminPickups);
+router.post('/:id/verify', authorizeRole('ADMIN_TPS3R'), verifyPickup);
 
-router.get('/analytics', authorizeRole('pemda'), getPickupAnalytics);
+router.get('/analytics', authorizeRole('PEMDA'), getPickupAnalytics);
 
 export default router;

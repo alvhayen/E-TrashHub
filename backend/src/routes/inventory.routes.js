@@ -13,12 +13,12 @@ const router = express.Router();
 router.use(verifyToken);
 
 // public for mitra_b2b
-router.get('/', authorizeRole('mitra_b2b', 'pemda', 'admin_tps3r'), getInventory);
+router.get('/', authorizeRole('MITRA_B2B', 'PEMDA', 'ADMIN_TPS3R'), getInventory);
 
 // specific to admin_tps3r
-router.get('/admin', authorizeRole('admin_tps3r'), getAdminInventory);
-router.post('/', authorizeRole('admin_tps3r'), createInventoryItem);
-router.patch('/:id', authorizeRole('admin_tps3r'), updateInventoryItem);
-router.delete('/:id', authorizeRole('admin_tps3r'), deleteInventoryItem);
+router.get('/admin', authorizeRole('ADMIN_TPS3R'), getAdminInventory);
+router.post('/', authorizeRole('ADMIN_TPS3R'), createInventoryItem);
+router.patch('/:id', authorizeRole('ADMIN_TPS3R'), updateInventoryItem);
+router.delete('/:id', authorizeRole('ADMIN_TPS3R'), deleteInventoryItem);
 
 export default router;

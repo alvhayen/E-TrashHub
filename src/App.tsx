@@ -148,8 +148,10 @@ export default function App() {
               <Route path="incoming" element={<IncomingPickups />} />
               <Route path="weigh/:id" element={<WeighingForm />} />
               <Route path="stock" element={<StockManager />} />
+              <Route path="inventory" element={<Navigate to="stock" replace />} />
               <Route path="shipment" element={<ShipmentManager />} />
               <Route path="reports" element={<AdminReports />} />
+              <Route path="faq" element={<AdminFAQ />} />
             </Route>
 
             {/* MITRA B2B — tanpa ProtectedRoute */}
@@ -158,6 +160,7 @@ export default function App() {
               <Route path="catalog" element={<Catalog />} />
               <Route path="detail/:id" element={<MaterialDetail />} />
               <Route path="profile" element={<MitraProfile />} />
+              <Route path="faq" element={<MitraFAQ />} />
             </Route>
 
             {/* PEMDA — tanpa ProtectedRoute */}
@@ -167,6 +170,7 @@ export default function App() {
               <Route path="volume" element={<VolumeDetail />} />
               <Route path="compliance" element={<CompliancePage />} />
               <Route path="reports" element={<ReportsExport />} />
+              <Route path="faq" element={<PemdaFAQ />} />
             </Route>
 
             {/* SUPER ADMIN — tanpa ProtectedRoute */}
@@ -174,6 +178,8 @@ export default function App() {
               <Route index element={<Navigate to="overview" replace />} />
               <Route path="overview" element={<SuperAdminOverview />} />
               <Route path="verification" element={<VerificationQueue />} />
+              <Route path="users" element={<VerificationQueue />} />
+              <Route path="settings" element={<SuperAdminOverview />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

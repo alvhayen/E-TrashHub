@@ -9,6 +9,18 @@ const generateWaybillNumber = () => {
   return `EXP-${dateStr}-${random4}`;
 };
 
+// Helper to parse expedition manifest from JSON string
+function parseExpedition(exp) {
+  if (!exp) return exp;
+  return {
+    ...exp,
+    manifest: (() => {
+      try { return typeof exp.manifest === 'string' ? JSON.parse(exp.manifest) : exp.manifest; }
+      catch { return null; }
+    })()
+  };
+}
+
 export const getExpeditionsForDriver = async (req, res) => {
   try {
     if (req.user.driverType !== 'MITRA_TPS3R') {
@@ -38,7 +50,7 @@ export const getExpeditionsForDriver = async (req, res) => {
       orderBy: { assignedAt: 'desc' }
     });
 
-    res.json({ success: true, expeditions });
+    res.json({ success: true, expeditions: expeditions.map(parseExpedition) });
   } catch (error) {
     console.error('getExpeditionsForDriver error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -47,7 +59,7 @@ export const getExpeditionsForDriver = async (req, res) => {
 
 export const getExpeditionById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     
     const expedition = await prisma.expedition.findUnique({
       where: { id },
@@ -79,7 +91,7 @@ export const getExpeditionById = async (req, res) => {
         return res.status(403).json({ error: 'Forbidden: Not relevant to your TPS3R' });
     }
 
-    res.json({ success: true, expedition });
+    res.json({ success: true, expedition: parseExpedition(expedition) });
   } catch (error) {
     console.error('getExpeditionById error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -88,7 +100,7 @@ export const getExpeditionById = async (req, res) => {
 
 export const departExpedition = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const expedition = await prisma.expedition.findUnique({ where: { id } });
 
     if (!expedition) return res.status(404).json({ error: 'Expedition not found' });
@@ -109,7 +121,7 @@ export const departExpedition = async (req, res) => {
       }
     });
 
-    res.json({ success: true, expedition: updated });
+    res.json({ success: true, expedition: parseExpedition(updated) });
   } catch (error) {
     console.error('departExpedition error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -118,7 +130,7 @@ export const departExpedition = async (req, res) => {
 
 export const arriveExpedition = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const expedition = await prisma.expedition.findUnique({ where: { id } });
 
     if (!expedition) return res.status(404).json({ error: 'Expedition not found' });
@@ -139,7 +151,7 @@ export const arriveExpedition = async (req, res) => {
       }
     });
 
-    res.json({ success: true, expedition: updated });
+    res.json({ success: true, expedition: parseExpedition(updated) });
   } catch (error) {
     console.error('arriveExpedition error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -148,7 +160,7 @@ export const arriveExpedition = async (req, res) => {
 
 export const confirmExpedition = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const expedition = await prisma.expedition.findUnique({ 
         where: { id },
         include: { items: true }
@@ -191,7 +203,7 @@ export const confirmExpedition = async (req, res) => {
         return updated;
     });
 
-    res.json({ success: true, expedition: result });
+    res.json({ success: true, expedition: parseExpedition(result) });
   } catch (error) {
     console.error('confirmExpedition error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -206,8 +218,12 @@ export const createExpedition = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Parse IDs from body to integer
+    const parsedDriverId = parseInt(driverId);
+    const parsedDestinationId = parseInt(destinationId);
+
     const originUser = await prisma.user.findUnique({ where: { id: req.user.id } });
-    const destinationUser = await prisma.user.findUnique({ where: { id: destinationId } });
+    const destinationUser = await prisma.user.findUnique({ where: { id: parsedDestinationId } });
 
     if (!originUser || !destinationUser) {
         return res.status(404).json({ error: 'Origin or Destination user not found' });
@@ -216,7 +232,8 @@ export const createExpedition = async (req, res) => {
     // Generate manifest
     const manifestItems = [];
     for (const item of items) {
-        const inv = await prisma.inventory.findUnique({ where: { id: item.inventoryId }});
+        const parsedInventoryId = parseInt(item.inventoryId);
+        const inv = await prisma.inventory.findUnique({ where: { id: parsedInventoryId }});
         if (inv) {
             manifestItems.push({
                 name: inv.commodity,
@@ -231,19 +248,19 @@ export const createExpedition = async (req, res) => {
     const expedition = await prisma.expedition.create({
       data: {
         type,
-        driverId,
+        driverId: parsedDriverId,
         originId: req.user.id,
-        destinationId,
+        destinationId: parsedDestinationId,
         originName: originUser.tpsName || originUser.name,
         destinationName: destinationUser.tpsName || destinationUser.name,
         originAddress: originUser.tpsAddress || originUser.address || '',
         destinationAddress: destinationUser.tpsAddress || destinationUser.companyAddress || '',
         notes,
         waybillNumber,
-        manifest: { items: manifestItems },
+        manifest: JSON.stringify({ items: manifestItems }),
         items: {
           create: items.map(item => ({
-            inventoryId: item.inventoryId,
+            inventoryId: parseInt(item.inventoryId),
             weightKg: item.weightKg,
             notes: item.notes
           }))
@@ -254,7 +271,7 @@ export const createExpedition = async (req, res) => {
       }
     });
 
-    res.status(201).json({ success: true, expedition });
+    res.status(201).json({ success: true, expedition: parseExpedition(expedition) });
   } catch (error) {
     console.error('createExpedition error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -280,7 +297,7 @@ export const getExpeditionsForAdmin = async (req, res) => {
       orderBy: { assignedAt: 'desc' }
     });
 
-    res.json({ success: true, expeditions });
+    res.json({ success: true, expeditions: expeditions.map(parseExpedition) });
   } catch (error) {
     console.error('getExpeditionsForAdmin error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -305,7 +322,7 @@ export const trackExpedition = async (req, res) => {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    res.json({ success: true, expedition });
+    res.json({ success: true, expedition: parseExpedition(expedition) });
   } catch (error) {
     console.error('trackExpedition error:', error);
     res.status(500).json({ error: 'Internal Server Error' });

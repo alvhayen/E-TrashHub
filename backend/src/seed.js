@@ -6,6 +6,73 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Start seeding...');
 
+  // 0. Seed WasteCategory (must come before PickupItem references)
+  const wasteCategories = [
+    {
+      name: 'Botol Plastik',
+      slug: 'botol-plastik',
+      imageUrl: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80',
+      priceEstMin: 1500, priceEstMax: 3000,
+      description: 'Botol plastik bekas minuman (PET/HDPE). Bersihkan dari sisa cairan sebelum dikumpulkan.',
+      sortingTips: 'Lepas tutup botol, pipihkan agar hemat tempat, pisahkan dari plastik jenis lain.',
+      sortOrder: 1
+    },
+    {
+      name: 'Gelas Plastik',
+      slug: 'gelas-plastik',
+      imageUrl: 'https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=400&q=80',
+      priceEstMin: 1000, priceEstMax: 2000,
+      description: 'Gelas plastik bekas minuman cup. Kumpulkan dalam jumlah banyak karena ringan.',
+      sortingTips: 'Cuci bersih, susun bertumpuk agar tidak memakan banyak ruang.',
+      sortOrder: 2
+    },
+    {
+      name: 'Kertas & Kardus',
+      slug: 'kertas-kardus',
+      imageUrl: 'https://images.unsplash.com/photo-1588515724527-074a7a56616c?w=400&q=80',
+      priceEstMin: 1200, priceEstMax: 2500,
+      description: 'Kertas koran, majalah, kardus bekas packaging. Hindari yang basah atau berminyak.',
+      sortingTips: 'Lipat kardus agar pipih, ikat dengan tali, jauhkan dari air.',
+      sortOrder: 3
+    },
+    {
+      name: 'Logam & Kaleng',
+      slug: 'logam-kaleng',
+      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
+      priceEstMin: 3000, priceEstMax: 12000,
+      description: 'Kaleng aluminium, besi tua, tembaga. Nilai jual tinggi terutama aluminium.',
+      sortingTips: 'Pisahkan jenis logam (aluminium vs besi). Bersihkan dari sisa makanan/minuman.',
+      sortOrder: 4
+    },
+    {
+      name: 'Tutup Botol',
+      slug: 'tutup-botol',
+      imageUrl: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80',
+      priceEstMin: 500, priceEstMax: 1500,
+      description: 'Tutup botol plastik dari berbagai jenis minuman. Dikumpulkan terpisah dari botolnya.',
+      sortingTips: 'Kumpulkan dalam wadah terpisah. Tidak perlu dicuci, cukup dikeringkan.',
+      sortOrder: 5
+    },
+    {
+      name: 'Kain & Tekstil',
+      slug: 'kain-tekstil',
+      imageUrl: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=400&q=80',
+      priceEstMin: 800, priceEstMax: 2000,
+      description: 'Pakaian bekas, kain perca, tekstil sisa produksi. Bisa untuk upcycling atau daur ulang.',
+      sortingTips: 'Pisahkan yang masih layak pakai untuk donasi. Yang sudah rusak untuk daur ulang.',
+      sortOrder: 6
+    }
+  ];
+
+  for (const cat of wasteCategories) {
+    await prisma.wasteCategory.upsert({
+      where: { slug: cat.slug },
+      update: {},
+      create: cat
+    });
+    console.log(`Created waste category: ${cat.name}`);
+  }
+
   // 1. Create Users
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash('password123', salt);
@@ -33,18 +100,33 @@ async function main() {
     console.log(`Created user: ${user.name} (${user.role})`);
   }
 
+  // Super Admin user
+  await prisma.user.upsert({
+    where: { email: 'superadmin@etrashhub.id' },
+    update: {},
+    create: {
+      email: 'superadmin@etrashhub.id',
+      name: 'Super Admin',
+      role: 'SUPER_ADMIN',
+      password: passwordHash,
+      verificationStatus: 'ACTIVE'
+    }
+  });
+  console.log('Created user: Super Admin (SUPER_ADMIN)');
+
   // Find IDs for relations
   const household = await prisma.user.findUnique({ where: { email: 'sari@email.com' } });
   const driver = await prisma.user.findUnique({ where: { email: 'budi.driver@email.com' } });
   const admin = await prisma.user.findUnique({ where: { email: 'admin.tps3r@email.com' } });
 
   // 2. Create Pickup Requests
+  // estimatedWeight is String in schema — use "Ringan"/"Sedang"/"Berat" labels
   const pickupData = [
-    { status: 'COMPLETED', weight: 5.2, points: 520, types: ['Botol Plastik'] },
-    { status: 'VERIFIED', weight: 3.0, points: 300, types: ['Kertas/Kardus'] },
-    { status: 'COLLECTED', weight: 2.5, points: 250, types: ['Logam/Kaleng'] },
-    { status: 'ON_THE_WAY', weight: 4.0, points: 0, types: ['Botol Plastik', 'Gelas Plastik'] },
-    { status: 'PENDING', weight: 1.5, points: 0, types: ['Tutup Botol'] }
+    { status: 'COMPLETED', weight: 5.2, points: 520, types: ['Botol Plastik'], estLabel: 'Berat' },
+    { status: 'VERIFIED', weight: 3.0, points: 300, types: ['Kertas/Kardus'], estLabel: 'Sedang' },
+    { status: 'COLLECTED', weight: 2.5, points: 250, types: ['Logam/Kaleng'], estLabel: 'Sedang' },
+    { status: 'ON_THE_WAY', weight: 4.0, points: 0, types: ['Botol Plastik', 'Gelas Plastik'], estLabel: 'Berat' },
+    { status: 'PENDING', weight: 1.5, points: 0, types: ['Tutup Botol'], estLabel: 'Ringan' }
   ];
 
   for (let i = 0; i < 10; i++) {
@@ -54,7 +136,7 @@ async function main() {
         userId: household.id,
         driverId: data.status !== 'PENDING' ? driver.id : null,
         wasteTypes: JSON.stringify(data.types),
-        estimatedWeight: data.weight,
+        estimatedWeight: data.estLabel,
         actualWeight: data.status === 'COMPLETED' || data.status === 'VERIFIED' ? data.weight : null,
         status: data.status,
         address: 'Jl. Jenderal Sudirman No. 45, Balikpapan Kota',

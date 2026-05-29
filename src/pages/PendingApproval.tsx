@@ -15,7 +15,7 @@ export default function PendingApproval() {
     navigate('/');
   };
 
-  const roleLabel = user?.role === 'driver' ? 'Driver / Pengepul' : user?.role?.replace('_', ' ') || 'Pengguna';
+  const roleLabel = user?.role === 'DRIVER' ? 'Driver / Pengepul' : user?.role?.replace('_', ' ') || 'Pengguna';
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a2318', position: 'relative', overflow: 'hidden' }}>

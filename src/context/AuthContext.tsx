@@ -15,12 +15,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const MOCK_USERS: Record<string, User> = {
-  RUMAH_TANGGA: { id: 1,  name: 'Sari Dewi',      email: 'sari@email.com',          role: 'rumah_tangga' as Role, status: 'active', address: 'Jl. Mawar No. 10', phone: '081234567890', points: 1250 },
-  DRIVER:       { id: 2,  name: 'Budi Santoso',    email: 'budi.driver@email.com',   role: 'driver' as Role,       status: 'active', address: 'Jl. Kenanga No. 5',  phone: '081234567891', points: 0 },
-  ADMIN_TPS3R:  { id: 3,  name: 'Admin TPS3R',     email: 'admin.tps3r@email.com',   role: 'admin_tps3r' as Role,  status: 'active', address: 'Jl. TPS3R Mawar',    phone: '081234567892', points: 0, tps3r_id: 1, tps3r_name: 'TPS3R Mawar' },
-  MITRA_B2B:    { id: 4,  name: 'Mitra Industri',  email: 'mitra@industri.com',      role: 'mitra_b2b' as Role,    status: 'active', address: 'Jl. Industri No. 1', phone: '081234567893', points: 0 },
-  PEMDA:        { id: 5,  name: 'Dinas Surabaya',  email: 'dinas@surabaya.go.id',    role: 'pemda' as Role,        status: 'active', address: 'Jl. Pemkot No. 1',   phone: '081234567894', points: 0 },
-  SUPER_ADMIN:  { id: 6,  name: 'Super Admin',     email: 'superadmin@etrashhub.id', role: 'super_admin' as Role,  status: 'active', address: '',                    phone: '',             points: 0 },
+  RUMAH_TANGGA: { id: 1,  name: 'Sari Dewi',      email: 'sari@email.com',          role: 'RUMAH_TANGGA' as Role, status: 'active', address: 'Jl. Mawar No. 10', phone: '081234567890', points: 1250 },
+  DRIVER:       { id: 2,  name: 'Budi Santoso',    email: 'budi.driver@email.com',   role: 'DRIVER' as Role,       status: 'active', address: 'Jl. Kenanga No. 5',  phone: '081234567891', points: 0 },
+  ADMIN_TPS3R:  { id: 3,  name: 'Admin TPS3R',     email: 'admin.tps3r@email.com',   role: 'ADMIN_TPS3R' as Role,  status: 'active', address: 'Jl. TPS3R Mawar',    phone: '081234567892', points: 0, tps3r_id: 1, tps3r_name: 'TPS3R Mawar' },
+  MITRA_B2B:    { id: 4,  name: 'Mitra Industri',  email: 'mitra@industri.com',      role: 'MITRA_B2B' as Role,    status: 'active', address: 'Jl. Industri No. 1', phone: '081234567893', points: 0 },
+  PEMDA:        { id: 5,  name: 'Dinas Surabaya',  email: 'dinas@surabaya.go.id',    role: 'PEMDA' as Role,        status: 'active', address: 'Jl. Pemkot No. 1',   phone: '081234567894', points: 0 },
+  SUPER_ADMIN:  { id: 6,  name: 'Super Admin',     email: 'superadmin@etrashhub.id', role: 'SUPER_ADMIN' as Role,  status: 'active', address: '',                    phone: '',             points: 0 },
 };
 
 // TODO: RESTORE AUTH — Ganti key ini untuk berpindah role saat development:

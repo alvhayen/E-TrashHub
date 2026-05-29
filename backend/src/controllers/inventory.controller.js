@@ -22,7 +22,12 @@ export const getInventory = async (req, res) => {
       where: whereClause,
       include: {
         tps3r: {
-          select: { name: true, address: true, phone: true }
+          select: {
+            name: true,
+            tpsName: true,
+            tpsAddress: true,
+            phone: true
+          }
         }
       },
       orderBy: { createdAt: 'desc' }
