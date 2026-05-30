@@ -5,6 +5,8 @@ import { createServer as createViteServer } from 'vite';
 
 import authRoutes from './backend/src/routes/auth.routes.js';
 import pickupRoutes from './backend/src/routes/pickup.routes.js';
+import adminDriverRoutes from './backend/src/routes/admin-driver.routes.js';
+import adminPemdaRoutes from './backend/src/routes/admin-pemda.routes.js';
 import inventoryRoutes from './backend/src/routes/inventory.routes.js';
 import analyticsRoutes from './backend/src/routes/analytics.routes.js';
 // TODO: RESTORE AUTH — routes ditambahkan agar semua endpoint aktif di dev server
@@ -15,7 +17,7 @@ import { errorHandler } from './src/middleware/errorHandler.js';
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = parseInt(process.env.PORT || '3000', 10);
 
   app.use(cors());
   app.use(express.json());
@@ -27,7 +29,9 @@ async function startServer() {
   app.use('/api/public', publicRoutes);
 
   app.use('/api/auth', authRoutes);
-  app.use('/api/pickup', pickupRoutes);
+  app.use('/api/pickups', pickupRoutes);
+  app.use('/api/admin-driver', adminDriverRoutes);
+  app.use('/api/admin-pemda', adminPemdaRoutes);
   app.use('/api/inventory', inventoryRoutes);
   app.use('/api/analytics', analyticsRoutes);
   app.use('/api/expedition', expeditionRoutes);

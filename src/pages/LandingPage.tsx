@@ -110,14 +110,14 @@ export default function LandingPage() {
     },
     {
       id: 'MITRA_B2B',
-      name: 'Mitra Industri',
+      name: 'Marketplace',
       icon: '♻️',
       desc: 'Beli bahan baku daur ulang langsung dari sumber terpercaya',
       bgClass: 'role-card-mitra'
     },
     {
       id: 'PEMDA',
-      name: 'Masyarakat',
+      name: 'Untuk Masyarakat',
       icon: '👥',
       desc: 'Pantau statistik pengelolaan sampah skala kota',
       bgClass: 'role-card-pemda'

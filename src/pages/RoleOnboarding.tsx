@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Home, Truck, Factory, Briefcase, Landmark, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Home, Truck, Factory, Store, Users, ArrowRight, ArrowLeft } from 'lucide-react';
 import Button from '../components/ui/Button';
 import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
 import { useAuth } from '../context/AuthContext';
@@ -42,10 +42,10 @@ const ROLE_INFO: Record<string, any> = {
     opacity: 0.75,
   },
   'MITRA_B2B': {
-    title: 'Peran: Mitra Industri (B2B)',
-    description: 'Sebagai Mitra Industri, Anda merupakan penggerak utama ekonomi sirkular. Beli material daur ulang berkualitas secara borongan langsung dari TPS3R terpercaya untuk menunjang kebutuhan bahan baku industri Anda.',
+    title: 'Peran: Marketplace',
+    description: 'Sebagai pembeli di Marketplace, Anda merupakan penggerak utama ekonomi sirkular. Beli material daur ulang berkualitas secara borongan langsung dari TPS3R terpercaya untuk menunjang kebutuhan Anda.',
     email: 'mitra@industri.com',
-    icon: Briefcase,
+    icon: Store,
     color: '#ec4899', // Pink
     iconBgColor: '#fdf2f8',
     themeBg: '#0b2e22',
@@ -53,10 +53,10 @@ const ROLE_INFO: Record<string, any> = {
     opacity: 0.8,
   },
   'PEMDA': {
-    title: 'Peran: Pemerintah Daerah',
-    description: 'Sebagai Pemerintah Daerah, Anda adalah pemantau ekosistem cerdas. Akses dashboard analitik real-time mengenai volume persampahan masyarakat (RTRW), evaluasi kinerja TPS3R, dan pastikan kepatuhan lingkungan harian berjalan baik.',
+    title: 'Peran: Untuk Masyarakat',
+    description: 'Sebagai Bagian dari Masyarakat, Anda dapat memantau ekosistem cerdas secara transparan. Akses dashboard analitik real-time mengenai volume persampahan, evaluasi kinerja pengelolaan sampah, dan lihat dampak nyatanya.',
     email: 'dinas@balikpapan.go.id',
-    icon: Landmark,
+    icon: Users,
     color: '#10b981', // Emerald
     iconBgColor: '#ecfdf5',
     themeBg: '#0f1f0f',
@@ -83,41 +83,36 @@ export default function RoleOnboarding() {
     );
   }
 
-  const handleStart = () => {
-    const roleMapping: Record<string, Role> = {
-      'RUMAH_TANGGA': 'RUMAH_TANGGA',
-      'DRIVER': 'DRIVER',
-      'ADMIN_TPS3R': 'ADMIN_TPS3R',
-      'MITRA_B2B': 'MITRA_B2B',
-      'PEMDA': 'PEMDA'
-    };
+  const handleStart = async () => {
+    if (roleId === 'MITRA_B2B' || roleId === 'PEMDA') {
+      try {
+        const emailMap: Record<string, string> = {
+          'MITRA_B2B': 'mitra@etrashhub.com',
+          'PEMDA': 'pemda@etrashhub.com'
+        };
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailMap[roleId], password: 'password123' })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          login(data.token, data.user);
+          const roleRoutes: Record<string, string> = {
+            MITRA_B2B: 'mitra',
+            PEMDA: 'pemda',
+          };
+          navigate(`/${roleRoutes[roleId]}`);
+          return;
+        }
+      } catch (e) {
+        console.error('Auto login failed:', e);
+      }
+    }
     
-    const actualRole = roleMapping[roleId || ''] || 'RUMAH_TANGGA';
-    
-    const mockUser = {
-      id: Math.floor(Math.random() * 1000) + 1,
-      email: role.email || 'demo@example.com',
-      name: role.title.replace('Peran: ', ''),
-      role: actualRole,
-      status: 'active' as const,
-      address: 'Jl. Demo No. 123',
-      phone: '081234567890',
-      points: 1500,
-      tps3r_id: actualRole === 'ADMIN_TPS3R' ? 1 : undefined,
-      tps3r_name: actualRole === 'ADMIN_TPS3R' ? 'TPS3R Mawar' : undefined
-    };
-    
-    login('dummy-token-for-frontend-demo', mockUser);
-    
-    const dashboardMapping: Record<string, string> = {
-      'RUMAH_TANGGA': '/household',
-      'DRIVER': '/driver',
-      'ADMIN_TPS3R': '/admin',
-      'MITRA_B2B': '/mitra',
-      'PEMDA': '/pemda'
-    };
-    
-    navigate(dashboardMapping[actualRole] || '/');
+    // Default fallback / normal flow for other roles
+    navigate(`/auth/login?role=${roleId || 'RUMAH_TANGGA'}`);
   };
 
   const handleBack = () => {

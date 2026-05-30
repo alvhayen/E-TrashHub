@@ -1,58 +1,94 @@
-// TODO: RESTORE AUTH — AuthContext di-mock sementara untuk debug
-// Original file used JWT token from localStorage and verified via /api/auth/me
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { User, Role } from '../types';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
+import { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  isAuthenticated: boolean;
+  loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
   updateUser: (data: Partial<User>) => void;
-  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const MOCK_USERS: Record<string, User> = {
-  RUMAH_TANGGA: { id: 1,  name: 'Sari Dewi',      email: 'sari@email.com',          role: 'RUMAH_TANGGA' as Role, status: 'active', address: 'Jl. Mawar No. 10', phone: '081234567890', points: 1250 },
-  DRIVER:       { id: 2,  name: 'Budi Santoso',    email: 'budi.driver@email.com',   role: 'DRIVER' as Role,       status: 'active', address: 'Jl. Kenanga No. 5',  phone: '081234567891', points: 0 },
-  ADMIN_TPS3R:  { id: 3,  name: 'Admin TPS3R',     email: 'admin.tps3r@email.com',   role: 'ADMIN_TPS3R' as Role,  status: 'active', address: 'Jl. TPS3R Mawar',    phone: '081234567892', points: 0, tps3r_id: 1, tps3r_name: 'TPS3R Mawar' },
-  MITRA_B2B:    { id: 4,  name: 'Mitra Industri',  email: 'mitra@industri.com',      role: 'MITRA_B2B' as Role,    status: 'active', address: 'Jl. Industri No. 1', phone: '081234567893', points: 0 },
-  PEMDA:        { id: 5,  name: 'Dinas Surabaya',  email: 'dinas@surabaya.go.id',    role: 'PEMDA' as Role,        status: 'active', address: 'Jl. Pemkot No. 1',   phone: '081234567894', points: 0 },
-  SUPER_ADMIN:  { id: 6,  name: 'Super Admin',     email: 'superadmin@etrashhub.id', role: 'SUPER_ADMIN' as Role,  status: 'active', address: '',                    phone: '',             points: 0 },
-};
-
-// TODO: RESTORE AUTH — Ganti key ini untuk berpindah role saat development:
-function getActiveMockRole(): string {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('dev_mock_role') || 'RUMAH_TANGGA';
-  }
-  return 'RUMAH_TANGGA';
-}
+const TOKEN_KEY = 'etrashhub_token';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(MOCK_USERS[getActiveMockRole()] || MOCK_USERS['RUMAH_TANGGA']);
-  const token = 'mock-token-bypass';
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [loading, setLoading] = useState(true);
 
-  const login = (newToken: string, newUser: User) => {
-    // TODO: RESTORE AUTH — restore localStorage token handling
-    setUser(newUser);
-  };
+  // Restore session on mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    if (!storedToken) {
+      setLoading(false);
+      return;
+    }
 
-  const logout = () => {
-    // TODO: RESTORE AUTH — restore localStorage cleanup and redirect
-    console.log('[AUTH BYPASS] logout() called — no-op in debug mode');
-  };
+    axios.get('/api/auth/me', {
+      headers: { Authorization: `Bearer ${storedToken}` }
+    })
+      .then(res => {
+        const userData = res.data.user;
+        setUser({
+          id: userData.id,
+          email: userData.email,
+          name: userData.name,
+          role: userData.role.toLowerCase() as any,
+          status: userData.verificationStatus === 'ACTIVE' ? 'active' : 'pending',
+          address: userData.address,
+          phone: userData.phone,
+          points: userData.points,
+          driverType: userData.driverType,
+          tps3r_name: userData.tpsName,
+        });
+        setToken(storedToken);
+      })
+      .catch(() => {
+        // Token invalid/expired — clear it
+        localStorage.removeItem(TOKEN_KEY);
+        setToken(null);
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  const updateUser = (data: Partial<User>) => {
-    if (user) {
-      setUser({ ...user, ...data });
+  const login = (newToken: string, newUser: any) => {
+    localStorage.setItem(TOKEN_KEY, newToken);
+    setToken(newToken);
+    
+    // Normalize role and status if they come directly from register/login API
+    if (newUser.role && newUser.role === newUser.role.toUpperCase()) {
+      setUser({
+        ...newUser,
+        role: newUser.role.toLowerCase(),
+        status: newUser.verificationStatus === 'ACTIVE' ? 'active' : 'pending'
+      });
+    } else {
+      setUser(newUser);
     }
   };
 
+  const logout = () => {
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
+    setUser(null);
+  };
+
+  const updateUser = (data: Partial<User>) => {
+    if (user) setUser({ ...user, ...data });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, updateUser, loading: false }}>
+    <AuthContext.Provider value={{
+      user, token,
+      isAuthenticated: !!user && !!token,
+      loading, login, logout, updateUser
+    }}>
       {children}
     </AuthContext.Provider>
   );
@@ -60,8 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }

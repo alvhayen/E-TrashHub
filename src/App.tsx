@@ -8,8 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/ui/Toast';
 import { NotificationProvider } from './context/NotificationContext';
-// TODO: RESTORE AUTH — ProtectedRoute import dipertahankan tapi tidak digunakan
-// import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function OfflineBanner() {
   const [isOffline, setIsOffline] = useState(typeof window !== 'undefined' ? !navigator.onLine : false);
@@ -78,10 +77,11 @@ import LandingPage from './pages/LandingPage';
 
 // New Auth & Public Pages
 import WasteCatalog from './pages/public/WasteCatalog';
-// TODO: RESTORE AUTH — login/register pages dinonaktifkan sementara
-// import NewLogin from './pages/auth/Login';
-// import NewRegister from './pages/auth/Register';
-// import PendingVerification from './pages/auth/PendingVerification';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import PendingVerification from './pages/auth/PendingVerification';
+import OAuthCallback from './pages/auth/OAuthCallback';
+import CompleteProfile from './pages/auth/CompleteProfile';
 
 import ExpeditionList from './pages/driver/ExpeditionList';
 import ExpeditionDetail from './pages/driver/ExpeditionDetail';
@@ -90,8 +90,15 @@ import SuperAdminLayout from './pages/superadmin/SuperAdminLayout';
 import SuperAdminOverview from './pages/superadmin/SuperAdminOverview';
 import VerificationQueue from './pages/superadmin/VerificationQueue';
 
-// TODO: RESTORE AUTH — hapus RoleSwitcher setelah auth dibangun ulang
-import RoleSwitcher from './components/dev/RoleSwitcher';
+import AdminDriverLayout from './pages/admin_driver/AdminDriverLayout';
+import DriverDashboard from './pages/admin_driver/DriverDashboard';
+import DriverList from './pages/admin_driver/DriverList';
+
+import AdminPemdaLayout from './pages/admin_pemda/AdminPemdaLayout';
+import PemdaDashboard from './pages/admin_pemda/PemdaDashboard';
+import PemdaList from './pages/admin_pemda/PemdaList';
+
+
 
 export default function App() {
   return (
@@ -100,7 +107,6 @@ export default function App() {
         <OfflineBanner />
         <AuthProvider>
           <BrowserRouter>
-            {/* TODO: RESTORE AUTH — ProtectedRoute dihapus sementara dari semua route */}
             <Routes>
             {/* PUBLIC ROUTES */}
             <Route path="/" element={<LandingPage />} />
@@ -108,19 +114,20 @@ export default function App() {
 
             <Route path="/role-onboarding/:roleId" element={<RoleOnboarding />} />
 
-            {/* TODO: RESTORE AUTH — login/register routes dinonaktifkan sementara */}
-            {/* <Route path="/login" element={<NewLogin />} /> */}
-            {/* <Route path="/auth/login" element={<NewLogin />} /> */}
-            {/* <Route path="/register" element={<RoleSelector />} /> */}
-            {/* <Route path="/register/:role" element={<NewRegister />} /> */}
-            {/* <Route path="/auth/register/:role" element={<NewRegister />} /> */}
-            {/* <Route path="/pending-verification" element={<PendingVerification />} /> */}
-            {/* <Route path="/auth/pending-verification" element={<PendingVerification />} /> */}
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register/:role" element={<Register />} />
+            <Route path="/auth/pending-verification" element={<PendingVerification />} />
+            <Route path="/auth/oauth-callback" element={<OAuthCallback />} />
+            <Route path="/auth/complete-profile" element={<CompleteProfile />} />
+
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* HOUSEHOLD — tanpa ProtectedRoute */}
-            <Route path="/household" element={<HouseholdLayout />}>
+            <Route path="/household" element={
+              <ProtectedRoute allowedRoles={['rumah_tangga']}>
+                <HouseholdLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Navigate to="home" replace />} />
               <Route path="home" element={<Home />} />
               <Route path="request" element={<RequestPickup />} />
@@ -130,8 +137,11 @@ export default function App() {
               <Route path="pickup/:id" element={<Navigate to="../history/:id" replace />} />
             </Route>
 
-            {/* DRIVER — tanpa ProtectedRoute */}
-            <Route path="/driver" element={<DriverLayout />}>
+            <Route path="/driver" element={
+              <ProtectedRoute allowedRoles={['driver']}>
+                <DriverLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Navigate to="tasks" replace />} />
               <Route path="tasks" element={<TaskDashboard />} />
               <Route path="route" element={<RouteOverview />} />
@@ -141,8 +151,11 @@ export default function App() {
               <Route path="profile" element={<DriverProfile />} />
             </Route>
 
-            {/* ADMIN TPS3R — tanpa ProtectedRoute */}
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/admin" element={
+              <ProtectedRoute allowedRoles={['admin_tps3r']}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="incoming" element={<IncomingPickups />} />
@@ -154,8 +167,11 @@ export default function App() {
               <Route path="faq" element={<AdminFAQ />} />
             </Route>
 
-            {/* MITRA B2B — tanpa ProtectedRoute */}
-            <Route path="/mitra" element={<MitraLayout />}>
+            <Route path="/mitra" element={
+              <ProtectedRoute allowedRoles={['mitra_b2b']}>
+                <MitraLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Navigate to="catalog" replace />} />
               <Route path="catalog" element={<Catalog />} />
               <Route path="detail/:id" element={<MaterialDetail />} />
@@ -163,8 +179,11 @@ export default function App() {
               <Route path="faq" element={<MitraFAQ />} />
             </Route>
 
-            {/* PEMDA — tanpa ProtectedRoute */}
-            <Route path="/pemda" element={<PemdaLayout />}>
+            <Route path="/pemda" element={
+              <ProtectedRoute allowedRoles={['pemda']}>
+                <PemdaLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Navigate to="overview" replace />} />
               <Route path="overview" element={<OverviewDashboard />} />
               <Route path="volume" element={<VolumeDetail />} />
@@ -173,8 +192,11 @@ export default function App() {
               <Route path="faq" element={<PemdaFAQ />} />
             </Route>
 
-            {/* SUPER ADMIN — tanpa ProtectedRoute */}
-            <Route path="/superadmin" element={<SuperAdminLayout />}>
+            <Route path="/superadmin" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <SuperAdminLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<Navigate to="overview" replace />} />
               <Route path="overview" element={<SuperAdminOverview />} />
               <Route path="verification" element={<VerificationQueue />} />
@@ -182,11 +204,31 @@ export default function App() {
               <Route path="settings" element={<SuperAdminOverview />} />
             </Route>
 
+            <Route path="/admin-driver" element={
+              <ProtectedRoute allowedRoles={['admin_driver']}>
+                <AdminDriverLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<DriverDashboard />} />
+              <Route path="list" element={<DriverList />} />
+              <Route path="activity" element={<DriverList />} />
+            </Route>
+
+            <Route path="/admin-pemda" element={
+              <ProtectedRoute allowedRoles={['admin_pemda']}>
+                <AdminPemdaLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<PemdaDashboard />} />
+              <Route path="list" element={<PemdaList />} />
+              <Route path="regions" element={<PemdaList />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AccessibilityHelp />
-          {/* TODO: RESTORE AUTH — hapus RoleSwitcher */}
-          <RoleSwitcher />
         </BrowserRouter>
       </AuthProvider>
       </NotificationProvider>

@@ -14,7 +14,7 @@ export default function PemdaLayout() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)' }}>
-      <Sidebar navItems={navItems} accentColor="#059669" roleName="Pemerintah Daerah" />
+      <Sidebar navItems={navItems} accentColor="#059669" roleName="Pemerintah Daerah" hideLogout={true} />
       <div style={{ flex: 1, height: '100vh', overflowY: 'auto' }}>
         <header className="page-header" style={{ 
           backgroundColor: '#fff', 

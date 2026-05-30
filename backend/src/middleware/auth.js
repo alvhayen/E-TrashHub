@@ -1,34 +1,57 @@
-// TODO: RESTORE AUTH — Original file backed up. All middleware bypassed for debug.
-// import jwt from 'jsonwebtoken';
-// import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
-// const prisma = new PrismaClient();
-// const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-etrashhub';
+const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-etrashhub';
 
-export const verifyToken = (req, res, next) => {
-  // TODO: RESTORE AUTH — skip JWT verification sementara
-  // Inject mock user berdasarkan header X-Mock-Role (untuk testing manual)
-  const mockRole = req.headers['x-mock-role'] || 'RUMAH_TANGGA';
+export const verifyToken = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-  const mockUsers = {
-    RUMAH_TANGGA: { id: 1, email: 'sari@email.com',          name: 'Sari',           role: 'RUMAH_TANGGA', driverType: null,          verificationStatus: 'ACTIVE' },
-    DRIVER:       { id: 2, email: 'budi.driver@email.com',   name: 'Budi',           role: 'DRIVER',       driverType: 'FREELANCE',   verificationStatus: 'ACTIVE' },
-    ADMIN_TPS3R:  { id: 3, email: 'admin.tps3r@email.com',   name: 'Admin TPS3R',    role: 'ADMIN_TPS3R',  driverType: null,          verificationStatus: 'ACTIVE' },
-    MITRA_B2B:    { id: 4, email: 'mitra@industri.com',      name: 'Mitra Industri', role: 'MITRA_B2B',    driverType: null,          verificationStatus: 'ACTIVE' },
-    PEMDA:        { id: 5, email: 'dinas@surabaya.go.id',    name: 'Dinas Pemda',    role: 'PEMDA',        driverType: null,          verificationStatus: 'ACTIVE' },
-    SUPER_ADMIN:  { id: 6, email: 'superadmin@etrashhub.id', name: 'Super Admin',    role: 'SUPER_ADMIN',  driverType: null,          verificationStatus: 'ACTIVE' },
-  };
+  if (!token) {
+    return res.status(401).json({ success: false, code: 'NO_TOKEN', error: 'Token tidak ditemukan. Silakan login.' });
+  }
 
-  req.user = mockUsers[mockRole] ?? mockUsers['RUMAH_TANGGA'];
-  next();
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, code: 'TOKEN_EXPIRED', error: 'Sesi telah berakhir. Silakan login kembali.' });
+    }
+    return res.status(401).json({ success: false, code: 'INVALID_TOKEN', error: 'Token tidak valid.' });
+  }
 };
 
 export const authorizeRole = (...roles) => (req, res, next) => {
-  // TODO: RESTORE AUTH — skip role check sementara
+  if (!req.user) {
+    return res.status(401).json({ success: false, error: 'Tidak terautentikasi.' });
+  }
+  const userRole = req.user.role?.toUpperCase();
+  const allowedRoles = roles.map(r => r.toUpperCase());
+  if (!allowedRoles.includes(userRole)) {
+    return res.status(403).json({ success: false, code: 'FORBIDDEN', error: `Akses ditolak. Role ${userRole} tidak diizinkan.` });
+  }
   next();
 };
 
-export const checkActiveStatus = (req, res, next) => {
-  // TODO: RESTORE AUTH — skip status check sementara
-  next();
+export const checkActiveStatus = async (req, res, next) => {
+  if (!req.user) return next();
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { verificationStatus: true }
+    });
+    if (!user) return res.status(401).json({ success: false, error: 'User tidak ditemukan.' });
+    if (user.verificationStatus === 'PENDING') {
+      return res.status(403).json({ success: false, code: 'PENDING_VERIFICATION', error: 'Akun sedang dalam proses verifikasi.' });
+    }
+    if (user.verificationStatus === 'REJECTED') {
+      return res.status(403).json({ success: false, code: 'REJECTED', error: 'Akun ditolak.' });
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
 };

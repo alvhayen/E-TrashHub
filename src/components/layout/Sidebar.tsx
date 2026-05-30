@@ -14,9 +14,10 @@ interface SidebarProps {
   navItems: NavItem[];
   accentColor: string;
   roleName: string;
+  hideLogout?: boolean;
 }
 
-export default function Sidebar({ navItems, accentColor, roleName }: SidebarProps) {
+export default function Sidebar({ navItems, accentColor, roleName, hideLogout = false }: SidebarProps) {
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -117,13 +118,13 @@ export default function Sidebar({ navItems, accentColor, roleName }: SidebarProp
               </div>
             )}
           </div>
-          {!isCollapsed && (
+          {!isCollapsed && !hideLogout && (
             <button onClick={logout} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: '0.5rem' }}>
               <LogOut size={20} />
             </button>
           )}
         </div>
-        {isCollapsed && (
+        {isCollapsed && !hideLogout && (
           <button onClick={logout} style={{ width: '100%', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: '1rem 0 0 0', display: 'flex', justifyContent: 'center' }}>
             <LogOut size={20} />
           </button>

@@ -1,6 +1,10 @@
-export type Role = 'RUMAH_TANGGA' | 'DRIVER' | 'ADMIN_TPS3R' | 'MITRA_B2B' | 'PEMDA' | 'SUPER_ADMIN';
+// Role di frontend menggunakan lowercase (sesuai yang disimpan di AuthContext)
+// Role di backend menggunakan UPPERCASE (sesuai yang disimpan di database)
+// Mapping terjadi di AuthContext saat login
 
-export type AccountStatus = 'active' | 'pending' | 'suspended';
+export type Role = 'rumah_tangga' | 'driver' | 'admin_tps3r' | 'mitra_b2b' | 'pemda' | 'super_admin' | 'admin_driver' | 'admin_pemda';
+
+export type AccountStatus = 'active' | 'pending' | 'rejected';
 
 export interface User {
   id: number;
@@ -13,10 +17,13 @@ export interface User {
   points?: number;
   tps3r_id?: number;
   tps3r_name?: string;
-  driverType?: 'MITRA_TPS3R' | 'INDEPENDENT' | string;
+  driverType?: 'MITRA_TPS3R' | 'FREELANCE' | string;
+  domicile?: string;
+  region?: string;
 }
 
 export interface AuthResponse {
+  success: boolean;
   token: string;
   user: User;
 }

@@ -1,21 +1,49 @@
-// TODO: RESTORE AUTH — ProtectedRoute bypassed, renders children directly
 import React from 'react';
-// import { Navigate } from 'react-router-dom';
-// import { useAuth } from '../context/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Role } from '../types';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: Role[];
+  allowedRoles?: Role[];
 }
 
+const ROLE_DASHBOARDS: Record<string, string> = {
+  rumah_tangga: '/household',
+  driver: '/driver',
+  admin_tps3r: '/admin',
+  mitra_b2b: '/mitra',
+  pemda: '/pemda',
+  super_admin: '/superadmin',
+  admin_driver: '/admin-driver',
+  admin_pemda: '/admin-pemda',
+};
+
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  // TODO: RESTORE AUTH — re-enable auth check, role check, status check
-  // Original behavior:
-  //   - If loading, show spinner
-  //   - If no user, redirect to /login
-  //   - If pending, redirect to /pending-approval
-  //   - If suspended, redirect to /unauthorized
-  //   - If role mismatch, redirect to user's dashboard
+  const { user, isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a2318' }}>
+        <div style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 600 }}>Memuat...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" state={{ from: location.pathname }} replace />;
+  }
+
+  if (user?.status === 'pending') {
+    return <Navigate to="/auth/pending-verification" replace />;
+  }
+
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    // Redirect to user's own dashboard instead of /unauthorized
+    const userDashboard = ROLE_DASHBOARDS[user.role] || '/';
+    return <Navigate to={userDashboard} replace />;
+  }
+
   return <>{children}</>;
 }
