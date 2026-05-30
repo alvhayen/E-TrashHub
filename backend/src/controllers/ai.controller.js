@@ -1,4 +1,10 @@
 import { GoogleGenAI } from '@google/genai';
+import fs from 'fs';
+
+// Pengecekan API Key saat startup (ketika modul di-load)
+if (!process.env.GEMINI_API_KEY) {
+  console.warn('⚠️ WARNING: GEMINI_API_KEY tidak ditemukan di environment variables. Fitur AI akan gagal jika tidak diatur.');
+}
 
 // Daftar kategori sampah yang ada di sistem e-TrashHub
 const WASTE_CATEGORIES_CONTEXT = `
@@ -14,12 +20,9 @@ Panduan estimasi berat:
 - "Ringan": < 2 kg
 - "Sedang": 2–5 kg
 - "Berat": > 5 kg
-
-Sistem poin: 50 poin per kg + bonus 50 poin setiap kelipatan 5 kg.
 `;
 
 export const analyzeWaste = async (req, res) => {
-  // Pengecekan API Key agar tidak terjadi error API_KEY di tengah jalan
   if (!process.env.GEMINI_API_KEY) {
     return res.status(500).json({ error: 'Konfigurasi API AI bermasalah. Admin belum memasukkan GEMINI_API_KEY di .env backend.' });
   }
@@ -37,83 +40,141 @@ export const analyzeWaste = async (req, res) => {
       return res.status(400).json({ error: 'Ukuran gambar terlalu besar. Maksimal 4MB.' });
     }
 
+    // Prompt yang lebih tegas agar AI hanya mengeluarkan JSON dan jika ragu beri confidence rendah.
     const prompt = `
-Kamu adalah asisten pengelolaan sampah cerdas untuk aplikasi e-TrashHub wilayah Kota Balikpapan.
-Analisis gambar sampah yang diberikan dan berikan respons HANYA dalam format JSON.
+Anda adalah asisten AI e-TrashHub wilayah Kota Balikpapan. Analisis gambar sampah ini dan KEMBALIKAN HANYA JSON VALID. DILARANG menggunakan markdown, DILARANG memberikan penjelasan tambahan.
+Jika gambar tidak jelas atau Anda tidak yakin itu sampah, KEMBALIKAN JSON VALID dengan nilai confidence rendah (<0.5).
 
 ${WASTE_CATEGORIES_CONTEXT}
 
 Tugas:
-1. Identifikasi jenis-jenis sampah yang terlihat di gambar
-2. Cocokkan dengan kategori yang tersedia di sistem
-3. Estimasi berat total berdasarkan volume yang terlihat
-4. Berikan tips sorting yang relevan
-5. Hitung estimasi poin yang akan didapat
+1. Identifikasi sampah di gambar.
+2. Cocokkan dengan kategori sistem yang tersedia.
+3. Estimasi berat dalam satuan Kg (angka desimal).
+4. Tentukan apakah bisa didaur ulang.
+`.trim();
 
-Format respons JSON yang diwajibkan:
-{
-  "detectedItems": [
-    {
-      "name": "Nama sampah yang terdeteksi",
-      "category": "slug-kategori-dari-sistem",
-      "categoryLabel": "Label kategori untuk ditampilkan",
-      "confidence": 0.95
-    }
-  ],
-  "estimatedWeight": "Ringan",
-  "estimatedPoints": 75,
-  "sortingTips": "Tips singkat tentang cara menyortir sampah ini.",
-  "environmentalMessage": "Pesan motivasi singkat.",
-  "isRecyclable": true,
-  "warningNote": null
-}
-    `.trim();
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { inlineData: { mimeType: mimeType, data: imageBase64 } },
-            { text: prompt }
-          ]
-        }
-      ],
-      config: {
-        responseMimeType: 'application/json', // Paksa response format JSON langsung dari API
-        temperature: 0.2, 
-        maxOutputTokens: 1024,
+    // Schema dipangkas sesuai permintaan agar tidak memakan token dan rentan kepotong (truncation)
+    const responseSchema = {
+      type: "OBJECT",
+      properties: {
+        detectedItems: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              category: { type: "STRING" },
+              estimatedWeightKg: { type: "NUMBER" },
+              recyclable: { type: "BOOLEAN" },
+              confidence: { type: "NUMBER" }
+            }
+          }
+        },
+        overallConfidence: { type: "NUMBER" }
       }
-    });
+    };
 
-    const rawText = response.text?.trim();
+    let response;
+    let usedModel = 'gemini-2.5-flash';
+
+    // Fungsi wrapper untuk memanggil API Gemini beserta Timeout
+    const callGemini = async (modelName) => {
+      // Timeout 30 detik untuk menghindari request menggantung lama
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), 30000)
+      );
+
+      const apiPromise = ai.models.generateContent({
+        model: modelName,
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { inlineData: { mimeType: mimeType, data: imageBase64 } },
+              { text: prompt }
+            ]
+          }
+        ],
+        config: {
+          responseMimeType: 'application/json', // Paksa response format JSON langsung dari API
+          responseSchema: responseSchema,
+          temperature: 0.1 // Diperkecil agar hasil JSON lebih deterministik & konsisten
+        }
+      });
+
+      return Promise.race([apiPromise, timeoutPromise]);
+    };
+
+    try {
+      response = await callGemini(usedModel);
+    } catch (modelError) {
+      const errMsg = modelError.message || '';
+      
+      // Penanganan 429 (Quota Exceeded / Rate Limit) yang benar, jangan fallback karena pasti gagal juga
+      if (errMsg.includes('429') || modelError.status === 429 || errMsg.includes('RESOURCE_EXHAUSTED')) {
+        console.error(`[AI API] Error 429 Quota Exceeded/Rate Limit pada model ${usedModel}`);
+        return res.status(429).json({ error: 'Layanan AI sedang penuh atau kuota harian telah habis. Silakan coba lagi beberapa saat lagi.' });
+      }
+
+      // Penanganan Timeout
+      if (errMsg === 'TIMEOUT') {
+        console.error(`[AI API] Timeout saat memanggil model ${usedModel}`);
+        return res.status(504).json({ error: 'Waktu tunggu layanan AI habis. Silakan coba lagi.' });
+      }
+
+      // Hanya fallback ke model 2.0-flash JIKA terjadi error 503/UNAVAILABLE
+      if (errMsg.includes('503') || errMsg.includes('UNAVAILABLE') || modelError.status === 503) {
+        console.warn(`[AI API] ${usedModel} unavailable, mencoba fallback ke gemini-2.0-flash...`);
+        usedModel = 'gemini-2.0-flash';
+        try {
+          response = await callGemini(usedModel);
+        } catch (fallbackError) {
+          const fallbackErrMsg = fallbackError.message || '';
+          if (fallbackErrMsg.includes('429') || fallbackError.status === 429 || fallbackErrMsg.includes('RESOURCE_EXHAUSTED')) {
+            console.error(`[AI API Fallback] Error 429 Quota Exceeded pada model ${usedModel}`);
+            return res.status(429).json({ error: 'Layanan AI sedang penuh atau kuota harian telah habis. Silakan coba lagi beberapa saat lagi.' });
+          }
+          throw fallbackError; // Jika bukan 429, lempar error untuk ditangkap di luar
+        }
+      } else {
+        throw modelError; // Jika error bukan 429 dan bukan 503, langsung lempar
+      }
+    }
+
+    // Parsing Response dan Usage Logging
+    let rawText = response.text?.trim() || '';
+    const tokenUsage = response.usageMetadata;
+    console.log(`[AI API] Berhasil menggunakan model ${usedModel}. Tokens -> Prompt: ${tokenUsage?.promptTokenCount || 0}, Output: ${tokenUsage?.candidatesTokenCount || 0}, Total: ${tokenUsage?.totalTokenCount || 0}`);
+
     if (!rawText) {
       return res.status(500).json({ error: 'Gemini tidak memberikan respons. Coba lagi.' });
     }
 
+    // Mencegah error parsing karena markdown (fallback jika API masih bandel)
+    if (rawText.startsWith('```')) {
+      rawText = rawText.replace(/^```(json)?/, '').replace(/```$/, '').trim();
+    }
+
     let analysisResult;
     try {
-      let cleanText = rawText;
-      if (cleanText.startsWith('```json')) {
-        cleanText = cleanText.replace(/^```json\n?/, '').replace(/\n?```$/, '');
-      } else if (cleanText.startsWith('```')) {
-        cleanText = cleanText.replace(/^```\n?/, '').replace(/\n?```$/, '');
-      }
-      analysisResult = JSON.parse(cleanText);
+      analysisResult = JSON.parse(rawText);
     } catch (parseErr) {
-      console.error('Failed to parse JSON. Raw text was:', rawText);
-      return res.status(500).json({ error: 'Gagal memproses respons AI. Format tidak sesuai JSON.' });
+      console.error('[AI API] Gagal memparsing JSON. Raw text:', rawText);
+      // Simpan log secara asinkron agar tidak memblokir thread
+      fs.promises.appendFile('ai-parse-error.log', `[${new Date().toISOString()}] Parse Error:\n${rawText}\n\n`).catch(() => {});
+      return res.status(500).json({ error: 'Gagal memproses respons AI karena format yang diberikan tidak valid.' });
     }
 
     res.json({ success: true, analysis: analysisResult });
 
   } catch (error) {
-    console.error('analyzeWaste error:', error);
-    // Log error to a file so we can inspect it
-    import('fs').then(fs => fs.appendFileSync('error.log', new Date().toISOString() + ' ' + error.stack + '\n'));
+    console.error('[AI API] Kesalahan Sistem analyzeWaste:', error);
+    // Simpan error log secara asinkron
+    fs.promises.appendFile('error.log', `[${new Date().toISOString()}] ${error.stack}\n`).catch(() => {});
+    
     if (error.message?.includes('SAFETY')) {
-      return res.status(400).json({ error: 'Gambar tidak dapat diproses karena alasan keamanan.' });
+      return res.status(400).json({ error: 'Gambar tidak dapat diproses karena alasan kebijakan keamanan.' });
     }
     res.status(500).json({ error: 'Terjadi kesalahan internal saat menganalisis gambar dengan AI. Detail: ' + error.message });
   }
