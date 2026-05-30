@@ -198,7 +198,7 @@ export default function Catalog() {
                     fullWidth 
                     variant="ghost" 
                     style={{ color: '#153D32', border: '1px solid var(--color-border)' }}
-                    onClick={() => navigate(`/mitra/material/${item.id}`)}
+                    onClick={() => navigate(`/mitra/detail/${item.id}`)}
                   >
                     Lihat Spesifikasi →
                   </Button>

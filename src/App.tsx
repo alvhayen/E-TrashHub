@@ -98,6 +98,7 @@ import DriverActivity from './pages/admin_driver/DriverActivity';
 import AdminPemdaLayout from './pages/admin_pemda/AdminPemdaLayout';
 import PemdaDashboard from './pages/admin_pemda/PemdaDashboard';
 import PemdaList from './pages/admin_pemda/PemdaList';
+import PemdaRegions from './pages/admin_pemda/PemdaRegions';
 
 
 
@@ -217,6 +218,7 @@ export default function App() {
               <Route path="activity" element={<DriverActivity />} />
             </Route>
 
+            <Route path="/admin_pemda/*" element={<Navigate to="/admin-pemda" replace />} />
             <Route path="/admin-pemda" element={
               <ProtectedRoute allowedRoles={['admin_pemda']}>
                 <AdminPemdaLayout />
@@ -225,7 +227,7 @@ export default function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<PemdaDashboard />} />
               <Route path="list" element={<PemdaList />} />
-              <Route path="regions" element={<PemdaList />} />
+              <Route path="regions" element={<PemdaRegions />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

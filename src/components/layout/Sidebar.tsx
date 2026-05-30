@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { LogOut, Menu, X } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LogOut, Menu, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -19,6 +19,7 @@ interface SidebarProps {
 
 export default function Sidebar({ navItems, accentColor, roleName, hideLogout = false }: SidebarProps) {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -105,28 +106,22 @@ export default function Sidebar({ navItems, accentColor, roleName, hideLogout = 
         ))}
       </nav>
 
-      <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-full)', backgroundColor: accentColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#fff' }}>
-              {user?.name?.charAt(0).toUpperCase()}
-            </div>
-            {!isCollapsed && (
-              <div style={{ border: 'none' }}>
-                <div style={{ fontSize: '0.875rem', fontWeight: 700, whiteSpace: 'nowrap' }}>{user?.name}</div>
-                <div style={{ fontSize: '0.65rem', opacity: 0.6, fontStyle: 'italic', color: accentColor, whiteSpace: 'nowrap' }}>{roleName}</div>
-              </div>
-            )}
-          </div>
-          {!isCollapsed && !hideLogout && (
-            <button onClick={logout} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: '0.5rem' }}>
-              <LogOut size={20} />
-            </button>
-          )}
-        </div>
-        {isCollapsed && !hideLogout && (
-          <button onClick={logout} style={{ width: '100%', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: '1rem 0 0 0', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <button onClick={() => navigate('/')} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-md)', color: 'rgba(255,255,255,0.9)', cursor: 'pointer', padding: '0.75rem', fontWeight: 600, transition: 'all 0.2s' }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+        >
+          <ArrowLeft size={20} />
+          {!isCollapsed && <span>Halaman Utama</span>}
+        </button>
+
+        {!hideLogout && (
+          <button onClick={logout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-md)', color: 'rgba(255,255,255,0.9)', cursor: 'pointer', padding: '0.75rem', fontWeight: 600, transition: 'all 0.2s' }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.2)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+          >
             <LogOut size={20} />
+            {!isCollapsed && <span>Keluar</span>}
           </button>
         )}
       </div>

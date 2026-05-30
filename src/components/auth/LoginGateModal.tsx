@@ -58,7 +58,7 @@ export default function LoginGateModal({ contextAction, targetRole, onClose }) {
               borderRadius: '12px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer'
             }}
           >
-            Daftar Gratis
+            Daftar
           </button>
         </div>
         

@@ -138,8 +138,14 @@ export default function LandingPage() {
             <a href="#dampak">Dampak</a>
           </div>
           <div className="nav-actions">
-            <button className="btn-outline" onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}>Masuk</button>
-            <button className="btn-solid" onClick={() => navigate('/role-onboarding/RUMAH_TANGGA')}>Mulai Gratis →</button>
+            <button 
+              style={{ backgroundColor: '#16a34a', color: '#ffffff', padding: '0.5rem 1.25rem', borderRadius: '9999px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#15803d'}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#16a34a'}
+              onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}
+            >
+              Bergabung Sekarang
+            </button>
             <button className="mobile-menu"><Menu size={24} /></button>
           </div>
         </div>
@@ -333,7 +339,7 @@ export default function LandingPage() {
         <div className="footer-cta">
           <h2>Siap bergabung dalam ekosistem hijau?</h2>
           <div className="footer-cta-buttons">
-            <button className="btn-solid-light" onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}>Mulai Gratis Sekarang</button>
+            <button className="btn-solid-light" onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}>Mulai Sekarang</button>
             <button className="btn-outline-light" onClick={() => document.getElementById('tentang')?.scrollIntoView({behavior: 'smooth'})}>Pelajari Lebih Lanjut</button>
           </div>
         </div>
