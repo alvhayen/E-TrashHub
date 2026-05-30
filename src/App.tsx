@@ -93,6 +93,7 @@ import VerificationQueue from './pages/superadmin/VerificationQueue';
 import AdminDriverLayout from './pages/admin_driver/AdminDriverLayout';
 import DriverDashboard from './pages/admin_driver/DriverDashboard';
 import DriverList from './pages/admin_driver/DriverList';
+import DriverActivity from './pages/admin_driver/DriverActivity';
 
 import AdminPemdaLayout from './pages/admin_pemda/AdminPemdaLayout';
 import PemdaDashboard from './pages/admin_pemda/PemdaDashboard';
@@ -204,6 +205,7 @@ export default function App() {
               <Route path="settings" element={<SuperAdminOverview />} />
             </Route>
 
+            <Route path="/admin_driver/*" element={<Navigate to="/admin-driver" replace />} />
             <Route path="/admin-driver" element={
               <ProtectedRoute allowedRoles={['admin_driver']}>
                 <AdminDriverLayout />
@@ -212,7 +214,7 @@ export default function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<DriverDashboard />} />
               <Route path="list" element={<DriverList />} />
-              <Route path="activity" element={<DriverList />} />
+              <Route path="activity" element={<DriverActivity />} />
             </Route>
 
             <Route path="/admin-pemda" element={

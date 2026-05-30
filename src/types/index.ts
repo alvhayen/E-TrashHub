@@ -20,6 +20,10 @@ export interface User {
   driverType?: 'MITRA_TPS3R' | 'FREELANCE' | string;
   domicile?: string;
   region?: string;
+  vehicleType?: string;
+  vehiclePlate?: string;
+  zone?: string;
+  isOnDuty?: boolean;
 }
 
 export interface AuthResponse {

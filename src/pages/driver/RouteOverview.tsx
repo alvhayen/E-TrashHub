@@ -16,26 +16,58 @@ L.Icon.Default.mergeOptions({
 
 const BALIKPAPAN_CENTER: [number, number] = [-1.2379, 116.8529];
 
-const getMockCoordinate = (idx: number): [number, number] => {
-  const offset = 0.005 * (idx + 1);
-  return [
-    BALIKPAPAN_CENTER[0] + (idx % 2 === 0 ? offset : -offset), 
-    BALIKPAPAN_CENTER[1] + (idx % 3 === 0 ? offset : -offset)
-  ];
+// GANTI fungsi getMockCoordinate dengan hook geocoding asli
+// Tambahkan state untuk koordinat hasil geocoding (dipindah ke dalam komponen)
+
+// Tambahkan fungsi geocode setelah state declarations
+const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
+  try {
+    const encoded = encodeURIComponent(address + ', Kalimantan Timur, Indonesia');
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encoded}&format=json&limit=1`, {
+      headers: { 'Accept-Language': 'id' }
+    });
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    }
+  } catch (err) {
+    console.warn('Geocode failed for:', address);
+  }
+  return null;
 };
 
 export default function RouteOverview() {
   const { request } = useApi();
   const [tasks, setTasks] = useState<any[]>([]);
+  const [coordsMap, setCoordsMap] = useState<Record<number, [number, number]>>({});
 
   useEffect(() => {
-    request('GET', '/api/pickup/driver').then(data => {
-      setTasks(data.pickups || []);
-    }).catch(console.error);
+    const loadTasksAndCoords = async () => {
+      try {
+        const data = await request('GET', '/api/pickup/driver');
+        setTasks(data.pickups || []);
+
+        // Geocode semua alamat
+        const newCoords: Record<number, [number, number]> = {};
+        for (const task of (data.pickups || [])) {
+          if (task.status !== 'PENDING' && task.status !== 'ON_THE_WAY') continue;
+          const coords = await geocodeAddress(task.address);
+          if (coords) newCoords[task.id] = coords;
+          // Rate limit Nominatim: tunggu 300ms antar request
+          await new Promise(r => setTimeout(r, 300));
+        }
+        setCoordsMap(newCoords);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadTasksAndCoords();
   }, [request]);
 
   const pendingTasks = tasks.filter(t => ['PENDING', 'ON_THE_WAY'].includes(t.status));
-  const markers = pendingTasks.map((t, idx) => ({ ...t, position: getMockCoordinate(idx) }));
+  const markers = pendingTasks
+    .filter(t => coordsMap[t.id])
+    .map(t => ({ ...t, position: coordsMap[t.id] as [number, number] }));
   const polylinePositions = markers.map(m => m.position);
 
   return (

@@ -184,10 +184,10 @@ export const getLeaderboard = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, vehicleType, vehiclePlate, domicile } = req.body;
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
-      data: { name, phone, address },
+      data: { name, phone, address, vehicleType, vehiclePlate, domicile },
       select: {
         id: true,
         email: true,
@@ -195,7 +195,10 @@ export const updateProfile = async (req, res, next) => {
         role: true,
         address: true,
         phone: true,
-        points: true
+        points: true,
+        vehicleType: true,
+        vehiclePlate: true,
+        domicile: true
       }
     });
     res.json({ user: updatedUser });

@@ -54,8 +54,8 @@ export const getDriverPickups = async (req, res) => {
     const pickups = await prisma.pickupRequest.findMany({
       where: {
         OR: [
-          { status: 'PENDING' },
-          { driverId: req.user.id, status: 'ON_THE_WAY' }
+          { status: 'PENDING', driverId: null },   // task tersedia (belum diklaim)
+          { driverId: req.user.id, status: { in: ['ACCEPTED', 'ON_THE_WAY', 'COLLECTED', 'DELIVERED_TO_TPS3R'] } }
         ]
       },
       include: {
@@ -73,6 +73,154 @@ export const getDriverPickups = async (req, res) => {
   }
 };
 
+// PATCH /pickup/:id/accept — driver mengklaim/menerima task (atomic, mencegah race condition)
+export const acceptPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pickupId = parseInt(id);
+    const driverId = req.user.id;
+
+    // Atomic update: hanya berhasil jika status masih PENDING dan belum ada driver
+    const pickup = await prisma.pickupRequest.updateMany({
+      where: {
+        id: pickupId,
+        status: 'PENDING',
+        driverId: null  // belum diklaim siapapun
+      },
+      data: {
+        status: 'ACCEPTED',
+        driverId: driverId,
+        acceptedAt: new Date()
+      }
+    });
+
+    // updateMany mengembalikan { count }, bukan objek pickup
+    if (pickup.count === 0) {
+      // Task sudah diklaim driver lain atau tidak ada
+      return res.status(409).json({
+        error: 'Task ini sudah diambil oleh driver lain atau tidak tersedia.',
+        code: 'ALREADY_CLAIMED'
+      });
+    }
+
+    const updatedPickup = await prisma.pickupRequest.findUnique({
+      where: { id: pickupId },
+      include: { user: { select: { name: true, phone: true, address: true } } }
+    });
+
+    res.json({ success: true, pickup: parsePickup(updatedPickup) });
+  } catch (error) {
+    console.error('acceptPickup error:', error);
+    res.status(500).json({ error: 'Gagal menerima task' });
+  }
+};
+
+// PATCH /pickup/:id/cancel-accept — driver membatalkan penerimaan (kembali ke PENDING)
+export const cancelAcceptPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const pickupId = parseInt(id);
+
+    const existing = await prisma.pickupRequest.findUnique({ where: { id: pickupId } });
+    if (!existing) return res.status(404).json({ error: 'Pickup tidak ditemukan' });
+    if (existing.driverId !== req.user.id) return res.status(403).json({ error: 'Bukan tugas Anda' });
+    if (!['ACCEPTED'].includes(existing.status)) {
+      return res.status(400).json({ error: 'Hanya task berstatus ACCEPTED yang bisa dibatalkan' });
+    }
+
+    const updated = await prisma.pickupRequest.update({
+      where: { id: pickupId },
+      data: {
+        status: 'PENDING',
+        driverId: null,
+        acceptedAt: null,
+        cancelReason: reason || 'Dibatalkan oleh driver'
+      }
+    });
+
+    res.json({ success: true, pickup: parsePickup(updated) });
+  } catch (error) {
+    console.error('cancelAcceptPickup error:', error);
+    res.status(500).json({ error: 'Gagal membatalkan penerimaan task' });
+  }
+};
+
+// PATCH /pickup/:id/deliver — driver melapor telah menyetor ke TPS3R (khusus FREELANCE)
+export const deliverToTPS3R = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tps3rTargetId, driverNote } = req.body;
+    const pickupId = parseInt(id);
+
+    const existing = await prisma.pickupRequest.findUnique({ where: { id: pickupId } });
+    if (!existing) return res.status(404).json({ error: 'Pickup tidak ditemukan' });
+    if (existing.driverId !== req.user.id) return res.status(403).json({ error: 'Bukan tugas Anda' });
+    if (existing.status !== 'COLLECTED') {
+      return res.status(400).json({ error: 'Pickup harus berstatus COLLECTED sebelum disetor' });
+    }
+
+    // Validasi tps3rTargetId adalah user dengan role ADMIN_TPS3R
+    if (tps3rTargetId) {
+      const tps3r = await prisma.user.findFirst({
+        where: { id: parseInt(tps3rTargetId), role: 'ADMIN_TPS3R', verificationStatus: 'ACTIVE' }
+      });
+      if (!tps3r) return res.status(400).json({ error: 'TPS3R tujuan tidak valid' });
+    }
+
+    const updated = await prisma.pickupRequest.update({
+      where: { id: pickupId },
+      data: {
+        status: 'DELIVERED_TO_TPS3R',
+        tps3rTargetId: tps3rTargetId ? parseInt(tps3rTargetId) : null,
+        deliveredAt: new Date(),
+        note: driverNote ? `${existing.note || ''}\n[Driver]: ${driverNote}`.trim() : existing.note
+      }
+    });
+
+    res.json({ success: true, pickup: parsePickup(updated) });
+  } catch (error) {
+    console.error('deliverToTPS3R error:', error);
+    res.status(500).json({ error: 'Gagal memperbarui status setoran' });
+  }
+};
+
+// GET /pickup/driver/active — driver lihat task yang sedang aktif miliknya
+export const getDriverActiveTask = async (req, res) => {
+  try {
+    const pickup = await prisma.pickupRequest.findFirst({
+      where: {
+        driverId: req.user.id,
+        status: { in: ['ACCEPTED', 'ON_THE_WAY', 'COLLECTED', 'DELIVERED_TO_TPS3R'] }
+      },
+      include: {
+        user: { select: { name: true, phone: true, address: true } }
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
+
+    res.json({ success: true, activeTask: pickup ? parsePickup(pickup) : null });
+  } catch (error) {
+    console.error('getDriverActiveTask error:', error);
+    res.status(500).json({ error: 'Gagal mengambil task aktif' });
+  }
+};
+
+// GET /pickup/driver/tps3r-list — ambil daftar TPS3R aktif untuk pilihan setor
+export const getActiveTPS3RList = async (req, res) => {
+  try {
+    const tps3rList = await prisma.user.findMany({
+      where: { role: 'ADMIN_TPS3R', verificationStatus: 'ACTIVE' },
+      select: { id: true, name: true, tpsName: true, tpsAddress: true, zone: true }
+    });
+
+    res.json({ success: true, tps3rList });
+  } catch (error) {
+    console.error('getActiveTPS3RList error:', error);
+    res.status(500).json({ error: 'Gagal mengambil daftar TPS3R' });
+  }
+};
+
 // PATCH /pickup/:id/status — driver updates status (DRIVER)
 export const updateStatus = async (req, res) => {
   try {
@@ -81,6 +229,16 @@ export const updateStatus = async (req, res) => {
 
     if (!['ON_THE_WAY', 'COLLECTED'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status update for driver' });
+    }
+
+    // Validasi: hanya driver yang sudah ACCEPT yang boleh update ke ON_THE_WAY
+    if (status === 'ON_THE_WAY') {
+      const currentPickup = await prisma.pickupRequest.findUnique({ where: { id: parseInt(id) } });
+      if (!currentPickup) return res.status(404).json({ error: 'Pickup tidak ditemukan' });
+      if (currentPickup.driverId !== req.user.id) return res.status(403).json({ error: 'Bukan tugas Anda' });
+      if (currentPickup.status !== 'ACCEPTED') {
+        return res.status(400).json({ error: 'Harus ACCEPT task sebelum berangkat' });
+      }
     }
 
     const pickup = await prisma.pickupRequest.update({
@@ -102,7 +260,14 @@ export const updateStatus = async (req, res) => {
 export const getAdminPickups = async (req, res) => {
   try {
     const pickups = await prisma.pickupRequest.findMany({
-      where: { status: 'COLLECTED' },
+      where: { 
+        status: { in: ['COLLECTED', 'DELIVERED_TO_TPS3R'] },
+        // Jika ada tps3rTargetId, hanya tampilkan yang ditujukan ke admin ini
+        OR: [
+          { tps3rTargetId: null },
+          { tps3rTargetId: req.user.id }
+        ]
+      },
       include: {
         user: { select: { name: true, address: true } },
         driver: { select: { name: true } }

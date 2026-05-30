@@ -12,7 +12,9 @@ export default function CompletedTasks() {
 
   useEffect(() => {
     request('GET', '/api/pickup/driver').then(data => {
-      setTasks((data.pickups || []).filter((p: any) => p.status === 'COLLECTED' || p.status === 'VERIFIED' || p.status === 'COMPLETED'));
+      setTasks((data.pickups || []).filter((p: any) => 
+        ['COLLECTED', 'DELIVERED_TO_TPS3R', 'VERIFIED', 'COMPLETED'].includes(p.status)
+      ));
     }).catch(console.error);
   }, [request]);
 
@@ -48,7 +50,14 @@ export default function CompletedTasks() {
               <Card key={task.id} variant="bordered" padding="sm">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <div style={{ fontWeight: 700, fontSize: '1rem' }}>{task.user?.name}</div>
-                  <Badge status={task.status} />
+                  <div>
+                    <Badge status={task.status} />
+                    {task.status === 'DELIVERED_TO_TPS3R' && (
+                      <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 600, display: 'block', marginTop: '0.25rem', textAlign: 'right' }}>
+                        ⏳ Menunggu verifikasi TPS3R
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>

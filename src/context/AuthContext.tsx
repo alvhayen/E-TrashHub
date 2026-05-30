@@ -80,7 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateUser = (data: Partial<User>) => {
-    if (user) setUser({ ...user, ...data });
+    if (user) {
+      const updatedData = { ...data };
+      if (updatedData.role && typeof updatedData.role === 'string') {
+        updatedData.role = updatedData.role.toLowerCase() as any;
+      }
+      setUser({ ...user, ...updatedData });
+    }
   };
 
   return (

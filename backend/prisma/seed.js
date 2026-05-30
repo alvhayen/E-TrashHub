@@ -61,7 +61,9 @@ async function main() {
       role: 'DRIVER',
       verificationStatus: 'ACTIVE',
       driverType: 'FREELANCE',
-      domicile: 'Jakarta Selatan',
+      domicile: 'Balikpapan Selatan',
+      vehicleType: 'Motor Roda Tiga',
+      vehiclePlate: 'KT 5678 CD',
     },
   });
 
@@ -75,7 +77,9 @@ async function main() {
       role: 'DRIVER',
       verificationStatus: 'ACTIVE',
       driverType: 'MITRA_TPS3R',
-      domicile: 'Jakarta Timur',
+      domicile: 'Balikpapan Barat',
+      vehicleType: 'Pickup Bak L300',
+      vehiclePlate: 'KT 1234 AB',
     },
   });
 

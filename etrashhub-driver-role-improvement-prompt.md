@@ -1,3 +1,365 @@
+# 🚛 Prompt Peningkatan Role Driver/Volunteer — e-TrashHub
+## Evaluasi Mendalam + Implementasi Lengkap untuk AI Agent (Antigravity)
+
+> **Kirim prompt ini ke AI Agent di Antigravity sebagai satu kesatuan.**
+> Agent wajib baca file existing terlebih dahulu — JANGAN membuat ulang dari nol.
+> Modifikasi bersifat additive dan non-breaking terhadap kode yang sudah ada.
+
+---
+
+## 📋 RINGKASAN EVALUASI (Baca Dahulu Sebelum Mengerjakan)
+
+Setelah audit menyeluruh terhadap role driver di e-TrashHub, ditemukan **7 masalah kritis** yang membuat role ini belum siap digunakan secara nyata:
+
+### ❌ Masalah yang Ditemukan
+
+| # | Masalah | Lokasi | Dampak |
+|---|---------|--------|--------|
+| 1 | **Tidak ada Accept/Reject task** — driver langsung "jemput" tanpa konfirmasi dahulu | `pickup.controller.js`, `TaskDashboard.tsx` | Driver tidak punya kendali; bisa overlap, salah zonasi |
+| 2 | **Status `COLLECTED` tidak punya aksi lanjutan** — button mati setelah sampah diambil, driver tidak tahu harus ke mana | `TaskDashboard.tsx` baris status COLLECTED | Driver bingung, UX buntu |
+| 3 | **Tidak ada pengecekan duplikasi** — dua driver bisa klik "Jemput Sekarang" pada task yang sama secara bersamaan | `updateStatus()` di `pickup.controller.js` | Race condition, task di-claim dua driver |
+| 4 | **Zonasi hardcoded** — "Zona: Balikpapan Barat" di header adalah teks statis, bukan data dari user | `TaskDashboard.tsx` baris 57 | Menyesatkan, tidak fungsional |
+| 5 | **RouteOverview pakai koordinat mock** — `getMockCoordinate()` menghasilkan titik acak di sekitar Balikpapan, bukan alamat asli | `RouteOverview.tsx` | Navigasi tidak akurat sama sekali |
+| 6 | **DriverProfile hardcoded** — kendaraan "Pickup Bak L300 (KT 1234 AB)" dan zona "Balikpapan Barat" adalah string statis | `DriverProfile.tsx` | Profil tidak mencerminkan data nyata |
+| 7 | **Expedition hanya untuk MITRA_TPS3R** — Driver FREELANCE tidak punya alur kerja setelah COLLECTED, tidak ada bridge ke TPS3R | `ExpeditionList.tsx`, `expedition.controller.js` | Freelance driver tidak punya end-to-end flow |
+
+### ✅ Yang Sudah Baik (Jangan Diubah)
+- Struktur navigasi DriverLayout (Tugas → Rute → Ekspedisi → Selesai → Profil)
+- Timeline visual di ExpeditionDetail
+- Logic Expedition (ASSIGNED → ON_THE_WAY → ARRIVED → CONFIRMED)
+- Manifest display di ExpeditionDetail
+- Bonus poin claim mechanism
+- CSS styling di Expedition.css (pertahankan semua class yang ada)
+
+---
+
+## 🏗️ ARSITEKTUR PERBAIKAN
+
+### Flow Baru yang Diinginkan
+
+```
+DRIVER FREELANCE:
+  Dashboard → Lihat task PENDING
+    → [Terima Tugas] → status: ACCEPTED (driver terkunci ke task ini)
+    → [Jemput Sekarang] → status: ON_THE_WAY
+    → [Sampah Sudah Diambil] → status: COLLECTED
+    → [Setor ke TPS3R] → pilih TPS3R terdekat → status: DELIVERED_TO_TPS3R
+    → Selesai ✅
+
+DRIVER MITRA_TPS3R:
+  Dashboard → Lihat task PENDING
+    → [Terima Tugas] → status: ACCEPTED
+    → [Jemput Sekarang] → status: ON_THE_WAY
+    → [Sampah Sudah Diambil] → status: COLLECTED
+    → [Antar ke TPS3R] → otomatis trigger ekspedisi → status: DELIVERING
+    → Ekspedisi selesai → status: COMPLETED ✅
+```
+
+---
+
+## 📁 FILE YANG PERLU DIMODIFIKASI
+
+### Daftar file yang wajib dibaca SEBELUM mengerjakan:
+1. `backend/prisma/schema.prisma`
+2. `backend/src/controllers/pickup.controller.js`
+3. `backend/src/routes/pickup.routes.js`
+4. `src/pages/driver/TaskDashboard.tsx`
+5. `src/pages/driver/RouteOverview.tsx`
+6. `src/pages/driver/DriverProfile.tsx`
+7. `src/pages/driver/CompletedTasks.tsx`
+8. `src/pages/driver/DriverLayout.tsx`
+9. `src/App.tsx` (untuk tambah route baru)
+
+---
+
+## BAGIAN 1 — DATABASE SCHEMA
+
+### FILE: `backend/prisma/schema.prisma`
+
+**Aksi: TAMBAHKAN field baru pada model `PickupRequest` dan model `User`. Jangan hapus field lama.**
+
+Pada model `PickupRequest`, tambahkan field berikut setelah baris `updatedAt`:
+
+```prisma
+  acceptedAt      DateTime?
+  collectedAt     DateTime?
+  deliveredAt     DateTime?
+  tps3rTargetId   Int?       // FK ke User (role ADMIN_TPS3R) yang dituju driver
+  cancelReason    String?    // alasan jika dibatalkan driver
+```
+
+Pada model `User`, tambahkan field berikut setelah baris `domicile`:
+
+```prisma
+  vehicleType     String?   // Jenis kendaraan, contoh: "Motor", "Pickup Bak"
+  vehiclePlate    String?   // Plat nomor kendaraan
+  isOnDuty        Boolean   @default(false)  // apakah sedang aktif bertugas
+```
+
+Setelah menambahkan field di schema, jalankan:
+```bash
+npx prisma migrate dev --name add_driver_workflow_fields
+npx prisma generate
+```
+
+---
+
+## BAGIAN 2 — BACKEND CONTROLLER
+
+### FILE: `backend/src/controllers/pickup.controller.js`
+
+**Aksi: TAMBAHKAN fungsi-fungsi baru di bawah fungsi `getDriverPickups` yang sudah ada. Jangan ubah fungsi existing.**
+
+Tambahkan tepat setelah fungsi `getDriverPickups` (sebelum `updateStatus`):
+
+```javascript
+// PATCH /pickup/:id/accept — driver mengklaim/menerima task (atomic, mencegah race condition)
+export const acceptPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pickupId = parseInt(id);
+    const driverId = req.user.id;
+
+    // Atomic update: hanya berhasil jika status masih PENDING dan belum ada driver
+    const pickup = await prisma.pickupRequest.updateMany({
+      where: {
+        id: pickupId,
+        status: 'PENDING',
+        driverId: null  // belum diklaim siapapun
+      },
+      data: {
+        status: 'ACCEPTED',
+        driverId: driverId,
+        acceptedAt: new Date()
+      }
+    });
+
+    // updateMany mengembalikan { count }, bukan objek pickup
+    if (pickup.count === 0) {
+      // Task sudah diklaim driver lain atau tidak ada
+      return res.status(409).json({
+        error: 'Task ini sudah diambil oleh driver lain atau tidak tersedia.',
+        code: 'ALREADY_CLAIMED'
+      });
+    }
+
+    const updatedPickup = await prisma.pickupRequest.findUnique({
+      where: { id: pickupId },
+      include: { user: { select: { name: true, phone: true, address: true } } }
+    });
+
+    res.json({ success: true, pickup: parsePickup(updatedPickup) });
+  } catch (error) {
+    console.error('acceptPickup error:', error);
+    res.status(500).json({ error: 'Gagal menerima task' });
+  }
+};
+
+// PATCH /pickup/:id/cancel-accept — driver membatalkan penerimaan (kembali ke PENDING)
+export const cancelAcceptPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const pickupId = parseInt(id);
+
+    const existing = await prisma.pickupRequest.findUnique({ where: { id: pickupId } });
+    if (!existing) return res.status(404).json({ error: 'Pickup tidak ditemukan' });
+    if (existing.driverId !== req.user.id) return res.status(403).json({ error: 'Bukan tugas Anda' });
+    if (!['ACCEPTED'].includes(existing.status)) {
+      return res.status(400).json({ error: 'Hanya task berstatus ACCEPTED yang bisa dibatalkan' });
+    }
+
+    const updated = await prisma.pickupRequest.update({
+      where: { id: pickupId },
+      data: {
+        status: 'PENDING',
+        driverId: null,
+        acceptedAt: null,
+        cancelReason: reason || 'Dibatalkan oleh driver'
+      }
+    });
+
+    res.json({ success: true, pickup: parsePickup(updated) });
+  } catch (error) {
+    console.error('cancelAcceptPickup error:', error);
+    res.status(500).json({ error: 'Gagal membatalkan penerimaan task' });
+  }
+};
+
+// PATCH /pickup/:id/deliver — driver melapor telah menyetor ke TPS3R (khusus FREELANCE)
+export const deliverToTPS3R = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tps3rTargetId, driverNote } = req.body;
+    const pickupId = parseInt(id);
+
+    const existing = await prisma.pickupRequest.findUnique({ where: { id: pickupId } });
+    if (!existing) return res.status(404).json({ error: 'Pickup tidak ditemukan' });
+    if (existing.driverId !== req.user.id) return res.status(403).json({ error: 'Bukan tugas Anda' });
+    if (existing.status !== 'COLLECTED') {
+      return res.status(400).json({ error: 'Pickup harus berstatus COLLECTED sebelum disetor' });
+    }
+
+    // Validasi tps3rTargetId adalah user dengan role ADMIN_TPS3R
+    if (tps3rTargetId) {
+      const tps3r = await prisma.user.findFirst({
+        where: { id: parseInt(tps3rTargetId), role: 'ADMIN_TPS3R', verificationStatus: 'ACTIVE' }
+      });
+      if (!tps3r) return res.status(400).json({ error: 'TPS3R tujuan tidak valid' });
+    }
+
+    const updated = await prisma.pickupRequest.update({
+      where: { id: pickupId },
+      data: {
+        status: 'DELIVERED_TO_TPS3R',
+        tps3rTargetId: tps3rTargetId ? parseInt(tps3rTargetId) : null,
+        deliveredAt: new Date(),
+        note: driverNote ? `${existing.note || ''}\n[Driver]: ${driverNote}`.trim() : existing.note
+      }
+    });
+
+    res.json({ success: true, pickup: parsePickup(updated) });
+  } catch (error) {
+    console.error('deliverToTPS3R error:', error);
+    res.status(500).json({ error: 'Gagal memperbarui status setoran' });
+  }
+};
+
+// GET /pickup/driver/active — driver lihat task yang sedang aktif miliknya
+export const getDriverActiveTask = async (req, res) => {
+  try {
+    const pickup = await prisma.pickupRequest.findFirst({
+      where: {
+        driverId: req.user.id,
+        status: { in: ['ACCEPTED', 'ON_THE_WAY', 'COLLECTED', 'DELIVERED_TO_TPS3R'] }
+      },
+      include: {
+        user: { select: { name: true, phone: true, address: true } }
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
+
+    res.json({ success: true, activeTask: pickup ? parsePickup(pickup) : null });
+  } catch (error) {
+    console.error('getDriverActiveTask error:', error);
+    res.status(500).json({ error: 'Gagal mengambil task aktif' });
+  }
+};
+
+// GET /pickup/driver/tps3r-list — ambil daftar TPS3R aktif untuk pilihan setor
+export const getActiveTPS3RList = async (req, res) => {
+  try {
+    const tps3rList = await prisma.user.findMany({
+      where: { role: 'ADMIN_TPS3R', verificationStatus: 'ACTIVE' },
+      select: { id: true, name: true, tpsName: true, tpsAddress: true, zone: true }
+    });
+
+    res.json({ success: true, tps3rList });
+  } catch (error) {
+    console.error('getActiveTPS3RList error:', error);
+    res.status(500).json({ error: 'Gagal mengambil daftar TPS3R' });
+  }
+};
+```
+
+Selanjutnya, **MODIFIKASI** fungsi `updateStatus` yang sudah ada — tambahkan status `ACCEPTED` dan `DELIVERED_TO_TPS3R` ke dalam validasi:
+
+Cari baris ini di `updateStatus`:
+```javascript
+if (!['ON_THE_WAY', 'COLLECTED'].includes(status)) {
+  return res.status(400).json({ error: 'Invalid status update for driver' });
+}
+```
+
+Ganti dengan:
+```javascript
+if (!['ON_THE_WAY', 'COLLECTED'].includes(status)) {
+  return res.status(400).json({ error: 'Invalid status update for driver' });
+}
+
+// Validasi: hanya driver yang sudah ACCEPT yang boleh update ke ON_THE_WAY
+if (status === 'ON_THE_WAY') {
+  const currentPickup = await prisma.pickupRequest.findUnique({ where: { id: parseInt(id) } });
+  if (!currentPickup) return res.status(404).json({ error: 'Pickup tidak ditemukan' });
+  if (currentPickup.driverId !== req.user.id) return res.status(403).json({ error: 'Bukan tugas Anda' });
+  if (currentPickup.status !== 'ACCEPTED') {
+    return res.status(400).json({ error: 'Harus ACCEPT task sebelum berangkat' });
+  }
+}
+```
+
+**MODIFIKASI** fungsi `getDriverPickups` — ubah query agar mengambil status yang lebih lengkap:
+
+Cari:
+```javascript
+const pickups = await prisma.pickupRequest.findMany({
+  where: {
+    OR: [
+      { status: 'PENDING' },
+      { driverId: req.user.id, status: 'ON_THE_WAY' }
+    ]
+  },
+```
+
+Ganti dengan:
+```javascript
+const pickups = await prisma.pickupRequest.findMany({
+  where: {
+    OR: [
+      { status: 'PENDING', driverId: null },   // task tersedia (belum diklaim)
+      { driverId: req.user.id, status: { in: ['ACCEPTED', 'ON_THE_WAY', 'COLLECTED', 'DELIVERED_TO_TPS3R'] } }
+    ]
+  },
+```
+
+---
+
+## BAGIAN 3 — BACKEND ROUTES
+
+### FILE: `backend/src/routes/pickup.routes.js`
+
+**Aksi: TAMBAHKAN route baru. Jangan hapus route existing.**
+
+Tambahkan setelah baris `router.patch('/:id/status', authorizeRole('DRIVER'), updateStatus);`:
+
+```javascript
+// Tambahkan import fungsi baru di bagian atas file (setelah import existing)
+// import { ..., acceptPickup, cancelAcceptPickup, deliverToTPS3R, getDriverActiveTask, getActiveTPS3RList } from '../controllers/pickup.controller.js';
+
+router.get('/driver/active', authorizeRole('DRIVER'), getDriverActiveTask);
+router.get('/driver/tps3r-list', authorizeRole('DRIVER'), getActiveTPS3RList);
+router.patch('/:id/accept', authorizeRole('DRIVER'), acceptPickup);
+router.patch('/:id/cancel-accept', authorizeRole('DRIVER'), cancelAcceptPickup);
+router.patch('/:id/deliver', authorizeRole('DRIVER'), deliverToTPS3R);
+```
+
+**PENTING:** Update juga baris import di bagian atas file agar memasukkan fungsi baru:
+```javascript
+import { 
+  createPickup, 
+  getHouseholdPickups, 
+  getDriverPickups, 
+  updateStatus,
+  acceptPickup,
+  cancelAcceptPickup,
+  deliverToTPS3R,
+  getDriverActiveTask,
+  getActiveTPS3RList,
+  getAdminPickups, 
+  verifyPickup, 
+  getPickupAnalytics 
+} from '../controllers/pickup.controller.js';
+```
+
+---
+
+## BAGIAN 4 — FRONTEND: TaskDashboard.tsx
+
+### FILE: `src/pages/driver/TaskDashboard.tsx`
+
+**Aksi: GANTI SELURUH ISI FILE dengan kode berikut.**
+
+```tsx
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApi } from '../../hooks/useApi';
@@ -31,7 +393,6 @@ type TPS3R = {
   id: number;
   tpsName: string;
   tpsAddress: string;
-  name?: string;
 };
 
 export default function TaskDashboard() {
@@ -457,3 +818,234 @@ function TaskCard({ task, isExpanded, onToggle, onAction, isProcessing, accentCo
     </Card>
   );
 }
+```
+
+---
+
+## BAGIAN 5 — FRONTEND: RouteOverview.tsx
+
+### FILE: `src/pages/driver/RouteOverview.tsx`
+
+**Aksi: MODIFIKASI bagian `getMockCoordinate` dan tambahkan geocoding sederhana.**
+
+Cari dan GANTI fungsi `getMockCoordinate`:
+
+```tsx
+// GANTI fungsi getMockCoordinate dengan hook geocoding asli
+// Tambahkan state untuk koordinat hasil geocoding
+const [coordsMap, setCoordsMap] = useState<Record<number, [number, number]>>({});
+
+// Tambahkan fungsi geocode setelah state declarations
+const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
+  try {
+    const encoded = encodeURIComponent(address + ', Kalimantan Timur, Indonesia');
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encoded}&format=json&limit=1`, {
+      headers: { 'Accept-Language': 'id' }
+    });
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    }
+  } catch (err) {
+    console.warn('Geocode failed for:', address);
+  }
+  return null;
+};
+```
+
+Kemudian di dalam `useEffect`, setelah `setTasks(data.pickups || [])`, tambahkan:
+
+```tsx
+// Geocode semua alamat
+const newCoords: Record<number, [number, number]> = {};
+for (const task of (data.pickups || [])) {
+  if (task.status !== 'PENDING' && task.status !== 'ON_THE_WAY') continue;
+  const coords = await geocodeAddress(task.address);
+  if (coords) newCoords[task.id] = coords;
+  // Rate limit Nominatim: tunggu 300ms antar request
+  await new Promise(r => setTimeout(r, 300));
+}
+setCoordsMap(newCoords);
+```
+
+Dan GANTI `const markers = pendingTasks.map(...)` dengan:
+
+```tsx
+const markers = pendingTasks
+  .filter(t => coordsMap[t.id])
+  .map(t => ({ ...t, position: coordsMap[t.id] as [number, number] }));
+```
+
+---
+
+## BAGIAN 6 — FRONTEND: DriverProfile.tsx
+
+### FILE: `src/pages/driver/DriverProfile.tsx`
+
+**Aksi: MODIFIKASI bagian yang hardcoded. Ganti nilai statis dengan data dari `user` object.**
+
+Cari baris:
+```tsx
+<div style={{ fontWeight: 700 }}>Pickup Bak L300 (KT 1234 AB)</div>
+```
+Ganti dengan:
+```tsx
+<div style={{ fontWeight: 700 }}>
+  {user?.vehicleType && user?.vehiclePlate 
+    ? `${user.vehicleType} (${user.vehiclePlate})`
+    : <span style={{ color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>Belum diisi — edit profil</span>
+  }
+</div>
+```
+
+Cari baris:
+```tsx
+<div style={{ fontWeight: 700 }}>Balikpapan Barat</div>
+```
+Ganti dengan:
+```tsx
+<div style={{ fontWeight: 700 }}>
+  {user?.domicile || user?.zone || 
+    <span style={{ color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>Belum diisi</span>
+  }
+</div>
+```
+
+Cari baris:
+```tsx
+<div style={{ opacity: 0.9, fontSize: '0.875rem' }}>Pengemudi Armada (Driver)</div>
+```
+Ganti dengan:
+```tsx
+<div style={{ opacity: 0.9, fontSize: '0.875rem' }}>
+  {user?.driverType === 'MITRA_TPS3R' ? '🏭 Driver Mitra TPS3R' : '🚛 Driver Freelance'}
+</div>
+```
+
+---
+
+## BAGIAN 7 — FRONTEND: CompletedTasks.tsx
+
+### FILE: `src/pages/driver/CompletedTasks.tsx`
+
+**Aksi: MODIFIKASI filter status agar memasukkan status baru.**
+
+Cari baris:
+```tsx
+setTasks((data.pickups || []).filter((p: any) => p.status === 'COLLECTED' || p.status === 'VERIFIED' || p.status === 'COMPLETED'));
+```
+
+Ganti dengan:
+```tsx
+setTasks((data.pickups || []).filter((p: any) => 
+  ['COLLECTED', 'DELIVERED_TO_TPS3R', 'VERIFIED', 'COMPLETED'].includes(p.status)
+));
+```
+
+Tambahkan kolom status yang lebih deskriptif. Cari bagian render di dalam `.map(task => (...))`:
+
+Setelah `<Badge status={task.status} />`, tambahkan:
+```tsx
+{task.status === 'DELIVERED_TO_TPS3R' && (
+  <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 600, display: 'block' }}>
+    ⏳ Menunggu verifikasi TPS3R
+  </span>
+)}
+```
+
+---
+
+## BAGIAN 8 — UPDATE ADMIN TPS3R (Terima Setoran dari Driver Freelance)
+
+### FILE: `backend/src/controllers/pickup.controller.js`
+
+**Aksi: MODIFIKASI fungsi `getAdminPickups` agar juga menampilkan status `DELIVERED_TO_TPS3R`.**
+
+Cari:
+```javascript
+const pickups = await prisma.pickupRequest.findMany({
+  where: { status: 'COLLECTED' },
+```
+
+Ganti dengan:
+```javascript
+const pickups = await prisma.pickupRequest.findMany({
+  where: { 
+    status: { in: ['COLLECTED', 'DELIVERED_TO_TPS3R'] },
+    // Jika ada tps3rTargetId, hanya tampilkan yang ditujukan ke admin ini
+    OR: [
+      { tps3rTargetId: null },
+      { tps3rTargetId: req.user.id }
+    ]
+  },
+```
+
+---
+
+## BAGIAN 9 — SEED DATA UPDATE (Opsional tapi Direkomendasikan)
+
+### FILE: `backend/prisma/seed.js`
+
+**Aksi: TAMBAHKAN field baru ke user driver di seed.**
+
+Cari definisi user driver (driver.freelance dan driver.mitra), tambahkan field:
+
+```javascript
+// Untuk driver freelance
+vehicleType: 'Motor Roda Tiga',
+vehiclePlate: 'KT 5678 CD',
+domicile: 'Balikpapan Selatan',
+
+// Untuk driver mitra
+vehicleType: 'Pickup Bak L300',
+vehiclePlate: 'KT 1234 AB',
+domicile: 'Balikpapan Barat',
+```
+
+---
+
+## ✅ CHECKLIST VERIFIKASI SETELAH IMPLEMENTASI
+
+Setelah selesai mengerjakan, AI Agent wajib memverifikasi hal-hal berikut:
+
+### Backend
+- [ ] `npx prisma migrate dev` berhasil tanpa error
+- [ ] `npx prisma generate` berhasil
+- [ ] Route `/api/pickup/driver/active` merespons 200 dengan token driver
+- [ ] Route `/api/pickup/:id/accept` mengembalikan 409 jika task sudah diklaim
+- [ ] Route `/api/pickup/driver/tps3r-list` mengembalikan array TPS3R aktif
+
+### Frontend
+- [ ] TaskDashboard memisahkan "Tugas Aktif Saya" dari "Tersedia untuk Diambil"
+- [ ] Tombol "Terima Tugas" ada dan berfungsi
+- [ ] Modal TPS3R muncul saat klik "Setor ke TPS3R"
+- [ ] DriverProfile menampilkan data user dinamis, bukan hardcoded
+- [ ] RouteOverview tidak lagi menggunakan `getMockCoordinate`
+- [ ] CompletedTasks menampilkan status `DELIVERED_TO_TPS3R`
+
+---
+
+## 🚫 LARANGAN (Jangan Dilakukan)
+
+1. **JANGAN** hapus atau ubah nama fungsi existing di controller
+2. **JANGAN** ubah struktur tabel yang sudah ada, hanya tambah field baru
+3. **JANGAN** ubah logic expedition yang sudah berjalan
+4. **JANGAN** ubah CSS di `Expedition.css` kecuali jika memang diperlukan
+5. **JANGAN** ubah schema auth atau JWT
+6. **JANGAN** jalankan `prisma migrate reset` — cukup `migrate dev`
+
+---
+
+## 📌 KONTEKS TEKNIS PENTING
+
+- **Stack:** React + TypeScript (Vite), Express.js, Prisma ORM, SQLite (dev)
+- **Auth:** JWT Bearer token, role disimpan di token payload
+- **State driver:** `user.driverType` bisa `FREELANCE` atau `MITRA_TPS3R`
+- **Status PickupRequest saat ini:** `PENDING → ON_THE_WAY → COLLECTED → VERIFIED → COMPLETED`
+- **Status PickupRequest setelah implementasi:** `PENDING → ACCEPTED → ON_THE_WAY → COLLECTED → DELIVERED_TO_TPS3R → VERIFIED → COMPLETED`
+- **Expedition hanya untuk MITRA_TPS3R** — tidak perlu diubah
+- **Geocoding:** Gunakan Nominatim (OpenStreetMap) — gratis, tanpa API key, rate limit 1 req/detik
+
+---
+
+*Prompt ini dibuat berdasarkan audit mendalam terhadap kode aktual E-TrashHub. Implementasikan secara berurutan dari Bagian 1 hingga Bagian 9.*

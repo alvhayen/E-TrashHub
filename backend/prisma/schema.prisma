@@ -33,6 +33,9 @@ model User {
   // Role DRIVER
   driverType         String?  // FREELANCE, MITRA_TPS3R
   domicile           String?
+  vehicleType        String?   // Jenis kendaraan, contoh: "Motor", "Pickup Bak"
+  vehiclePlate       String?   // Plat nomor kendaraan
+  isOnDuty           Boolean   @default(false)  // apakah sedang aktif bertugas
 
   // Role ADMIN_TPS3R
   tpsName            String?
@@ -87,6 +90,11 @@ model PickupRequest {
   environmentalImpact String? // JSON string
   createdAt       DateTime @default(now())
   updatedAt       DateTime @default(now())
+  acceptedAt      DateTime?
+  collectedAt     DateTime?
+  deliveredAt     DateTime?
+  tps3rTargetId   Int?       // FK ke User (role ADMIN_TPS3R) yang dituju driver
+  cancelReason    String?    // alasan jika dibatalkan driver
 
   // Legacy field for backward compat with old data
   wasteTypes      String?
