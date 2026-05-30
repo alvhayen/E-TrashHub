@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
@@ -13,6 +14,7 @@ import analyticsRoutes from './backend/src/routes/analytics.routes.js';
 import expeditionRoutes from './backend/src/routes/expedition.routes.js';
 import superadminRoutes from './backend/src/routes/superadmin.routes.js';
 import publicRoutes from './backend/src/routes/public.routes.js';
+import aiRoutes from './backend/src/routes/ai.routes.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
 
 async function startServer() {
@@ -20,7 +22,7 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || '3000', 10);
 
   app.use(cors());
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
 
   // Real Database API Routes
   app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
@@ -36,6 +38,7 @@ async function startServer() {
   app.use('/api/analytics', analyticsRoutes);
   app.use('/api/expedition', expeditionRoutes);
   app.use('/api/superadmin', superadminRoutes);
+  app.use('/api/ai', aiRoutes);
 
   // Global Error Handler
   app.use(errorHandler);

@@ -11,6 +11,7 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import superadminRoutes from './routes/superadmin.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import expeditionRoutes from './routes/expedition.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/superadmin', superadminRoutes);
 app.use('/api/expedition', expeditionRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
