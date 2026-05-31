@@ -98,6 +98,8 @@ import PemdaDashboard from './pages/admin_pemda/PemdaDashboard';
 import PemdaList from './pages/admin_pemda/PemdaList';
 import PemdaRegions from './pages/admin_pemda/PemdaRegions';
 
+import RedeemPoints from './pages/shared/RedeemPoints';
+
 
 
 export default function App() {
@@ -133,6 +135,7 @@ export default function App() {
               <Route path="request" element={<RequestPickup />} />
               <Route path="history" element={<History />} />
               <Route path="history/:id" element={<PickupDetail />} />
+              <Route path="redeem" element={<RedeemPoints role="rumah_tangga" />} />
               <Route path="profile" element={<Profile />} />
               <Route path="pickup/:id" element={<Navigate to="../history/:id" replace />} />
             </Route>
@@ -148,6 +151,7 @@ export default function App() {
               <Route path="completed" element={<CompletedTasks />} />
               <Route path="expedition" element={<ExpeditionList />} />
               <Route path="expedition/:id" element={<ExpeditionDetail />} />
+              <Route path="redeem" element={<RedeemPoints role="driver" />} />
               <Route path="profile" element={<DriverProfile />} />
             </Route>
 

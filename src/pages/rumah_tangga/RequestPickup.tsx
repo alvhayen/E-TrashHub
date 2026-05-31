@@ -9,7 +9,6 @@ import Button from '../../components/ui/Button';
 import axios from 'axios';
 import { getWasteImage } from '../../utils/wasteImages';
 
-const WasteScanner = lazy(() => import('../../components/ai/WasteScanner'));
 
 const HARDCODED_WASTE_TYPES = [
   { id: 'Botol Plastik', name: 'Botol Plastik', slug: 'botol-plastik', priceEstMin: 1500, priceEstMax: 2500, imageUrl: '' },
@@ -36,35 +35,6 @@ export default function RequestPickup() {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedWeight, setSelectedWeight] = useState<string | null>(null);
   const [note, setNote] = useState('');
-  const [showScanner, setShowScanner] = useState(false);
-
-  const handleScanComplete = (analysis: any) => {
-    if (analysis.detectedItems && analysis.detectedItems.length > 0) {
-      const detectedCategories = analysis.detectedItems
-        .map((item: any) => item.categoryLabel)
-        .filter(Boolean);
-      
-      setSelectedTypes(prev => {
-        const newTypes = [...prev];
-        detectedCategories.forEach((cat: string) => {
-          if (!newTypes.includes(cat)) {
-            newTypes.push(cat);
-          }
-        });
-        return newTypes;
-      });
-    }
-
-    if (analysis.estimatedWeight) {
-      let weightId = '';
-      if (analysis.estimatedWeight.toLowerCase() === 'ringan') weightId = 'ringan';
-      if (analysis.estimatedWeight.toLowerCase() === 'sedang') weightId = 'sedang';
-      if (analysis.estimatedWeight.toLowerCase() === 'berat') weightId = 'berat';
-      if (weightId) setSelectedWeight(weightId);
-    }
-    
-    success('AI: Form berhasil diisi otomatis! ✨');
-  };
 
   useEffect(() => {
     axios.get('/api/public/waste-categories')
@@ -118,42 +88,6 @@ export default function RequestPickup() {
         <div className="page-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           <section>
-            <div style={{ marginBottom: '1.5rem' }}>
-              <button
-                type="button"
-                onClick={() => setShowScanner(true)}
-                style={{
-                  width: '100%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem',
-                  padding: '0.875rem 1rem',
-                  borderRadius: '0.875rem',
-                  border: '2px solid #16a34a',
-                  backgroundColor: '#f0fdf4',
-                  color: '#15803d',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontSize: '0.9375rem',
-                  transition: 'all 0.15s',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = '#dcfce7';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(22,163,74,0.2)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f0fdf4';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <Sparkles size={20} />
-                📷 Scan Sampah dengan AI
-                <span style={{ fontSize: '0.7rem', fontWeight: 600, padding: '0.125rem 0.375rem', backgroundColor: '#16a34a', color: '#fff', borderRadius: '999px', marginLeft: '0.25rem' }}>
-                  BARU
-                </span>
-              </button>
-              <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#64748b', margin: '0.5rem 0 0' }}>
-                Foto sampahmu → AI isi form otomatis ✨
-              </p>
-            </div>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>1. Pilih Jenis Sampah (Bisa &gt;1)</h2>
             <div className="waste-type-grid">
               {loading ? (
@@ -300,14 +234,6 @@ export default function RequestPickup() {
         </Button>
       </div>
 
-      {showScanner && (
-        <Suspense fallback={null}>
-          <WasteScanner
-            onAnalysisComplete={handleScanComplete}
-            onClose={() => setShowScanner(false)}
-          />
-        </Suspense>
-      )}
 
       <style>{`
         .waste-type-grid {

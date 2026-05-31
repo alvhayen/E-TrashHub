@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Play, Camera, Truck, Star } from 'lucide-react';
+import { Menu, Play, ClipboardEdit, Truck, Wallet } from 'lucide-react';
 import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
 import './LandingPage.css';
 
@@ -155,9 +155,9 @@ export default function LandingPage() {
         <div className="hero-container">
           <div className="hero-content">
             <div className="eyebrow-pill">Platform Pengelolaan Sampah #1 di Indonesia</div>
-            <h1 className="hero-title">Sampahmu punya nilai.<br />Kami yang jemput.</h1>
+            <h1 className="hero-title">Ubah Sampah Jadi Rupiah,<br />Tanpa Perlu Keluar Rumah.</h1>
             <p className="hero-subtitle">
-              e-TrashHub menghubungkan rumah tangga, pengepul, TPS3R, dan industri dalam satu ekosistem yang menguntungkan semua pihak.
+              e-TrashHub menghubungkan rumah tangga, driver TPS3R atau driver volunteer, TPS3R, dan industri dalam satu ekosistem yang menguntungkan semua pihak.
             </p>
             <div className="hero-cta-group">
               <button className="btn-primary-large" onClick={() => navigate('/role-onboarding/RUMAH_TANGGA')}>
@@ -172,15 +172,15 @@ export default function LandingPage() {
           <div className="hero-visual">
             <div className="floating-card card-1">
               <div className="card-dot dot-green"></div>
-              <span>+235 poin • Botol Plastik 3.5kg</span>
+              <span>Gunakan fitur AI Summary untuk memudahkan kamu membaca dashboard Analitik Pengelolaan Sampah di Kotamu!</span>
             </div>
             <div className="floating-card card-2">
               <div className="card-dot dot-blue"></div>
-              <span>🚛 Driver sedang dalam perjalanan...</span>
+              <span>Sampah plastik membutuhkan waktu antara 10 hingga 500 tahun untuk terurai secara alami</span>
             </div>
             <div className="floating-card card-3">
               <div className="card-dot dot-amber"></div>
-              <span>TPS3R: Stok 200kg Siap</span>
+              <span>Mulai kesadaran memilah sampah dari rumah sendiri</span>
             </div>
           </div>
         </div>
@@ -211,13 +211,13 @@ export default function LandingPage() {
       {/* SECTION 4: CARA KERJA */}
       <section id="cara-kerja" className="how-it-works-section">
         <div className="section-header">
-          <h2>Semudah foto, pilah, dan tunggu dijemput</h2>
+          <h2>Semudah pilah, timbang, dan tunggu dijemput!</h2>
         </div>
         <div className="steps-container">
           <div className="step-card">
-            <div className="step-icon-wrapper"><Camera size={32} /></div>
-            <h3>1. Pilah sampahmu</h3>
-            <p>Foto sampahmu, AI langsung bantu identifikasi jenis dan estimasi beratnya</p>
+            <div className="step-icon-wrapper"><ClipboardEdit size={32} /></div>
+            <h3>1. Pilah & Jual Barang Bekasmu!</h3>
+            <p>Pilahlah sampahmu terlebih dahulu, timbang, dan isi form dengan data yang real</p>
           </div>
           <div className="step-card">
             <div className="step-icon-wrapper"><Truck size={32} /></div>
@@ -225,9 +225,9 @@ export default function LandingPage() {
             <p>Pilih jadwal, driver terdekat langsung datang ke rumahmu</p>
           </div>
           <div className="step-card">
-            <div className="step-icon-wrapper"><Star size={32} /></div>
+            <div className="step-icon-wrapper"><Wallet size={32} /></div>
             <h3>3. Dapat poin & dampak</h3>
-            <p>Setiap kilogram menghasilkan poin yang bisa ditukar voucher belanja</p>
+            <p>Setiap kilogram menghasilkan poin yang bisa ditukar dengan saldo E-Wallet!</p>
           </div>
         </div>
       </section>
@@ -258,7 +258,7 @@ export default function LandingPage() {
       <section className="catalog-section">
         <div className="section-header center">
           <h2>Sampah apa yang bisa kamu jual?</h2>
-          <p>Lihat harga estimasi sebelum mulai — tidak perlu daftar dulu</p>
+          <p>Pilih jenis sampah Anda dan manfaatkan layanan yang terjadwal, terpercaya, dan menguntungkan.</p>
         </div>
         
         <div className="catalog-grid">

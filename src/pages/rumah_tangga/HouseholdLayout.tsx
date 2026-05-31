@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Home, PackagePlus, FileText, User } from 'lucide-react';
+import { Home, PackagePlus, FileText, User, Wallet } from 'lucide-react';
 import BottomNav from '../../components/layout/BottomNav';
 import Sidebar from '../../components/layout/Sidebar';
 import NotificationBell from '../../components/ui/NotificationBell';
@@ -10,6 +10,7 @@ export default function HouseholdLayout() {
     { icon: Home, label: 'Beranda', path: '/household' },
     { icon: PackagePlus, label: 'Jemput', path: '/household/request' },
     { icon: FileText, label: 'Riwayat', path: '/household/history' },
+    { icon: Wallet, label: 'Tukar Poin', path: '/household/redeem' },
     { icon: User, label: 'Akun', path: '/household/profile' }
   ];
 

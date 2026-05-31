@@ -54,7 +54,15 @@ export default function PickupDetail() {
                 <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }}>
                   {new Date(pickup.createdAt).toLocaleString('id-ID')}
                 </div>
-                <div style={{ fontWeight: 700, fontSize: '1.125rem' }}>{pickup.wasteTypes.join(', ')}</div>
+                <div style={{ fontWeight: 700, fontSize: '1.125rem' }}>
+                  {pickup.wasteTypes.map((id: any) => {
+                    const types: Record<string, string> = {
+                      '1': 'Botol Plastik', '2': 'Gelas Plastik', '3': 'Kertas/Kardus', 
+                      '4': 'Logam/Kaleng', '5': 'Tutup Botol', '6': 'Kain/Tekstil'
+                    };
+                    return types[id.toString()] || id;
+                  }).join(', ')}
+                </div>
               </div>
               <Badge status={pickup.status} />
             </div>
