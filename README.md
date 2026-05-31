@@ -2,7 +2,49 @@
 
 e-TrashHub adalah platform pengelolaan sampah terpadu yang menjembatani rumah tangga, pengepul/driver, TPS3R, mitra industri (B2B), dan pemerintah daerah, di bawah pengawasan langsung sistem verifikasi terpusat oleh Super Admin.
 
-## Daftar Akun Demo (Seed Data)
+## 🚀 Fitur Utama
+- **Katalog Publik**: Cek harga sampah terkini.
+- **Request Pickup**: Pesan jemputan sampah rumah tangga secara praktis.
+- **Real-time Tracking**: Pelacakan posisi supir (driver) secara real-time.
+- **Sistem Poin**: Dapatkan poin dari hasil penimbangan sampah yang dapat ditukar.
+- **Manajemen TPS3R**: Manajemen stok, sortasi, dan publikasi komoditas sampah.
+- **Dashboard Super Admin**: Pusat verifikasi dan pengelolaan seluruh entitas.
+
+## 🛠️ Teknologi yang Digunakan
+- **Frontend**: React 19, TypeScript, Tailwind CSS, Vite, Framer Motion, React Leaflet, Recharts.
+- **Backend**: Node.js, Express, Prisma ORM, JWT Authentication.
+
+## 📦 Panduan Instalasi dan Menjalankan Proyek
+
+1. **Clone repositori ini:**
+   ```bash
+   git clone https://github.com/alvhayen/E-TrashHub.git
+   cd E-TrashHub
+   ```
+
+2. **Install dependensi:**
+   ```bash
+   npm install
+   ```
+
+3. **Konfigurasi Environment:**
+   Buat file `.env` di folder root serta di backend/frontend jika diperlukan, dengan merujuk ke file `.env.example`.
+   Isikan variabel yang dibutuhkan seperti `DATABASE_URL` untuk Prisma dan *secret key* untuk JWT.
+
+4. **Jalankan Prisma Generate:**
+   Jika postinstall tidak berjalan otomatis, eksekusi perintah:
+   ```bash
+   npm run postinstall
+   ```
+
+5. **Jalankan Aplikasi:**
+   Untuk *development* (client & server secara bersamaan via tsx & vite):
+   ```bash
+   npm run dev
+   ```
+   Aplikasi dapat diakses melalui http://localhost:3000
+
+## 🔑 Daftar Akun Demo (Seed Data)
 | Peran | Email | Kata Sandi | Status |
 |-------|-------|------------|--------|
 | Super Admin | `superadmin@etrashhub.id` | `superadmin123` | ACTIVE |
@@ -17,7 +59,8 @@ e-TrashHub adalah platform pengelolaan sampah terpadu yang menjembatani rumah ta
 | Pemda | `dinas@surabaya.go.id` | `password123` | ACTIVE |
 | Pemda | `pending.pemda@email.com` | `password123` | PENDING |
 
-## User Flow Utama
+## 🔄 User Flow Utama
+
 1. **Rumah Tangga Flow**
    * Melihat **Katalog Publik** tanpa login untuk mengecek harga sampah saat ini.
    * Melakukan registrasi, kemudian memutar form pemesanan jemputan (*Request Pickup*) menggunakan kartu gambar visual.
