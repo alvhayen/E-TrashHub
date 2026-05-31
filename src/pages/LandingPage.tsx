@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Play, ClipboardEdit, Truck, Wallet } from 'lucide-react';
 import LeafNetworkBg from '../components/backgrounds/LeafNetworkBg';
+import ImpactModal from '../components/ui/ImpactModal';
 import './LandingPage.css';
 
 // Hook for count-up animation
@@ -176,11 +177,11 @@ export default function LandingPage() {
             </div>
             <div className="floating-card card-2">
               <div className="card-dot dot-blue"></div>
-              <span>Sampah plastik membutuhkan waktu antara 10 hingga 500 tahun untuk terurai secara alami</span>
+              <span>Kamu bisa berkontribusi menjaga lingkungan sekaligus membangun side hustle di waktu luang!</span>
             </div>
             <div className="floating-card card-3">
               <div className="card-dot dot-amber"></div>
-              <span>Mulai kesadaran memilah sampah dari rumah sendiri</span>
+              <span>Mulai tumbuhkan kesadaran memilah sampah dari rumah sendiri.</span>
             </div>
           </div>
         </div>
@@ -373,6 +374,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <ImpactModal />
     </div>
   );
 }
