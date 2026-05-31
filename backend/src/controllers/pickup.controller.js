@@ -17,7 +17,7 @@ export const createPickup = async (req, res) => {
       data: {
         userId: req.user.id,
         wasteTypes: JSON.stringify(wasteTypes || []),
-        estimatedWeight: estimatedWeight, // Store as string label: "Ringan"/"Sedang"/"Berat"
+        estimatedWeight: String(estimatedWeight), // Store as string label: "Ringan"/"Sedang"/"Berat"
         address,
         note,
         status: 'PENDING'

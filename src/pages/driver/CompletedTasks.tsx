@@ -18,7 +18,7 @@ export default function CompletedTasks() {
     }).catch(console.error);
   }, [request]);
 
-  const totalKg = tasks.reduce((sum, t) => sum + (t.actualWeight || t.estimatedWeight || 0), 0);
+  const totalKg = tasks.reduce((sum, t) => sum + (t.actualWeight || parseFloat(t.estimatedWeight as string) || 0), 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>

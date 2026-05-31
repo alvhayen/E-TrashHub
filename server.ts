@@ -31,7 +31,7 @@ async function startServer() {
   app.use('/api/public', publicRoutes);
 
   app.use('/api/auth', authRoutes);
-  app.use('/api/pickups', pickupRoutes);
+  app.use('/api/pickup', pickupRoutes);
   app.use('/api/admin-driver', adminDriverRoutes);
   app.use('/api/admin-pemda', adminPemdaRoutes);
   app.use('/api/inventory', inventoryRoutes);
