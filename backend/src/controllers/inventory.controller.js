@@ -12,7 +12,7 @@ export const getInventory = async (req, res) => {
     };
 
     if (commodity) {
-      whereClause.commodity = { contains: commodity, mode: 'insensitive' };
+      whereClause.commodity = { contains: commodity };
     }
     if (minStock) {
       whereClause.stockKg = { gte: parseFloat(minStock) };

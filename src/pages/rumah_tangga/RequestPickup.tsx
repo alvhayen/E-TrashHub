@@ -64,7 +64,7 @@ export default function RequestPickup() {
     try {
       await request('POST', '/api/pickup', {
         wasteTypes: selectedTypes, // Using IDs or names
-        estimatedWeight: String(currentWeightObj.val),
+        estimatedWeight: currentWeightObj.id === 'ringan' ? 'Ringan' : currentWeightObj.id === 'sedang' ? 'Sedang' : 'Berat',
         address: user?.address || 'Alamat tidak diinput',
         note: note
       });

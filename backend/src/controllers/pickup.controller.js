@@ -295,8 +295,8 @@ export const verifyPickup = async (req, res) => {
 
     const existingPickup = await prisma.pickupRequest.findUnique({ where: { id: pickupId } });
     if (!existingPickup) return res.status(404).json({ error: 'Pickup not found' });
-    if (existingPickup.status !== 'COLLECTED') {
-      return res.status(400).json({ error: 'Pickup must be COLLECTED before verification' });
+    if (!['COLLECTED', 'DELIVERED_TO_TPS3R'].includes(existingPickup.status)) {
+      return res.status(400).json({ error: 'Pickup must be COLLECTED or DELIVERED_TO_TPS3R before verification' });
     }
 
     const basePoints = weightInfo * 50;

@@ -12,6 +12,7 @@ import superadminRoutes from './routes/superadmin.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import expeditionRoutes from './routes/expedition.routes.js';
 import aiRoutes from './routes/ai.routes.js';
+import adminDriverRoutes from './routes/admin-driver.routes.js';
 import adminPemdaRoutes from './routes/admin-pemda.routes.js';
 import orderRoutes from './routes/order.routes.js';
 
@@ -30,6 +31,7 @@ app.use('/api/public', publicRoutes);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/pickup', pickupRoutes);
+app.use('/api/admin-driver', adminDriverRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/superadmin', superadminRoutes);

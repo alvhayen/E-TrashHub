@@ -11,13 +11,13 @@ export const getPemdaOverview = async (req, res) => {
     const [todayPickups, totalHouseholds, completedPickups] = await Promise.all([
       prisma.pickupRequest.aggregate({
         where: { createdAt: { gte: today } },
-        _sum: { actualWeight: true, estimatedWeight: true }
+        _sum: { actualWeight: true }
       }),
       prisma.user.count({ where: { role: 'RUMAH_TANGGA' } }),
       prisma.pickupRequest.count({ where: { status: 'COMPLETED' } })
     ]);
 
-    const totalVolumeToday = todayPickups._sum.actualWeight || todayPickups._sum.estimatedWeight || 0;
+    const totalVolumeToday = todayPickups._sum.actualWeight || 0;
     
     // Some rough metrics
     const totalPickupsCount = await prisma.pickupRequest.count();

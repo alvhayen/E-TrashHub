@@ -7,8 +7,8 @@ export default function RedeemPoints({ role }: { role: 'rumah_tangga' | 'driver'
   const { user } = useAuth();
   const toast = useToast();
   
-  // Mock points balance for now, can be fetched from API later
-  const [currentPoints, setCurrentPoints] = useState(1000); 
+  // Use points from user context
+  const [currentPoints, setCurrentPoints] = useState(user?.points || 0); 
   const [pointsToRedeem, setPointsToRedeem] = useState<number | ''>('');
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
   const [walletNumber, setWalletNumber] = useState('');
