@@ -41,10 +41,10 @@ const ROLE_INFO: Record<string, any> = {
     accentColor: '#86efac',
     opacity: 0.75,
   },
-  'MITRA_B2B': {
+  'CUSTOMER': {
     title: 'Peran: Marketplace',
     description: 'Sebagai pembeli di Marketplace, Anda merupakan penggerak utama ekonomi sirkular. Beli material daur ulang berkualitas secara borongan langsung dari TPS3R terpercaya untuk menunjang kebutuhan Anda.',
-    email: 'mitra@industri.com',
+    email: 'customer@industri.com',
     icon: Store,
     color: '#ec4899', // Pink
     iconBgColor: '#fdf2f8',
@@ -84,10 +84,10 @@ export default function RoleOnboarding() {
   }
 
   const handleStart = async () => {
-    if (roleId === 'MITRA_B2B' || roleId === 'PEMDA') {
+    if (roleId === 'CUSTOMER' || roleId === 'PEMDA') {
       try {
         const emailMap: Record<string, string> = {
-          'MITRA_B2B': 'mitra@etrashhub.com',
+          'CUSTOMER': 'customer@etrashhub.com',
           'PEMDA': 'pemda@etrashhub.com'
         };
         const res = await fetch('/api/auth/login', {
@@ -100,7 +100,7 @@ export default function RoleOnboarding() {
         if (data.success) {
           login(data.token, data.user);
           const roleRoutes: Record<string, string> = {
-            MITRA_B2B: 'mitra',
+            CUSTOMER: 'customer',
             PEMDA: 'pemda',
           };
           navigate(`/${roleRoutes[roleId]}`);

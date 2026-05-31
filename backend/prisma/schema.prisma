@@ -15,7 +15,7 @@ model User {
   email              String   @unique
   password           String
   name               String
-  role               String   // RUMAH_TANGGA, DRIVER, ADMIN_TPS3R, MITRA_B2B, PEMDA, SUPER_ADMIN
+  role               String   // RUMAH_TANGGA, DRIVER, ADMIN_TPS3R, CUSTOMER, PEMDA, SUPER_ADMIN
   phone              String?
   verificationStatus String   @default("ACTIVE") // ACTIVE, PENDING, REJECTED
   points             Int      @default(0)
@@ -41,7 +41,7 @@ model User {
   tpsName            String?
   tpsAddress         String?
 
-  // Role MITRA_B2B
+  // Role CUSTOMER
   industryType       String?  // INDUSTRI, PENGRAJIN, PELAJAR
   companyAddress     String?
   companyPostalCode  String?
@@ -58,6 +58,9 @@ model User {
   voucherRedemptions     VoucherRedemption[]
   expeditionsAsDriver    Expedition[]        @relation("ExpeditionDriver")
   verificationQueue      VerificationQueue?
+  ordersAsCustomer       Order[]             @relation("CustomerOrders")
+  ordersAsTps3r          Order[]             @relation("Tps3rOrders")
+  ordersAsDriver         Order[]             @relation("DriverOrders")
 }
 
 model WasteCategory {
@@ -131,6 +134,7 @@ model Inventory {
   tps3r           User           @relation(fields: [tps3rId], references: [id])
   wasteCategory   WasteCategory? @relation(fields: [wasteCategoryId], references: [id])
   expeditionItems ExpeditionItem[]
+  orders          Order[]        @relation("InventoryOrders")
 }
 
 model Expedition {
@@ -202,4 +206,26 @@ model VoucherRedemption {
   createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id                 Int      @id @default(autoincrement())
+  customerId         Int
+  tps3rId            Int
+  driverId           Int?
+  inventoryId        Int
+  quantityKg         Float
+  pricePerKgSnapshot Float
+  totalPrice         Float
+  status             String   @default("PENDING") // PENDING, CONFIRMED, DRIVER_ASSIGNED, ON_THE_WAY, DELIVERED, COMPLETED, REJECTED
+  deliveryAddress    String
+  notes              String?
+  rejectionReason    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @default(now())
+
+  customer  User      @relation("CustomerOrders", fields: [customerId], references: [id])
+  tps3r     User      @relation("Tps3rOrders", fields: [tps3rId], references: [id])
+  driver    User?     @relation("DriverOrders", fields: [driverId], references: [id])
+  inventory Inventory @relation("InventoryOrders", fields: [inventoryId], references: [id])
 }

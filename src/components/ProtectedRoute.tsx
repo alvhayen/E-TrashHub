@@ -12,10 +12,9 @@ const ROLE_DASHBOARDS: Record<string, string> = {
   rumah_tangga: '/household',
   driver: '/driver',
   admin_tps3r: '/admin',
-  mitra_b2b: '/mitra',
+  customer: '/customer',
   pemda: '/pemda',
   super_admin: '/superadmin',
-  admin_driver: '/admin-driver',
   admin_pemda: '/admin-pemda',
 };
 

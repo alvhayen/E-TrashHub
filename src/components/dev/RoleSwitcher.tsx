@@ -6,7 +6,7 @@ const ROLES = [
   { key: 'RUMAH_TANGGA', label: '🏠 Rumah Tangga', path: '/household/home'       },
   { key: 'DRIVER',       label: '🚛 Driver',       path: '/driver/tasks'         },
   { key: 'ADMIN_TPS3R',  label: '🏭 Admin TPS3R',  path: '/admin/dashboard'      },
-  { key: 'MITRA_B2B',    label: '🏢 Mitra B2B',    path: '/mitra/catalog'        },
+  { key: 'CUSTOMER',    label: '🏢 Customer',    path: '/customer/catalog'        },
   { key: 'PEMDA',        label: '🏛️ Pemda',        path: '/pemda/overview'       },
   { key: 'SUPER_ADMIN',  label: '⚙️ Super Admin',  path: '/superadmin/overview'  },
 ];

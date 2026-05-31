@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
-import { LayoutDashboard, Inbox, Package, FileText, HelpCircle, Scale, Truck } from 'lucide-react';
+import { LayoutDashboard, Inbox, Package, FileText, HelpCircle, Scale, Truck, Users, Activity } from 'lucide-react';
 
 export default function AdminLayout() {
   const navItems = [
@@ -9,6 +9,8 @@ export default function AdminLayout() {
     { icon: Scale, label: 'Timbang & Verifikasi', path: '/admin/incoming' },
     { icon: Package, label: 'Manajemen Stok', path: '/admin/stock' },
     { icon: Truck, label: 'Manajemen Pengiriman', path: '/admin/shipment' },
+    { icon: Users, label: 'Manajemen Driver', path: '/admin/drivers' },
+    { icon: Activity, label: 'Aktivitas Driver', path: '/admin/driver-activity' },
     { icon: FileText, label: 'Laporan', path: '/admin/reports' }
   ];
 

@@ -105,11 +105,11 @@ export default function LandingPage() {
       id: 'ADMIN_TPS3R',
       name: 'TPS3R',
       icon: '🏭',
-      desc: 'Kelola inventaris dan distribusi ke mitra daur ulang',
+      desc: 'Kelola inventaris dan distribusi ke customer daur ulang',
       bgClass: 'role-card-tps'
     },
     {
-      id: 'MITRA_B2B',
+      id: 'CUSTOMER',
       name: 'Marketplace',
       icon: '♻️',
       desc: 'Beli bahan baku daur ulang langsung dari sumber terpercaya',
@@ -139,9 +139,7 @@ export default function LandingPage() {
           </div>
           <div className="nav-actions">
             <button 
-              style={{ backgroundColor: '#16a34a', color: '#ffffff', padding: '0.5rem 1.25rem', borderRadius: '9999px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#15803d'}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#16a34a'}
+              className="btn-solid"
               onClick={() => document.getElementById('roles')?.scrollIntoView({behavior: 'smooth'})}
             >
               Bergabung Sekarang
@@ -264,7 +262,7 @@ export default function LandingPage() {
         </div>
         
         <div className="catalog-grid">
-          {!loadingCats && categories.length > 0 ? categories.slice(0, 6).map(cat => (
+          {!loadingCats && categories.length > 0 ? categories.map(cat => (
             <div key={cat.id} className="catalog-card">
               <div className="catalog-img-placeholder">
                 <img src={cat.imageUrl} alt={cat.name} onError={(e) => { const target = e.currentTarget; target.style.display = 'none'; if (target.nextElementSibling) { (target.nextElementSibling as HTMLElement).style.display = 'flex'; } }} />
@@ -277,7 +275,7 @@ export default function LandingPage() {
               </div>
             </div>
           )) : (
-            Array.from({length: 6}).map((_, i) => (
+            Array.from({length: 5}).map((_, i) => (
               <div key={i} className="catalog-card skeleton">
                 <div className="skeleton-img"></div>
                 <div className="skeleton-text-1"></div>
@@ -314,7 +312,7 @@ export default function LandingPage() {
               <div className="avatar">SR</div>
               <div className="testi-meta">
                 <h4>Sari Rahayu</h4>
-                <p>Driver Mitra TPS3R</p>
+                <p>Driver Customer TPS3R</p>
               </div>
             </div>
             <div className="stars">⭐⭐⭐⭐⭐</div>
@@ -355,7 +353,7 @@ export default function LandingPage() {
               <a href="#">Untuk Rumah Tangga</a>
               <a href="#">Untuk Driver</a>
               <a href="#">Untuk TPS3R</a>
-              <a href="#">Untuk Mitra Industri</a>
+              <a href="#">Untuk Customer Industri</a>
             </div>
             <div className="link-col">
               <h4>Perusahaan</h4>

@@ -5,7 +5,7 @@ import { verifyToken, authorizeRole } from '../middleware/auth.js';
 const router = express.Router();
 
 router.use(verifyToken);
-router.use(authorizeRole('ADMIN_DRIVER'));
+router.use(authorizeRole('ADMIN_TPS3R'));
 
 router.get('/stats', getDriverStats);
 router.get('/list', getDriverList);

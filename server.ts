@@ -14,12 +14,13 @@ import analyticsRoutes from './backend/src/routes/analytics.routes.js';
 import expeditionRoutes from './backend/src/routes/expedition.routes.js';
 import superadminRoutes from './backend/src/routes/superadmin.routes.js';
 import publicRoutes from './backend/src/routes/public.routes.js';
+import orderRoutes from './backend/src/routes/order.routes.js';
 import aiRoutes from './backend/src/routes/ai.routes.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
 
 async function startServer() {
   const app = express();
-  const PORT = parseInt(process.env.PORT || '3000', 10);
+  const PORT = 3000;
 
   app.use(cors());
   app.use(express.json({ limit: '10mb' }));
@@ -37,6 +38,7 @@ async function startServer() {
   app.use('/api/inventory', inventoryRoutes);
   app.use('/api/analytics', analyticsRoutes);
   app.use('/api/expedition', expeditionRoutes);
+  app.use('/api/orders', orderRoutes);
   app.use('/api/superadmin', superadminRoutes);
   app.use('/api/ai', aiRoutes);
 

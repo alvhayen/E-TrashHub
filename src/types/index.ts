@@ -2,7 +2,7 @@
 // Role di backend menggunakan UPPERCASE (sesuai yang disimpan di database)
 // Mapping terjadi di AuthContext saat login
 
-export type Role = 'rumah_tangga' | 'driver' | 'admin_tps3r' | 'mitra_b2b' | 'pemda' | 'super_admin' | 'admin_driver' | 'admin_pemda';
+export type Role = 'rumah_tangga' | 'driver' | 'admin_tps3r' | 'customer' | 'pemda' | 'super_admin' | 'admin_pemda';
 
 export type AccountStatus = 'active' | 'pending' | 'rejected';
 

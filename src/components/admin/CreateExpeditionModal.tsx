@@ -15,7 +15,7 @@ export default function CreateExpeditionModal({ onClose, preselectedStock }: { o
   const [drivers, setDrivers] = useState([]);
   
   const [loading, setLoading] = useState(false);
-  const { addToast } = useToast();
+  const { success, error } = useToast();
 
   useEffect(() => {
     // Mock fetch for dropdowns
@@ -39,10 +39,10 @@ export default function CreateExpeditionModal({ onClose, preselectedStock }: { o
     try {
       // Simulated POST /api/expedition
       await new Promise(r => setTimeout(r, 1000));
-      addToast('Ekspedisi berhasil dibuat! Surat Jalan: EXP-20250524-0099', 'success');
+      success('Ekspedisi berhasil dibuat! Surat Jalan: EXP-20250524-0099');
       onClose();
     } catch (err) {
-      addToast('Gagal membuat ekspedisi', 'error');
+      error('Gagal membuat ekspedisi');
     } finally {
       setLoading(false);
     }

@@ -24,7 +24,7 @@ export default function Login() {
       RUMAH_TANGGA: 'Rumah Tangga',
       DRIVER: 'Driver',
       ADMIN_TPS3R: 'Admin TPS3R',
-      MITRA_B2B: 'Mitra Industri',
+      CUSTOMER: 'Customer Industri',
       PEMDA: 'Pemda'
     };
     return roles[r] || r;
@@ -64,7 +64,7 @@ export default function Login() {
           RUMAH_TANGGA: 'household',
           DRIVER: 'driver',
           ADMIN_TPS3R: 'admin',
-          MITRA_B2B: 'mitra',
+          CUSTOMER: 'customer',
           PEMDA: 'pemda',
           SUPER_ADMIN: 'superadmin'
         };

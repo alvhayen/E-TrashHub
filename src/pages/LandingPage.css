@@ -110,8 +110,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 768px) {
+  .nav-container { padding: 0 16px; }
   .nav-links { display: none; }
-  .nav-actions .btn-outline, .nav-actions .btn-solid { display: none; }
+  .nav-actions .btn-outline { display: none; }
+  .nav-actions { gap: 8px; }
+  .nav-actions .btn-solid {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+  }
+  .nav-logo {
+    font-size: 1.1rem;
+    gap: 4px;
+  }
   .mobile-menu { display: block; }
 }
 

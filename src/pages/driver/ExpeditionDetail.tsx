@@ -23,10 +23,32 @@ export default function ExpeditionDetail() {
     fetchDetail();
   }, [id, user, navigate]);
 
+  const isOrder = id?.startsWith('ORD-');
+  const realId = isOrder ? id?.replace('ORD-', '') : id;
+
   const fetchDetail = async () => {
     try {
-      const res = await axios.get(`/api/expedition/${id}`);
-      setExpedition(res.data.data);
+      if (isOrder) {
+        const res = await axios.get(`/api/orders/${realId}`);
+        const o = res.data.order;
+        setExpedition({
+          id: `ORD-${o.id}`,
+          type: 'TPS3R_TO_MITRA',
+          status: o.status === 'DRIVER_ASSIGNED' ? 'ASSIGNED' : o.status === 'DELIVERED' ? 'ARRIVED' : o.status === 'COMPLETED' ? 'CONFIRMED' : o.status,
+          originTps: { name: o.tps3r?.tpsName || o.tps3r?.name, address: o.tps3r?.tpsAddress || '-' },
+          destinationMitra: { name: o.mitra?.name, companyAddress: o.deliveryAddress || '-' },
+          items: [{ id: 1, weight: o.quantityKg, category: { name: o.inventory.commodity }, notes: o.notes }],
+          createdAt: o.createdAt,
+          departedAt: !['PENDING', 'CONFIRMED', 'DRIVER_ASSIGNED'].includes(o.status) ? o.updatedAt : null,
+          arrivedAt: ['DELIVERED', 'COMPLETED'].includes(o.status) ? o.updatedAt : null,
+          confirmedAt: o.status === 'COMPLETED' ? o.updatedAt : null,
+          isOrder: true,
+          originalOrderId: o.id
+        });
+      } else {
+        const res = await axios.get(`/api/expedition/${id}`);
+        setExpedition(res.data.data);
+      }
     } catch (err) {
       error('Gagal memuat detail ekspedisi');
     } finally {
@@ -37,7 +59,12 @@ export default function ExpeditionDetail() {
   const handleAction = async (action: 'depart' | 'arrive') => {
     setActionLoading(true);
     try {
-      await axios.patch(`/api/expedition/${id}/${action}`);
+      if (isOrder) {
+        const newStatus = action === 'depart' ? 'ON_THE_WAY' : 'DELIVERED';
+        await axios.patch(`/api/orders/${realId}/driver-status`, { status: newStatus });
+      } else {
+        await axios.patch(`/api/expedition/${id}/${action}`);
+      }
       success(`Status berhasil diperbarui`);
       fetchDetail();
     } catch (err: any) {

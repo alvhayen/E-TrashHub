@@ -56,11 +56,11 @@ import ShipmentManager from './pages/admin_tps3r/ShipmentManager';
 import AdminReports from './pages/admin_tps3r/AdminReports';
 import AdminFAQ from './pages/admin_tps3r/AdminFAQ';
 
-import MitraLayout from './pages/mitra_b2b/MitraLayout';
-import Catalog from './pages/mitra_b2b/Catalog';
-import MaterialDetail from './pages/mitra_b2b/MaterialDetail';
-import MitraProfile from './pages/mitra_b2b/MitraProfile';
-import MitraFAQ from './pages/mitra_b2b/MitraFAQ';
+import CustomerLayout from './pages/customer/CustomerLayout';
+import Catalog from './pages/customer/Catalog';
+import MaterialDetail from './pages/customer/MaterialDetail';
+import CustomerOrders from './pages/customer/CustomerOrders';
+import CustomerFAQ from './pages/customer/CustomerFAQ';
 
 import PemdaLayout from './pages/pemda/PemdaLayout';
 import OverviewDashboard from './pages/pemda/OverviewDashboard';
@@ -90,10 +90,8 @@ import SuperAdminLayout from './pages/superadmin/SuperAdminLayout';
 import SuperAdminOverview from './pages/superadmin/SuperAdminOverview';
 import VerificationQueue from './pages/superadmin/VerificationQueue';
 
-import AdminDriverLayout from './pages/admin_driver/AdminDriverLayout';
-import DriverDashboard from './pages/admin_driver/DriverDashboard';
-import DriverList from './pages/admin_driver/DriverList';
-import DriverActivity from './pages/admin_driver/DriverActivity';
+import AdminDriverList from './pages/admin_tps3r/AdminDriverList';
+import AdminDriverActivity from './pages/admin_tps3r/AdminDriverActivity';
 
 import AdminPemdaLayout from './pages/admin_pemda/AdminPemdaLayout';
 import PemdaDashboard from './pages/admin_pemda/PemdaDashboard';
@@ -165,20 +163,22 @@ export default function App() {
               <Route path="stock" element={<StockManager />} />
               <Route path="inventory" element={<Navigate to="stock" replace />} />
               <Route path="shipment" element={<ShipmentManager />} />
+              <Route path="drivers" element={<AdminDriverList />} />
+              <Route path="driver-activity" element={<AdminDriverActivity />} />
               <Route path="reports" element={<AdminReports />} />
               <Route path="faq" element={<AdminFAQ />} />
             </Route>
 
-            <Route path="/mitra" element={
-              <ProtectedRoute allowedRoles={['mitra_b2b']}>
-                <MitraLayout />
+            <Route path="/customer" element={
+              <ProtectedRoute allowedRoles={['customer']}>
+                <CustomerLayout />
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="catalog" replace />} />
               <Route path="catalog" element={<Catalog />} />
               <Route path="detail/:id" element={<MaterialDetail />} />
-              <Route path="profile" element={<MitraProfile />} />
-              <Route path="faq" element={<MitraFAQ />} />
+              <Route path="orders" element={<CustomerOrders />} />
+              <Route path="faq" element={<CustomerFAQ />} />
             </Route>
 
             <Route path="/pemda" element={
@@ -206,17 +206,7 @@ export default function App() {
               <Route path="settings" element={<SuperAdminOverview />} />
             </Route>
 
-            <Route path="/admin_driver/*" element={<Navigate to="/admin-driver" replace />} />
-            <Route path="/admin-driver" element={
-              <ProtectedRoute allowedRoles={['admin_driver']}>
-                <AdminDriverLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<DriverDashboard />} />
-              <Route path="list" element={<DriverList />} />
-              <Route path="activity" element={<DriverActivity />} />
-            </Route>
+
 
             <Route path="/admin_pemda/*" element={<Navigate to="/admin-pemda" replace />} />
             <Route path="/admin-pemda" element={

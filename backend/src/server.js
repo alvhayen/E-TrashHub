@@ -12,6 +12,8 @@ import superadminRoutes from './routes/superadmin.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import expeditionRoutes from './routes/expedition.routes.js';
 import aiRoutes from './routes/ai.routes.js';
+import adminPemdaRoutes from './routes/admin-pemda.routes.js';
+import orderRoutes from './routes/order.routes.js';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -33,6 +35,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/superadmin', superadminRoutes);
 app.use('/api/expedition', expeditionRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/admin-pemda', adminPemdaRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

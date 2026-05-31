@@ -24,8 +24,26 @@ export default function ExpeditionList() {
 
   const fetchExpeditions = async () => {
     try {
-      const res = await axios.get('/api/expedition/driver');
-      setExpeditions(res.data.data);
+      const [resExp, resOrd] = await Promise.all([
+        axios.get('/api/expedition/driver').catch(() => ({ data: { data: [] } })),
+        axios.get('/api/orders/driver').catch(() => ({ data: { orders: [] } }))
+      ]);
+      
+      const exps = resExp.data.data || [];
+      const ords = (resOrd.data.orders || []).map((o: any) => ({
+        id: `ORD-${o.id}`,
+        type: 'TPS3R_TO_MITRA',
+        status: o.status === 'DRIVER_ASSIGNED' ? 'ASSIGNED' : o.status === 'DELIVERED' ? 'ARRIVED' : o.status === 'COMPLETED' ? 'CONFIRMED' : o.status,
+        originTps: { name: o.tps3r?.tpsName || o.tps3r?.name },
+        destinationMitra: { name: o.mitra?.name },
+        items: [{ id: 1, weight: o.quantityKg }],
+        createdAt: o.updatedAt,
+        isOrder: true,
+        originalOrderId: o.id
+      }));
+
+      const merged = [...exps, ...ords].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setExpeditions(merged as any);
     } catch (err) {
       console.error(err);
     } finally {

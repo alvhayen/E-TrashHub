@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Card from '../../components/ui/Card';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 
-export default function MitraFAQ() {
+export default function CustomerFAQ() {
   const [openIndex, setIndexOpen] = useState<number | null>(null);
 
   const faqs = [
@@ -20,7 +20,7 @@ export default function MitraFAQ() {
     },
     {
       question: 'Apakah saya bisa melacak pengiriman dari TPS3R setelah melakukan transaksi?',
-      answer: 'Fitur pelacakan pengiriman material massal secara real-time untuk Mitra B2B akan hadir dalam pengembangan fitur berikutnya. Untuk sekarang, koordinasi dilakukan antara armada B2B dan admin TPS3R secara langsung setelah transaksi sukses.'
+      answer: 'Fitur pelacakan pengiriman material massal secara real-time untuk Customer akan hadir dalam pengembangan fitur berikutnya. Untuk sekarang, koordinasi dilakukan antara armada Customer dan admin TPS3R secara langsung setelah transaksi sukses.'
     },
     {
       question: 'Bagaimana jika kualitas material tidak sesuai dengan yang ada di Katalog ketika barang sampai?',
@@ -36,10 +36,10 @@ export default function MitraFAQ() {
         </div>
         <div>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem' }}>
-            FAQ & Panduan Mitra
+            FAQ & Panduan Customer
           </h1>
           <p style={{ color: '#64748b', fontSize: '1rem' }}>
-            Informasi umum seputar cara operasional B2B dengan TPS3R dan ekosistem aplikasi.
+            Informasi umum seputar cara operasional Customer dengan TPS3R dan ekosistem aplikasi.
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@ import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { useApi } from '../../hooks/useApi';
 import { useToast } from '../../components/ui/Toast';
+import PageContainer from '../../components/layout/PageContainer';
 
 export default function DriverList() {
   const { request, loading } = useApi();
@@ -32,12 +33,7 @@ export default function DriverList() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Manajemen Driver</h2>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Kelola semua driver dan mitra TPS3R yang terdaftar dalam sistem e-TrashHub.</p>
-      </div>
-
+    <PageContainer title="Manajemen Driver" subtitle="Kelola semua driver dan customer TPS3R yang terdaftar dalam sistem e-TrashHub.">
       <Card padding="none">
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -68,7 +64,7 @@ export default function DriverList() {
                       <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>{driver.phone || '-'}</div>
                       <div style={{ marginTop: '0.25rem' }}>
                         <span style={{ fontSize: '0.75rem', padding: '0.125rem 0.5rem', borderRadius: '1rem', backgroundColor: '#e2e8f0', fontWeight: 600 }}>
-                          {driver.driverType === 'FREELANCE' ? 'Freelance' : 'Mitra TPS3R'}
+                          {driver.driverType === 'FREELANCE' ? 'Freelance' : 'Customer TPS3R'}
                         </span>
                       </div>
                     </td>
@@ -107,6 +103,6 @@ export default function DriverList() {
           </table>
         </div>
       </Card>
-    </div>
+    </PageContainer>
   );
 }

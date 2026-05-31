@@ -10,7 +10,7 @@ export default function VerificationQueue() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [rejectReason, setRejectReason] = useState('');
   
-  const { addToast } = useToast();
+  const { success, error } = useToast();
 
   useEffect(() => {
     // Simulated fetch
@@ -28,7 +28,7 @@ export default function VerificationQueue() {
     if (window.confirm('Setujui pendaftaran entitas ini?')) {
       // Simulate PATCH /api/superadmin/queue/:id/approve
       setQueue(queue.filter(q => q.id !== id));
-      addToast('Verifikasi disetujui', 'success');
+      success('Verifikasi disetujui');
     }
   };
 
@@ -40,13 +40,13 @@ export default function VerificationQueue() {
 
   const handleRejectSubmit = () => {
     if (!rejectReason.trim()) {
-      addToast('Alasan penolakan wajib diisi', 'error');
+      error('Alasan penolakan wajib diisi');
       return;
     }
     // Simulate PATCH /api/superadmin/queue/:id/reject
     setQueue(queue.filter(q => q.id !== selectedItem.id));
     setRejectModalOpen(false);
-    addToast('Pendaftaran ditolak', 'success');
+    success('Pendaftaran ditolak');
   };
 
   const filteredQueue = queue.filter(q => q.role === activeTab);

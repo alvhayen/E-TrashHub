@@ -32,7 +32,7 @@ export default function Register() {
   const [driverType, setDriverType] = useState('FREELANCE');
   const [domicile, setDomicile] = useState('');
 
-  // MITRA_B2B
+  // CUSTOMER
   const [industryType, setIndustryType] = useState('INDUSTRI');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyPostalCode, setCompanyPostalCode] = useState('');
@@ -52,7 +52,7 @@ export default function Register() {
       RUMAH_TANGGA: 'Rumah Tangga',
       DRIVER: 'Driver',
       ADMIN_TPS3R: 'Admin TPS3R',
-      MITRA_B2B: 'Mitra Industri',
+      CUSTOMER: 'Customer Industri',
       PEMDA: 'Pemda'
     };
     return roles[r] || r;
@@ -102,7 +102,7 @@ export default function Register() {
     } else if (targetRole === 'DRIVER') {
       payload.driverType = driverType;
       payload.domicile = domicile;
-    } else if (targetRole === 'MITRA_B2B') {
+    } else if (targetRole === 'CUSTOMER') {
       payload.industryType = industryType;
       payload.companyAddress = companyAddress;
       payload.companyPostalCode = companyPostalCode;
@@ -126,7 +126,7 @@ export default function Register() {
           RUMAH_TANGGA: 'household',
           DRIVER: 'driver',
           ADMIN_TPS3R: 'admin',
-          MITRA_B2B: 'mitra',
+          CUSTOMER: 'customer',
           PEMDA: 'pemda',
           SUPER_ADMIN: 'superadmin'
         };
@@ -272,7 +272,7 @@ export default function Register() {
                     onClick={() => setDriverType('MITRA_TPS3R')}
                     style={{ border: `2px solid ${driverType === 'MITRA_TPS3R' ? '#10B981' : 'rgba(255,255,255,0.2)'}`, background: driverType === 'MITRA_TPS3R' ? 'rgba(16,185,129,0.1)' : 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px', cursor: 'pointer' }}
                   >
-                    <div style={{ fontWeight: 700, color: 'white', marginBottom: '4px', fontSize: '1rem' }}>🤝 Mitra TPS3R</div>
+                    <div style={{ fontWeight: 700, color: 'white', marginBottom: '4px', fontSize: '1rem' }}>🤝 Customer TPS3R</div>
                     <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Terikat dengan TPS3R tertentu, termasuk tugas ekspedisi</div>
                   </div>
                 </div>
@@ -286,7 +286,7 @@ export default function Register() {
               </>
             )}
 
-            {targetRole === 'MITRA_B2B' && (
+            {targetRole === 'CUSTOMER' && (
               <>
                 <label style={labelStyle}>Tipe Industri</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>

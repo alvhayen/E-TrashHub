@@ -318,7 +318,7 @@ export const trackExpedition = async (req, res) => {
     if (!expedition) return res.status(404).json({ error: 'Expedition not found' });
 
     // Allowed roles
-    if (!['DRIVER', 'ADMIN_TPS3R', 'MITRA_B2B'].includes(req.user.role)) {
+    if (!['DRIVER', 'ADMIN_TPS3R', 'CUSTOMER'].includes(req.user.role)) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 

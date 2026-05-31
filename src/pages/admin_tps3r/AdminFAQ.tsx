@@ -12,7 +12,7 @@ export default function AdminFAQ() {
     },
     {
       question: 'Apa fungsi halaman Inventori?',
-      answer: 'Halaman Inventori digunakan untuk melacak total stok sampah yang telah dikumpulkan, diverifikasi, dan dikelompokkan berdasarkan jenis (Misal: Plastik, Kertas, Logam). Data inventori ini nantinya bisa dibeli oleh Mitra B2B.'
+      answer: 'Halaman Inventori digunakan untuk melacak total stok sampah yang telah dikumpulkan, diverifikasi, dan dikelompokkan berdasarkan jenis (Misal: Plastik, Kertas, Logam). Data inventori ini nantinya bisa dibeli oleh Customer.'
     },
     {
       question: 'Bagaimana cara melihat performa TPS3R?',
@@ -23,8 +23,8 @@ export default function AdminFAQ() {
       answer: 'Saat ini proses verifikasi final dilakukan di halaman timbangan. Jika ada kesalahan setelah disimpan, hubungi Administrator Sistem Pemda untuk koreksi data secara manual.'
     },
     {
-      question: 'Bagaimana Mitra B2B membeli stok sampah TPS3R?',
-      answer: 'Mitra B2B yang sudah terdaftar akan dapat melihat keseluruhan inventori Anda melalui akses Katalog mereka. Anda hanya bertugas memastikan jumlah inventori atau stok yang masuk sudah di-update melalui proses Verifikasi TPS.'
+      question: 'Bagaimana Customer membeli stok sampah TPS3R?',
+      answer: 'Customer yang sudah terdaftar akan dapat melihat keseluruhan inventori Anda melalui akses Katalog mereka. Anda hanya bertugas memastikan jumlah inventori atau stok yang masuk sudah di-update melalui proses Verifikasi TPS.'
     }
   ];
 

@@ -8,14 +8,14 @@ import LeafNetworkBg from '../../components/backgrounds/LeafNetworkBg';
 const ROLES = [
   { id: 'RUMAH_TANGGA', label: 'Rumah Tangga', icon: '🏠', desc: 'Jual sampah, dapat poin' },
   { id: 'DRIVER', label: 'Driver / Pengepul', icon: '🚛', desc: 'Jemput sampah, dapat penghasilan' },
-  { id: 'MITRA_B2B', label: 'Mitra Industri', icon: '🏢', desc: 'Beli bahan baku daur ulang' },
+  { id: 'CUSTOMER', label: 'Customer Industri', icon: '🏢', desc: 'Beli bahan baku daur ulang' },
   { id: 'ADMIN_TPS3R', label: 'Admin TPS3R', icon: '🏭', desc: 'Kelola fasilitas TPS3R' },
   { id: 'PEMDA', label: 'Pemerintah Daerah', icon: '🏛️', desc: 'Pantau analitik kota' },
 ];
 
 const ROLE_ROUTE_MAP: Record<string, string> = {
   RUMAH_TANGGA: '/household', DRIVER: '/driver', ADMIN_TPS3R: '/admin',
-  MITRA_B2B: '/mitra', PEMDA: '/pemda',
+  CUSTOMER: '/customer', PEMDA: '/pemda',
 };
 
 export default function CompleteProfile() {
@@ -63,7 +63,7 @@ export default function CompleteProfile() {
     const payload: any = { preAuthToken, role: selectedRole, phone };
     if (selectedRole === 'RUMAH_TANGGA') Object.assign(payload, { houseRole, address, postalCode });
     else if (selectedRole === 'DRIVER') Object.assign(payload, { driverType, domicile });
-    else if (selectedRole === 'MITRA_B2B') Object.assign(payload, { industryType, companyAddress, companyPostalCode });
+    else if (selectedRole === 'CUSTOMER') Object.assign(payload, { industryType, companyAddress, companyPostalCode });
     else if (selectedRole === 'ADMIN_TPS3R') Object.assign(payload, { tpsName, tpsAddress });
     else if (selectedRole === 'PEMDA') Object.assign(payload, { region, officeAddress });
 
@@ -158,7 +158,7 @@ export default function CompleteProfile() {
             {selectedRole === 'DRIVER' && (<>
               <div>
                 <label style={labelStyle}>Tipe Driver</label>
-                {[{v:'FREELANCE',label:'🚛 Freelance',desc:'Terima order dari siapapun'},{v:'MITRA_TPS3R',label:'🤝 Mitra TPS3R',desc:'Terikat dengan TPS3R tertentu'}].map(opt => (
+                {[{v:'FREELANCE',label:'🚛 Freelance',desc:'Terima order dari siapapun'},{v:'MITRA_TPS3R',label:'🤝 Customer TPS3R',desc:'Terikat dengan TPS3R tertentu'}].map(opt => (
                   <div key={opt.v} onClick={() => setDriverType(opt.v)} style={{ border: `2px solid ${driverType === opt.v ? '#10B981' : 'rgba(255,255,255,0.2)'}`, background: driverType === opt.v ? 'rgba(16,185,129,0.1)' : 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '12px', cursor: 'pointer', marginBottom: '8px' }}>
                     <div style={{ fontWeight: 700, color: 'white' }}>{opt.label}</div>
                     <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>{opt.desc}</div>
@@ -169,7 +169,7 @@ export default function CompleteProfile() {
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', color: '#6ee7b7', fontSize: '0.875rem' }}><CheckCircle size={16} /> Akun langsung aktif</div>
             </>)}
 
-            {selectedRole === 'MITRA_B2B' && (<>
+            {selectedRole === 'CUSTOMER' && (<>
               <div>
                 <label style={labelStyle}>Tipe</label>
                 {[{v:'INDUSTRI',label:'🏭 Industri'},{v:'PENGRAJIN',label:'🎨 Pengrajin'},{v:'PELAJAR',label:'🎓 Pelajar'}].map(opt => (

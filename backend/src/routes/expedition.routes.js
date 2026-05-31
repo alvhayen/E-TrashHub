@@ -16,13 +16,13 @@ router.patch('/:id/arrive', authorizeRole('DRIVER'), expeditionController.arrive
 router.get('/admin', authorizeRole('ADMIN_TPS3R'), expeditionController.getExpeditionsForAdmin);
 router.post('/', authorizeRole('ADMIN_TPS3R'), expeditionController.createExpedition);
 
-// Cross-role (Admin or Mitra)
-router.patch('/:id/confirm', authorizeRole('ADMIN_TPS3R', 'MITRA_B2B'), expeditionController.confirmExpedition);
+// Cross-role (Admin or Customer)
+router.patch('/:id/confirm', authorizeRole('ADMIN_TPS3R', 'CUSTOMER'), expeditionController.confirmExpedition);
 
-// Tracking (Driver, Admin, Mitra)
-router.get('/tracking/:waybillNumber', authorizeRole('DRIVER', 'ADMIN_TPS3R', 'MITRA_B2B'), expeditionController.trackExpedition);
+// Tracking (Driver, Admin, Customer)
+router.get('/tracking/:waybillNumber', authorizeRole('DRIVER', 'ADMIN_TPS3R', 'CUSTOMER'), expeditionController.trackExpedition);
 
-// General ID lookup (Driver, Admin, or Mitra)
-router.get('/:id', authorizeRole('DRIVER', 'ADMIN_TPS3R', 'MITRA_B2B'), expeditionController.getExpeditionById);
+// General ID lookup (Driver, Admin, or Customer)
+router.get('/:id', authorizeRole('DRIVER', 'ADMIN_TPS3R', 'CUSTOMER'), expeditionController.getExpeditionById);
 
 export default router;

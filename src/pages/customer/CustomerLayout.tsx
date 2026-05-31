@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Search, ShoppingBag, User, HelpCircle, Menu, X, LogOut } from 'lucide-react';
+import { Search, ShoppingBag, User, HelpCircle, Menu, X, LogOut, Package } from 'lucide-react';
 
-export default function MitraLayout() {
+export default function CustomerLayout() {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { icon: ShoppingBag, label: 'Katalog Material', path: '/mitra' },
-    { icon: User, label: 'Profil Perusahaan', path: '/mitra/profile' },
-    { icon: HelpCircle, label: 'FAQ', path: '/mitra/faq' },
+    { icon: ShoppingBag, label: 'Katalog Material', path: '/customer/catalog' },
+    { icon: Package, label: 'Pesanan Saya', path: '/customer/orders' },
+    { icon: HelpCircle, label: 'FAQ', path: '/customer/faq' },
   ];
 
   return (
@@ -29,16 +29,16 @@ export default function MitraLayout() {
       }}>
         {/* Brand */}
         <div style={{ fontSize: '1.25rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <ShoppingBag size={24} color="#34d399" /> Serene B2B
+          <ShoppingBag size={24} color="#34d399" /> Marketplace
         </div>
 
         {/* Desktop nav */}
-        <nav className="mitra-desktop-nav">
+        <nav className="customer-desktop-nav">
           {navItems.map(item => (
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/mitra'}
+              end={item.path === '/customer'}
               style={({ isActive }) => ({ 
                 color: isActive ? '#34d399' : 'rgba(255,255,255,0.7)', 
                 textDecoration: 'none', 
@@ -53,10 +53,10 @@ export default function MitraLayout() {
         </nav>
 
         {/* Desktop user info */}
-        <div className="mitra-desktop-user" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="customer-desktop-user" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user?.name}</div>
-            <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Mitra Industri</div>
+            <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Customer</div>
           </div>
           <div style={{ 
             width: '2.5rem', height: '2.5rem', borderRadius: '50%', 
@@ -77,7 +77,7 @@ export default function MitraLayout() {
 
         {/* Mobile hamburger */}
         <button
-          className="mitra-mobile-menu-btn"
+          className="customer-mobile-menu-btn"
           onClick={() => setMobileMenuOpen(v => !v)}
           style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}
         >
@@ -87,7 +87,7 @@ export default function MitraLayout() {
 
       {/* Mobile dropdown menu */}
       {mobileMenuOpen && (
-        <div className="mitra-mobile-menu" style={{
+        <div className="customer-mobile-menu" style={{
           backgroundColor: '#1a4a3d',
           borderBottom: '1px solid rgba(255,255,255,0.1)',
           padding: '1rem 1.5rem',
@@ -104,14 +104,14 @@ export default function MitraLayout() {
             </div>
             <div>
               <div style={{ fontWeight: 700, color: '#fff' }}>{user?.name}</div>
-              <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Mitra Industri</div>
+              <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Customer</div>
             </div>
           </div>
           {navItems.map(item => (
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/mitra'}
+              end={item.path === '/customer'}
               onClick={() => setMobileMenuOpen(false)}
               style={({ isActive }) => ({
                 display: 'flex', alignItems: 'center', gap: '0.75rem',
@@ -137,40 +137,40 @@ export default function MitraLayout() {
       )}
 
       <main style={{ flex: 1, padding: '1.5rem', maxWidth: '1280px', margin: '0 auto', width: '100%' }}
-        className="mitra-main">
+        className="customer-main">
         <Outlet />
       </main>
 
       <style>{`
-        .mitra-desktop-nav {
+        .customer-desktop-nav {
           display: none;
           gap: 2rem;
         }
-        .mitra-desktop-user {
+        .customer-desktop-user {
           display: none !important;
         }
-        .mitra-mobile-menu-btn {
+        .customer-mobile-menu-btn {
           display: flex !important;
         }
-        .mitra-mobile-menu {
+        .customer-mobile-menu {
           display: flex;
         }
         @media (min-width: 768px) {
-          .mitra-desktop-nav {
+          .customer-desktop-nav {
             display: flex;
           }
-          .mitra-desktop-user {
+          .customer-desktop-user {
             display: flex !important;
           }
-          .mitra-mobile-menu-btn {
+          .customer-mobile-menu-btn {
             display: none !important;
           }
-          .mitra-mobile-menu {
+          .customer-mobile-menu {
             display: none !important;
           }
         }
         @media (min-width: 1024px) {
-          .mitra-main {
+          .customer-main {
             padding: 2rem 2.5rem !important;
           }
         }

@@ -141,15 +141,15 @@ async function main() {
     },
   });
 
-  // 5. Create Mitra Industri
-  const mitraIndustri = await prisma.user.upsert({
-    where: { email: 'mitra@industri.com' },
+  // 5. Create Customer Industri
+  const customerIndustri = await prisma.user.upsert({
+    where: { email: 'customer@industri.com' },
     update: {},
     create: {
-      email: 'mitra@industri.com',
+      email: 'customer@industri.com',
       password: passwordHash,
       name: 'PT Daur Ulang Jaya',
-      role: 'MITRA_B2B',
+      role: 'CUSTOMER',
       verificationStatus: 'ACTIVE',
       industryType: 'INDUSTRI',
       companyAddress: 'Kawasan Industri Pulogadung',

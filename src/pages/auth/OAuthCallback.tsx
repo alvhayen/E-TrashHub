@@ -9,7 +9,7 @@ const ROLE_ROUTE_MAP: Record<string, { frontendRole: any; path: string }> = {
   RUMAH_TANGGA: { frontendRole: 'rumah_tangga', path: '/household' },
   DRIVER:       { frontendRole: 'driver',        path: '/driver'    },
   ADMIN_TPS3R:  { frontendRole: 'admin_tps3r',   path: '/admin'     },
-  MITRA_B2B:    { frontendRole: 'mitra_b2b',     path: '/mitra'     },
+  CUSTOMER:    { frontendRole: 'customer',     path: '/customer'     },
   PEMDA:        { frontendRole: 'pemda',          path: '/pemda'     },
   SUPER_ADMIN:  { frontendRole: 'super_admin',    path: '/superadmin'},
 };

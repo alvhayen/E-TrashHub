@@ -7,11 +7,20 @@ import Badge from '../../components/ui/Badge';
 import LineChart from '../../components/chart/LineChart';
 import { MapPin, Package, MessageCircle, ArrowLeft, Building2, Phone, Mail, FileText, CheckCircle2 } from 'lucide-react';
 
+import { useToast } from '../../components/ui/Toast';
+import Input from '../../components/form/Input';
+
 export default function MaterialDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { request } = useApi();
+  const { success, error: toastError } = useToast();
+  
   const [item, setItem] = useState<any>(null);
+  const [orderQty, setOrderQty] = useState('');
+  const [address, setAddress] = useState('');
+  const [notes, setNotes] = useState('');
+  const [isOrdering, setIsOrdering] = useState(false);
 
   useEffect(() => {
     request('GET', `/api/inventory`).then(data => {
@@ -21,10 +30,39 @@ export default function MaterialDetail() {
     }).catch(console.error);
   }, [id, request]);
 
+  const handleOrder = async () => {
+    if (!orderQty || isNaN(Number(orderQty)) || Number(orderQty) <= 0) {
+      return toastError('Masukkan jumlah yang valid');
+    }
+    if (Number(orderQty) > item.stockKg) {
+      return toastError('Jumlah melebihi stok yang tersedia');
+    }
+    if (!address) {
+      return toastError('Alamat pengiriman harus diisi');
+    }
+
+    setIsOrdering(true);
+    try {
+      await request('POST', '/api/orders', {
+        inventoryId: item.id,
+        quantityKg: Number(orderQty),
+        deliveryAddress: address,
+        notes
+      });
+      success('Pesanan berhasil dibuat!');
+      navigate('/customer/orders');
+    } catch (err: any) {
+      toastError(err.message || 'Gagal membuat pesanan');
+    } finally {
+      setIsOrdering(false);
+    }
+  };
+
   if (!item) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '1.25rem' }}>Memuat spesifikasi material...</div>;
 
   const stockStatus = item.stockKg > 100 ? 'high' : item.stockKg > 50 ? 'medium' : 'low';
-  const statusColor = stockStatus === 'high' ? '#10b981' : stockStatus === 'medium' ? '#f59e0b' : '#ef4444';
+  const statusColor = stockStatus === 'high' ? '#ef4444' : stockStatus === 'medium' ? '#f59e0b' : '#10b981';
+  const statusText = stockStatus === 'high' ? 'Volume Penuh' : stockStatus === 'medium' ? 'Volume Menengah' : 'Volume Aman';
 
   const chartData = {
     labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
@@ -87,7 +125,7 @@ export default function MaterialDetail() {
                   {item.stockKg} kg 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontWeight: 600, color: statusColor, backgroundColor: `${statusColor}15`, padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>
                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: statusColor }} />
-                    Volume Aman
+                    {statusText}
                   </div>
                 </div>
               </div>
@@ -142,22 +180,45 @@ export default function MaterialDetail() {
               </div>
             </div>
 
-            <div style={{ marginTop: '2rem' }}>
+            <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.125rem' }}>Pesan Material</div>
+              
+              <Input 
+                label="Jumlah Pesanan (Kg)" 
+                type="number" 
+                value={orderQty} 
+                onChange={e => setOrderQty(e.target.value)} 
+                placeholder={`Maksimal ${item.stockKg} Kg`}
+                max={item.stockKg}
+              />
+              <Input 
+                label="Alamat Pengiriman" 
+                value={address} 
+                onChange={e => setAddress(e.target.value)} 
+                placeholder="Alamat lengkap pabrik / gudang"
+              />
+              <Input 
+                label="Catatan Pengiriman (Opsional)" 
+                value={notes} 
+                onChange={e => setNotes(e.target.value)} 
+                placeholder="Misal: Truk masuk dari gerbang utara"
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.125rem', marginTop: '0.5rem' }}>
+                <span>Total Estimasi:</span>
+                <span>Rp {(Number(orderQty) * item.pricePerKg || 0).toLocaleString()}</span>
+              </div>
+
               <Button 
                 fullWidth 
-                icon={MessageCircle} 
                 size="lg"
-                style={{ backgroundColor: '#25D366', color: '#fff', fontSize: '1.125rem', padding: '1rem' }}
-                onClick={() => {
-                  const text = encodeURIComponent(`Halo TPS3R Balikpapan Barat,\n\nSaya tertarik untuk mengakuisisi komoditas:\n*${item.commodity}*\nStok: ${item.stockKg} kg\nHarga: Rp ${item.pricePerKg}/kg\n\nApakah material ini siap di-survey dan dijemput?`);
-                  window.open(`https://wa.me/628123456789?text=${text}`, '_blank');
-                }}
+                style={{ backgroundColor: '#153D32', color: '#fff', fontSize: '1.125rem', padding: '1rem', marginTop: '0.5rem' }}
+                onClick={handleOrder}
+                loading={isOrdering}
+                disabled={isOrdering || !orderQty || !address}
               >
-                Inkuiri via WhatsApp
+                Buat Pesanan Sekarang
               </Button>
-              <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '1rem', lineHeight: 1.4 }}>
-                Sistem e-procurement kami memfasilitasi penemuan. Transaksi akhir diselesaikan langsung antara mitra B2B dan TPS3R.
-              </div>
             </div>
           </Card>
         </div>

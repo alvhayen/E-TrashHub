@@ -76,7 +76,7 @@ export default function Button({
         ...getSizeStyles(),
         ...style
       }}
-      {...props}
+      {...(props as any)}
     >
       {loading ? (
         <Loader2 size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} style={{ animation: 'spin 1s linear infinite' }} />

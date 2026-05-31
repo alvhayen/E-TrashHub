@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.use(verifyToken);
 
-// public for mitra_b2b
-router.get('/', authorizeRole('MITRA_B2B', 'PEMDA', 'ADMIN_TPS3R'), getInventory);
+// public for customer
+router.get('/', authorizeRole('CUSTOMER', 'PEMDA', 'ADMIN_TPS3R'), getInventory);
 
 // specific to admin_tps3r
 router.get('/admin', authorizeRole('ADMIN_TPS3R'), getAdminInventory);

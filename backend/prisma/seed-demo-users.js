@@ -42,9 +42,9 @@ async function main() {
       points: 5000
     },
     {
-      email: 'mitra@etrashhub.com',
-      name: 'Demo Mitra B2B',
-      role: 'MITRA_B2B',
+      email: 'customer@etrashhub.com',
+      name: 'Demo Customer',
+      role: 'CUSTOMER',
       password: passwordHash,
       verificationStatus: 'ACTIVE',
       phone: '08444444444',

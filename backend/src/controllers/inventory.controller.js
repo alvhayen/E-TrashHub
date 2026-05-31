@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET /inventory — public (Mitra B2B) — list all READY inventory with TPS3R info
+// GET /inventory — public (Customer) — list all READY inventory with TPS3R info
 export const getInventory = async (req, res) => {
   try {
     const { commodity, minStock } = req.query;

@@ -3,6 +3,7 @@ import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import { useApi } from '../../hooks/useApi';
 import { Clock, MapPin, Truck } from 'lucide-react';
+import PageContainer from '../../components/layout/PageContainer';
 
 function getRelativeTime(dateString: string) {
   const rtf = new Intl.RelativeTimeFormat('id', { numeric: 'auto' });
@@ -43,18 +44,16 @@ export default function DriverActivity() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Aktivitas Driver (Live)</h2>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Memantau tugas penjemputan yang sedang dikerjakan secara real-time.</p>
-        </div>
+    <PageContainer 
+      title="Aktivitas Driver (Live)" 
+      subtitle="Memantau tugas penjemputan yang sedang dikerjakan secara real-time."
+      actions={
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', animation: 'pulse 2s infinite' }} />
           Auto-refresh aktif
         </div>
-      </div>
-
+      }
+    >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {loading && activities.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
@@ -122,6 +121,6 @@ export default function DriverActivity() {
           50% { opacity: .5; transform: scale(1.2); }
         }
       `}</style>
-    </div>
+    </PageContainer>
   );
 }

@@ -83,7 +83,7 @@ export default function StockManager() {
         <div style={{ padding: '20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Daftar Inventaris</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>Tampilkan di Katalog Mitra</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>Tampilkan di Katalog Customer</span>
             <div style={{ width: '40px', height: '24px', background: '#10B981', borderRadius: '12px', position: 'relative', cursor: 'pointer' }}>
               <div style={{ width: '20px', height: '20px', background: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: '18px' }}></div>
             </div>
@@ -99,7 +99,7 @@ export default function StockManager() {
                 <th style={{ padding: '16px 20px', fontWeight: 600 }}>Stok (kg)</th>
                 <th style={{ padding: '16px 20px', fontWeight: 600 }}>Harga/kg</th>
                 <th style={{ padding: '16px 20px', fontWeight: 600 }}>Status</th>
-                <th style={{ padding: '16px 20px', fontWeight: 600 }}>Tampil ke Mitra</th>
+                <th style={{ padding: '16px 20px', fontWeight: 600 }}>Tampil ke Customer</th>
                 <th style={{ padding: '16px 20px', fontWeight: 600 }}>Aksi</th>
               </tr>
             </thead>

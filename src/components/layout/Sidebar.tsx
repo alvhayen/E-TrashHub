@@ -15,6 +15,7 @@ interface SidebarProps {
   accentColor: string;
   roleName: string;
   hideLogout?: boolean;
+  customTheme?: any;
 }
 
 export default function Sidebar({ navItems, accentColor, roleName, hideLogout = false }: SidebarProps) {

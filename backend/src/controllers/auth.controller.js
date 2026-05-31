@@ -40,7 +40,7 @@ export const register = async (req, res) => {
     } else if (role === 'DRIVER') {
       const { driverType, domicile } = req.body;
       userData = { ...userData, driverType, domicile, verificationStatus: 'ACTIVE' };
-    } else if (role === 'MITRA_B2B') {
+    } else if (role === 'CUSTOMER') {
       const { industryType, companyAddress, companyPostalCode } = req.body;
       userData = { ...userData, industryType, companyAddress, companyPostalCode, verificationStatus: 'ACTIVE' };
     } else if (role === 'ADMIN_TPS3R') {
@@ -411,7 +411,7 @@ export const completeGoogleProfile = async (req, res) => {
       userData = { ...userData, houseRole: profileData.houseRole, address: profileData.address, postalCode: profileData.postalCode };
     } else if (role === 'DRIVER') {
       userData = { ...userData, driverType: profileData.driverType, domicile: profileData.domicile };
-    } else if (role === 'MITRA_B2B') {
+    } else if (role === 'CUSTOMER') {
       userData = { ...userData, industryType: profileData.industryType, companyAddress: profileData.companyAddress, companyPostalCode: profileData.companyPostalCode };
     } else if (role === 'ADMIN_TPS3R') {
       userData = { ...userData, tpsName: profileData.tpsName, tpsAddress: profileData.tpsAddress, verificationStatus: 'PENDING' };
