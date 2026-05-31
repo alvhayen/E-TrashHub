@@ -169,15 +169,17 @@ export default function App() {
               <Route path="faq" element={<AdminFAQ />} />
             </Route>
 
-            <Route path="/customer" element={
-              <ProtectedRoute allowedRoles={['customer']}>
-                <CustomerLayout />
-              </ProtectedRoute>
-            }>
+            <Route path="/customer" element={<CustomerLayout />}>
               <Route index element={<Navigate to="catalog" replace />} />
               <Route path="catalog" element={<Catalog />} />
               <Route path="detail/:id" element={<MaterialDetail />} />
-              <Route path="orders" element={<CustomerOrders />} />
+              
+              <Route path="orders" element={
+                <ProtectedRoute allowedRoles={['customer']}>
+                  <CustomerOrders />
+                </ProtectedRoute>
+              } />
+              
               <Route path="faq" element={<CustomerFAQ />} />
             </Route>
 

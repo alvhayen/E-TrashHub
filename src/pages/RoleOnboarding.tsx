@@ -84,10 +84,9 @@ export default function RoleOnboarding() {
   }
 
   const handleStart = async () => {
-    if (roleId === 'CUSTOMER' || roleId === 'PEMDA') {
+    if (roleId === 'PEMDA') {
       try {
         const emailMap: Record<string, string> = {
-          'CUSTOMER': 'customer@etrashhub.com',
           'PEMDA': 'pemda@etrashhub.com'
         };
         const res = await fetch('/api/auth/login', {
@@ -100,7 +99,6 @@ export default function RoleOnboarding() {
         if (data.success) {
           login(data.token, data.user);
           const roleRoutes: Record<string, string> = {
-            CUSTOMER: 'customer',
             PEMDA: 'pemda',
           };
           navigate(`/${roleRoutes[roleId]}`);
@@ -109,6 +107,11 @@ export default function RoleOnboarding() {
       } catch (e) {
         console.error('Auto login failed:', e);
       }
+    }
+    
+    if (roleId === 'CUSTOMER') {
+      navigate('/customer/catalog');
+      return;
     }
     
     // Default fallback / normal flow for other roles

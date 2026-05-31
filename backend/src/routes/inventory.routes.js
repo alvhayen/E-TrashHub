@@ -10,10 +10,10 @@ import { verifyToken, authorizeRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(verifyToken);
-
 // public for customer
-router.get('/', authorizeRole('CUSTOMER', 'PEMDA', 'ADMIN_TPS3R'), getInventory);
+router.get('/', getInventory);
+
+router.use(verifyToken);
 
 // specific to admin_tps3r
 router.get('/admin', authorizeRole('ADMIN_TPS3R'), getAdminInventory);

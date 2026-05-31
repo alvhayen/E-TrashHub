@@ -9,7 +9,7 @@ export default function CustomerLayout() {
 
   const navItems = [
     { icon: ShoppingBag, label: 'Katalog Material', path: '/customer/catalog' },
-    { icon: Package, label: 'Pesanan Saya', path: '/customer/orders' },
+    ...(user ? [{ icon: Package, label: 'Pesanan Saya', path: '/customer/orders' }] : []),
     { icon: HelpCircle, label: 'FAQ', path: '/customer/faq' },
   ];
 
@@ -53,27 +53,40 @@ export default function CustomerLayout() {
         </nav>
 
         {/* Desktop user info */}
-        <div className="customer-desktop-user" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user?.name}</div>
-            <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Customer</div>
+        {/* Desktop user info */}
+        {user ? (
+          <div className="customer-desktop-user" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user?.name}</div>
+              <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Customer</div>
+            </div>
+            <div style={{ 
+              width: '2.5rem', height: '2.5rem', borderRadius: '50%', 
+              backgroundColor: '#34d399', color: '#153D32', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              fontWeight: 800, fontSize: '1.25rem' 
+            }}>
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <button
+              onClick={logout}
+              title="Keluar"
+              style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '0.25rem' }}
+            >
+              <LogOut size={18} />
+            </button>
           </div>
-          <div style={{ 
-            width: '2.5rem', height: '2.5rem', borderRadius: '50%', 
-            backgroundColor: '#34d399', color: '#153D32', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            fontWeight: 800, fontSize: '1.25rem' 
-          }}>
-            {user?.name?.charAt(0).toUpperCase()}
+        ) : (
+          <div className="customer-desktop-user" style={{ display: 'flex', alignItems: 'center' }}>
+            <NavLink to="/auth/login?role=CUSTOMER" style={{
+              background: '#34d399', color: '#153D32', border: 'none', padding: '0.5rem 1rem',
+              borderRadius: '9999px', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: '0.5rem'
+            }}>
+              <User size={16} /> Masuk / Daftar
+            </NavLink>
           </div>
-          <button
-            onClick={logout}
-            title="Keluar"
-            style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '0.25rem' }}
-          >
-            <LogOut size={18} />
-          </button>
-        </div>
+        )}
 
         {/* Mobile hamburger */}
         <button
@@ -98,15 +111,17 @@ export default function CustomerLayout() {
           top: '57px',
           zIndex: 49,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '0.5rem' }}>
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', backgroundColor: '#34d399', color: '#153D32', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.25rem' }}>
-              {user?.name?.charAt(0).toUpperCase()}
+          {user && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '0.5rem' }}>
+              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', backgroundColor: '#34d399', color: '#153D32', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.25rem' }}>
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, color: '#fff' }}>{user?.name}</div>
+                <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Customer</div>
+              </div>
             </div>
-            <div>
-              <div style={{ fontWeight: 700, color: '#fff' }}>{user?.name}</div>
-              <div style={{ fontSize: '0.75rem', color: '#34d399' }}>Customer</div>
-            </div>
-          </div>
+          )}
           {navItems.map(item => (
             <NavLink
               key={item.path}
@@ -127,12 +142,22 @@ export default function CustomerLayout() {
               <item.icon size={20} /> {item.label}
             </NavLink>
           ))}
-          <button
-            onClick={() => { setMobileMenuOpen(false); logout(); }}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0.5rem', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', borderRadius: '0.5rem', marginTop: '0.25rem' }}
-          >
-            <LogOut size={18} /> Keluar / Sign Out
-          </button>
+          {user ? (
+            <button
+              onClick={() => { setMobileMenuOpen(false); logout(); }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0.5rem', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', borderRadius: '0.5rem', marginTop: '0.25rem' }}
+            >
+              <LogOut size={18} /> Keluar / Sign Out
+            </button>
+          ) : (
+            <NavLink
+              to="/auth/login?role=CUSTOMER"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0.5rem', background: 'transparent', border: 'none', color: '#34d399', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', borderRadius: '0.5rem', marginTop: '0.25rem', textDecoration: 'none', fontWeight: 600 }}
+            >
+              <User size={18} /> Masuk / Daftar
+            </NavLink>
+          )}
         </div>
       )}
 

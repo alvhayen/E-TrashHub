@@ -9,18 +9,22 @@ import { MapPin, Package, MessageCircle, ArrowLeft, Building2, Phone, Mail, File
 
 import { useToast } from '../../components/ui/Toast';
 import Input from '../../components/form/Input';
+import LoginGateModal from '../../components/auth/LoginGateModal';
+import { useAuth } from '../../context/AuthContext';
 
 export default function MaterialDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { request } = useApi();
   const { success, error: toastError } = useToast();
+  const { user } = useAuth();
   
   const [item, setItem] = useState<any>(null);
   const [orderQty, setOrderQty] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [isOrdering, setIsOrdering] = useState(false);
+  const [showGate, setShowGate] = useState(false);
 
   useEffect(() => {
     request('GET', `/api/inventory`).then(data => {
@@ -31,6 +35,11 @@ export default function MaterialDetail() {
   }, [id, request]);
 
   const handleOrder = async () => {
+    if (!user) {
+      setShowGate(true);
+      return;
+    }
+    
     if (!orderQty || isNaN(Number(orderQty)) || Number(orderQty) <= 0) {
       return toastError('Masukkan jumlah yang valid');
     }
@@ -188,7 +197,7 @@ export default function MaterialDetail() {
                 type="number" 
                 value={orderQty} 
                 onChange={e => setOrderQty(e.target.value)} 
-                placeholder={`Maksimal ${item.stockKg} Kg`}
+                placeholder="Misal: 10 Kg"
                 max={item.stockKg}
               />
               <Input 
@@ -223,6 +232,14 @@ export default function MaterialDetail() {
           </Card>
         </div>
       </div>
+      
+      {showGate && (
+        <LoginGateModal 
+          contextAction="membuat pesanan material" 
+          targetRole="CUSTOMER" 
+          onClose={() => setShowGate(false)} 
+        />
+      )}
     </div>
   );
 }
