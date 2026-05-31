@@ -384,11 +384,18 @@ function TaskCard({ task, isExpanded, onToggle, onAction, isProcessing, accentCo
 
       {/* Waste tags + weight */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
-        {task.wasteTypes?.map((type) => (
-          <span key={type} style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.125rem 0.5rem', backgroundColor: '#f1f5f9', color: '#475569', borderRadius: 'var(--radius-sm)' }}>
-            {type}
-          </span>
-        ))}
+        {task.wasteTypes?.map((type) => {
+          const types: Record<string, string> = {
+            '1': 'Botol Plastik', '2': 'Gelas Plastik', '3': 'Kertas/Kardus', 
+            '4': 'Logam/Kaleng', '5': 'Tutup Botol', '6': 'Kain/Tekstil'
+          };
+          const typeName = types[type.toString()] || type;
+          return (
+            <span key={type} style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.125rem 0.5rem', backgroundColor: '#f1f5f9', color: '#475569', borderRadius: 'var(--radius-sm)' }}>
+              {typeName}
+            </span>
+          );
+        })}
         <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.125rem 0.5rem', backgroundColor: '#e0f2fe', color: '#0369a1', borderRadius: 'var(--radius-sm)' }}>
           Est: {task.estimatedWeight}
         </span>

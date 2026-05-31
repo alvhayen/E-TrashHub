@@ -106,36 +106,61 @@ export default function RouteOverview() {
         </div>
 
         {/* Route list */}
-        <div>
-          <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>Urutan Titik Lokasi ({pendingTasks.length})</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div className="route-list-wrapper">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Urutan Titik Lokasi</h2>
+            <div style={{ background: 'var(--role-driver)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700 }}>
+              {pendingTasks.length} Titik
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '2rem' }}>
             {pendingTasks.map((task, idx) => (
-              <Card key={task.id} variant="bordered" padding="sm" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ width: '2rem', height: '2rem', borderRadius: '50%', backgroundColor: 'rgba(14, 165, 233, 0.1)', color: 'var(--role-driver)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+              <div key={task.id} className="route-card" style={{ 
+                display: 'flex', alignItems: 'center', gap: '1rem', 
+                backgroundColor: '#ffffff', borderRadius: '1rem', padding: '1rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{ 
+                  width: '2.5rem', height: '2.5rem', borderRadius: '50%', flexShrink: 0,
+                  background: 'linear-gradient(135deg, var(--role-driver) 0%, #38bdf8 100%)', 
+                  color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  fontWeight: 800, fontSize: '1.125rem', boxShadow: '0 4px 10px rgba(14, 165, 233, 0.3)'
+                }}>
                   {idx + 1}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                    <div style={{ fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{task.user?.name}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.9375rem', color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {task.user?.name}
+                    </div>
                     <Badge status={task.status} />
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {task.address}
                   </div>
                 </div>
                 <button 
                   onClick={() => window.open(`https://maps.google.com/?q=${task.address}`, '_blank')}
-                  style={{ background: 'transparent', border: 'none', color: 'var(--role-driver)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}
+                  style={{ 
+                    background: '#f0f9ff', border: '1px solid #bae6fd', color: 'var(--role-driver)', 
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    width: '2.5rem', height: '2.5rem', borderRadius: '50%', flexShrink: 0,
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = 'var(--role-driver)'; e.currentTarget.style.color = '#fff'; }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = '#f0f9ff'; e.currentTarget.style.color = 'var(--role-driver)'; }}
+                  title="Buka Navigasi Maps"
                 >
-                  <div style={{ padding: '0.5rem', backgroundColor: '#e0f2fe', borderRadius: 'var(--radius-full)' }}>
-                    <ExternalLink size={16} />
-                  </div>
+                  <ExternalLink size={16} />
                 </button>
-              </Card>
+              </div>
             ))}
             {pendingTasks.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-                Tidak ada rute penjemputan tersisa.
+              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--color-text-secondary)', backgroundColor: 'var(--color-surface)', borderRadius: '1rem', border: '1px dashed var(--color-border)' }}>
+                <MapIcon size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+                <div style={{ fontSize: '1rem', fontWeight: 600 }}>Tidak ada rute penjemputan tersisa.</div>
+                <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Selesaikan tugas untuk mengosongkan rute</div>
               </div>
             )}
           </div>
@@ -150,26 +175,58 @@ export default function RouteOverview() {
         }
         .route-map-container {
           width: 100%;
-          height: 260px;
+          height: 300px;
           background-color: #f1f5f9;
-          border-radius: var(--radius-lg);
-          border: 1px solid var(--color-border);
+          border-radius: 1.5rem;
+          border: 4px solid #fff;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
           overflow: hidden;
           position: relative;
           z-index: 10;
           flex-shrink: 0;
         }
+        .route-list-wrapper {
+          display: flex;
+          flex-direction: column;
+        }
+        .route-card {
+          transition: all 0.2s ease-in-out;
+          border: 1px solid transparent;
+        }
+        .route-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+          border-color: rgba(14, 165, 233, 0.3);
+        }
+        
         @media (min-width: 1024px) {
           .route-layout {
             display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 2rem;
+            grid-template-columns: 1fr 400px;
+            gap: 2.5rem;
             align-items: start;
+            height: calc(100vh - 160px);
           }
           .route-map-container {
-            height: 480px;
-            position: sticky;
-            top: 1rem;
+            height: 100%;
+            min-height: 500px;
+          }
+          .route-list-wrapper {
+            height: 100%;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            padding-right: 0.5rem;
+          }
+          /* Custom scrollbar for list */
+          .route-list-wrapper::-webkit-scrollbar {
+            width: 6px;
+          }
+          .route-list-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .route-list-wrapper::-webkit-scrollbar-thumb {
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 10px;
           }
         }
       `}</style>
